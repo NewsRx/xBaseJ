@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- american coders, ltd.  http://www.americancoders.com/xBaseJ -->
+<!ELEMENT dbf (field+, record+)>
+<!ATTLIST dbf
+	name CDATA #REQUIRED
+	encoding CDATA #IMPLIED
+>
+<!ELEMENT field (#PCDATA)>
+<!ATTLIST field
+	name CDATA #REQUIRED
+	type (C | D | F | L | M | N | P) "C"
+	length CDATA #IMPLIED
+	decimalPos CDATA #IMPLIED
+>
+<!ELEMENT record (field+)>
+<!ATTLIST record
+	deleted (Y | N) "N"
+>
