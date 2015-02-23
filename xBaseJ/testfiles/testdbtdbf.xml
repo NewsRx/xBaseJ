@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- org.xBaseJ release 20140310-->
+<!-- http://www.americancoders.com-->
+<!DOCTYPE dbf SYSTEM "xbase.dtd">
+<dbf name="testfiles/testdbt.dbf" encoding="8859_1">
+  <field name="CHAR" type="C" length="10"/>
+  <field name="MEMO" type="M"/>
+  <record>
+    <field name="CHAR">123456789</field>
+    <field name="MEMO">123456789</field>
+  </record>
+  <record>
+    <field name="CHAR">9</field>
+    <field name="MEMO">9</field>
+  </record>
+</dbf>
