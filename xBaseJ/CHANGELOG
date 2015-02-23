@@ -1,0 +1,186 @@
+Release 20140411
+
+	1. Corrected put(Float) problem in NumField and FloatField.
+	
+ 	2. Added some functionality for LogicalField.
+ 	
+ 	3. #25 Temp file name bug in pack(); removed '.' from temp file name.
+ 	
+ 	4. #23 new method DateField.getCalendar(Timezone tz) 
+ 	 
+Release 20140310
+
+	1. Change version numbering to use release date.
+	
+ 	2. Corrected File and Record Lock mechanism.
+ 	
+ 	3. Replaced database version attribute - was int now using Java 
+ 	enum type.
+ 	   
+ 	4. Now handles Clipper large Char fields (lengths > 256).
+ 	
+Release 2013/11/29
+
+	1.  Updated source packages to use generics.  Therefore requires 
+	Java 1.5 or better.
+	
+	2.  Bug fix: NullPointer exception when putting a Date object to
+	a DateField object.
+	
+	3.  Cleaned up date parsing logic in DateField class.
+	
+	4.  Cleaned up some testing modules.
+	
+	5.  Added addFields(ArrayList<Fields>) to DBF class.
+	
+	6.  Improved Swing dbfViewer class.
+	
+		6.1  Added Exit menu item.
+		
+		6.2  Added logic to test data changes. Includes new dialog
+		requesting continue if data has changed when opening a new dbf
+		or exiting the application.
+
+Release 2012/12/31
+
+	1.  XMLParser.java -  Removed Xerces dependency and added new 
+	         parse method that includes a second parameter to pass a 
+	         new file name
+
+    2.  TestXMLParser.java - For #1.
+    
+    3.  xBaseJ.dtd - this should have been in the original package.
+    
+    
+                                            
+Release 2012/12/17
+
+	1.  MDXFile.java -  Close the mdxfile when throwing an exception
+
+    2.  TestConcurrInsert.java - Added sychronized block to System.output
+                                            in thread method.
+                                            
+Release 2012/01/19
+
+    1.  CurrencyField.java - new field class.
+         
+    2.  field classes - added static type attribute.
+    
+    3.  Float.java - improved number parsing logic.
+    
+    4.  *.java - updated references for static field type
+                     added reference to new CurrencyField class.
+                     
+    5.  Field.java - improved encoding type logic for put(String)
+                           method.                 
+
+Release 2011/07/07
+
+    1.  DBF.java - delete and undelete methods now lock at record
+         level.  They no longer lock the entire file. 3356961
+         
+    2.  DBF.java - added a '.' character to temp file name. 3335462
+    
+    3.  Util.java - corrected reference to propIS object. 3335370
+
+Release 2011/04/21
+
+    1.  Fixed Duplicate key condition in NDX class.
+
+Release 2011/04/01
+
+ 	1. Util.java - Moved test for x86 architecture to static method to 
+ 	   improve system performance.  2951954
+ 	   
+ 	2. Index.java - Moved uniqueKey test before code to build key to 
+ 	   improve system performance. 2949611 
+ 	   
+ 	3. DbfDumper.java- new sample program. 2997132
+ 	
+ 	4. Field.java - added static method to test field type. 2997153
+ 	   see isCharField, isDateField, isLogicalField...  This also
+ 	   updates code that used the instanceof class  test.
+ 	   
+ 	5. DBF.java - improved logic to delete temporary MDX files. 2972349
+ 	
+ 	6. Index.java - Fix error -> Reindex won't work after pack removes 
+ 	   all records.  2897506 	    
+ 	   
+ 	7. Several test case programs did not use case sensitive file names 
+ 	   which caused running test application in case sensitive environment
+ 	   to fail.
+ 	   
+Release 2009/12/03
+
+	1. Index class had issues when packing an empty dbf.
+
+Release 2009/10/13
+
+	1. Method reIndex2 removed for all indexing classes.
+	  
+	2. added new test class testMDXBy2ndParty
+	
+	3. removed old debugging code from some classes.
+	
+	4. Fixed null pointer exception which happened when calling close() without any NDX files open.
+	
+	5. abstracted the getType method in abstract Field class.
+	
+	5.a  getType no longer throws xBaseJException.
+	
+	6. cleaned up put(double) method in FloatField.
+	
+	7. key size was wrong for date and numeric changed from 16 to 8
+	
+	8. reIndex() was using read() and should have been using gotoRecord()
+	
+	9. Made a patch to make date index work. The way things are, 
+	Date and Numeric will only work if they are keys by themselves.
+	If you need dates or numbers to be part of a segmented key you 
+	need to declare them as Character  columns.
+	
+	10. added testType method to Junit TestField class.
+	
+	11. Updated RMI Field class getType in base package no longer
+	throws xBaseJException.
+	
+	12. DBF renameTo() only works when the rename  
+	isn't occurring across partitions or physical devices.
+	
+	 
+Release 2009/09/22 
+
+	1. Replaced the Log4J usage in the Util class with Apache
+	  Commons Logging.  You can still use Log4J, Commons Logging will
+	  use that library if it finds it in the classpath.
+	  
+	2. Updated documentation and added examples to source tree.
+
+Release 2009/09/16 
+
+	1. When storing the decimal separator use the '.' character.  When
+	  getting from the db restore with the locale defined character.
+	  
+	2. When writing String data with DBT_FPT use encoding logic.
+
+Release 2.2.3
+
+  1. Decimal separator made to use locale defined character.
+
+Release 2.2.2 
+
+  1.  [ 1985813 ] Bug in DBT_fpt.java
+     add file.skipBytes(4) to bypass memo field type in FPT files.
+     
+   2.  added missing subdirectory name in test scripts.
+   
+Release 2.2.1
+
+  1 Changed license from GENERAL PUBLIC LICENSE (GPL) to LESSER GENERAL PUBLIC LICENSE (LGPL).
+    
+Release 2.2.0
+
+  1. Initial Open Source Release
+  
+
+  

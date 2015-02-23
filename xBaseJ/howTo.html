@@ -1,0 +1,393 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+</head>
+<BODY BACKGROUND="/images/graylines.gif">
+
+<center><h2>xBaseJ 2.2 - Java Objects To Read and Write to dBase Files.</h2></center>
+
+<p>This current release supports DBF, DBT, NDX MDX, and FPT files.
+
+<hr>
+
+<center><h2>Features</h2></center>
+
+
+<h3>Navigational Access</h3>
+
+
+xBaseJ classes offer several methods to process dBase III and IV files
+and FoxPro files.
+
+<h3>Record Locking</h3>
+
+<h3>High Capacity Channel Access</h3>
+
+Implements channel I/O methods and routines. 
+
+<h3>A RMI Server and RMI Client Package</h3>
+
+
+The package comes with a RMI based database server application and  client interface
+classes. These classes allow remote clients to access databases on your server
+machines. While the RMI package is very fast, it offers NO SECURITY NOR LOCKING
+MECHANISMS.
+
+<h3>Database Browser</h3>
+<h3>xBaseJ has two classes, dbfShow and dbfViewer, for a GUI access local databases.</h3>
+<h4>dbfShow an AWT application navigates a database record by record</h4>
+
+<hr SIZE=3 WIDTH="59%">
+
+<h4>dbfViewer a Swing application displays the database as a table.</h4>
+
+<h4>A GUI To Create a Database</h4>
+
+<h3>Database HTML Report Generator</h3>
+
+
+&nbsp;&nbsp;&nbsp; xBaseJ has a class, dbfHTML, that creates an HTML output
+file of your databases.
+
+<hr SIZE=3 WIDTH="55%">
+
+<h3>Field level objects</h3>
+
+
+&nbsp;&nbsp;&nbsp; Each Field in the database is an object unto itself.
+<hr SIZE=3 WIDTH="55%">
+
+&nbsp;&nbsp;&nbsp;
+A Java class that reads a dbf file and creates
+a Java bean to simplify your coding effort
+<hr SIZE=3 WIDTH="55%">
+<h3><a href="../xBaseJMailer.html">xBaseJMailer</a></h3>
+An E-Mailer application that
+    reads a dbf file to generate and send e-mail messages.
+
+
+<hr SIZE=3 WIDTH="55%">
+
+
+<h3>Current dBase Format Supported</h3>
+
+dBase III - DBF, DBT, and NDX
+
+<i>No support for expression or function
+indexes.</i>
+
+
+dBase IV - DBF, DBT, MDX, and NDX
+<i>No support for expression or function
+indexes.</i>
+
+
+FoxPro - DBF, FPT
+<i>no support for FoxPro indexes.</i>
+
+<hr SIZE=3 WIDTH="55%">
+<h3>Known Problems</h3>
+
+
+There is some incompatibility with dBase V and MDX files use numeric indexes and indexes using date fields.
+
+
+<hr SIZE=3 WIDTH="55%">
+<h3>xBaseJ.Properties</h3>
+
+Properties may be set in one of two ways.
+First, with the xBaseJ.properties file.  Contents of which are the standard properties file used by Java.
+<code>
+ignoreDBFLengthCheck=true
+ignoreMissingMDXFile=false
+</code>
+<hr WIDTH="40%">
+Second by using the xBaseJ.Util.setxBaseJProperty method passing the name value pair as two parameters.
+<code>
+import xBaseJ.util;
+...
+setxBaseJProperty("ignoreDBFLengthCheck", "true");
+</code>
+<hr WIDTH="40%">
+<center><h4>Property Descriptions</h4></center>
+<TABLE  BORDER=1 CELLSPACING=2 CELLPADDING=2 >
+<tr>
+<th>Name
+<th>Description
+<th>Possible Values
+<th>Default Value
+</tr>
+<tr>
+<td>checkPropertyFileForChanges
+
+<td>Indicates to recheck the property file system date
+to see if it has changed since the last get properties call.
+<td>True, Yes, False, No
+<td>True, check to see if property file has changed since last call.
+<tr>
+<td>fieldFilledWithSpaces
+<td>When a character field length is shorter than its maximum length
+the remain bytes are field with spaces or binary zeros.
+<td>True, Yes, False, No
+<td>False, remaining bytes filled with binary zeros.
+<tr>
+<td>ignoreDBFLengthCheck
+<td>Used when creating a DBF,  dBase defines maximum record length at 4000.  Set
+this property to true when you want to create dbf files with record lengths greater
+than 4000.
+<td>True, Yes, False, No
+<td>False,  record length maximum is 4000
+<tr>
+<td>ignoreMissingMDX
+<td>When opening a DBF file that has its MDX file indicator set to true xBaseJ, like
+other dbase engines, looks to open the associated MDX file.  If it can't be found
+an exception is thrown.  If this property is set to true or yes then the application
+will not throw an exception.
+<td>True, Yes, False, No
+
+<td>False, throw exception if MDX file is missing.
+<tr>
+<td>memoFileExtension
+<td>When you want to use a different extension for the memo file.  Most applications
+use "DBT" some use "FPT", others have been used.
+<td>anything
+<td>if left blank application assumes "DBT".
+<tr>
+<td>otherValidCharactersInFieldNames
+<td>Used to specify non LATIN characters in field names.
+<td>anything
+<td>n/a
+<tr>
+<td>trimFields
+<td>Removing trailing spaces from character fields when using get method.
+<td>True, Yes, False, No
+<td>False, trailing spaces are not removed.
+</tr>
+</table>
+
+<center>
+<h1>The Classes</h1></center>
+
+<TABLE ALIGN="left" BORDER=1 CELLSPACING=2 CELLPADDING=2 >
+<tr>
+<th>Classes</th>
+<th>Documentation</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>DBF</td>
+
+<td><a href="xBaseJ/xBaseJ/DBF.html">Methods</a></td>
+
+<td>DBF class is used to create an database object. It contains several
+methods for database access and control</td>
+</tr>
+
+<tr>
+<th>Classes</th>
+
+<th>Documentation</th>
+
+<th>Description</th>
+</tr>
+
+<tr>
+<td>Index</td>
+
+<td><a href="xBaseJ/xBaseJ/Index.html">Abstract class for Index files and tags</a></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td>NDX</td>
+
+<td>Protected and private methods.</td>
+
+<td>Used to access the DBF through NDX files.</td>
+</tr>
+
+<tr>
+<td>MDX</td>
+
+<td>Protected and Mostly private methods.</td>
+
+<td>Used to access the DBF through MDX tags</td>
+</tr>
+
+<tr>
+<th>Classes</th>
+
+<th>Documentation</th>
+
+<th>Description</th>
+</tr>
+
+<tr>
+
+<td>Field</td>
+
+<td><a href="xBaseJ/xBaseJ/Field.html">Abstract class</a></td>
+
+<td>Used by the Field classes</td>
+</tr>
+
+<tr>
+<td>CharField</td>
+
+<td><a href="xBaseJ/xBaseJ/CharField.html">character Field subclass</a></td>
+
+<td>Used to access Field types of 'C'</td>
+</tr>
+
+<tr>
+<td>DateField</td>
+
+<td><a href="xBaseJ/xBaseJ/DateField.html">date Field subclass</a></td>
+
+<td>Used to access Field types of 'D'</td>
+</tr>
+
+<tr>
+<td>LogicalField</td>
+
+<td><a href="xBaseJ/xBaseJ/LogicalField.html">logical Field subclass</a></td>
+
+<td>Used to access Field types of 'L'</td>
+</tr>
+
+<tr>
+<td>MemoField</td>
+
+<td><a href="xBaseJ/xBaseJ/MemoField.html">memo Field subclass</a></td>
+
+<td>Used to access Field types of 'M'</td>
+
+</tr>
+
+<tr>
+<td>PictureField</td>
+
+<td><a href="xBaseJ/xBaseJ/PictureField.html">picture Field subclass</a></td>
+
+<td>Used to access Field types of 'P'</td>
+</tr>
+
+<tr>
+<td>NumField</td>
+
+<td><a href="xBaseJ/xBaseJ/NumField.html">numeric Field subclass</a></td>
+
+<td>Used to access Field types of 'N'</td>
+</tr>
+
+<tr>
+<td>FloatField</td>
+
+<td><a href="xBaseJ/xBaseJ/FloatField.html">float Field subclass</a></td>
+
+<td>Used to access Field types of 'F'</td>
+</tr>
+
+<tr>
+<th>Classes</th>
+
+<th>Documentation</th>
+
+<th>Description</th>
+</tr>
+
+<tr>
+<td>dbfShow</td>
+
+<td><a href="xBaseJ/xBaseJ/dbfShow.html">Java Frame.</a></td>
+
+<td>This is a Java frame we wrote for testing the class. Write to us and
+we'll send you the source. 
+<br>To run this Java application use the following command line:
+<br>java xBaseJ.dbfShow</td>
+</tr>
+
+<tr>
+<td>dbfViewer</td>
+
+<td><a href="xBaseJ/xBaseJ/dbfViewer.html">Java Swing JFrame.</a></td>
+
+<td>This is a Java swing jframe we wrote for testing the class.
+
+<br>To run this Java application use the following command line:
+<br>java xBaseJ.dbfViewer</td>
+</tr>
+
+<tr>
+<th>Classes</th>
+
+<th>Documentation</th>
+
+<th>Description</th>
+</tr>
+
+<tr>
+
+<td>rmi/Server</td>
+
+<td><a href="xBaseJ/xBaseJ/rmi/Server.html">The RMI Server.</a></td>
+
+<td>Use this to create RMI access to your xBase files.</td>
+</tr>
+
+
+<tr>
+<td>rmi/DBFServerInterface</td>
+
+<td><a href="xBaseJ/xBaseJ/rmi/DBFServerInterface.html">The Client Access to Server is by an Interface</a></td>
+
+<td>Used in conjunction with server. This is the interface that operates on
+the client machine.</td>
+</tr>
+
+<tr>
+<td>rmi/DBFInterface</td>
+
+<td><a href="xBaseJ/xBaseJ/rmi/DBFInterface.html">The Client Access to DBF objects is by an Interface</a></td>
+
+<td>Access fields and other database constructs.</td>
+</tr>
+
+
+<tr>
+<td>rmi/Field</td>
+
+<td><a href="xBaseJ/xBaseJ/rmi/FieldInterface.html">The Client Access to Field objects also by an Interface</a></td>
+
+<td>Here are the getter/setter methods for the field objects</td>
+<td></td>
+</tr>
+
+
+
+<tr>
+<th>Other Classes</th>
+
+<th>Documentation</th>
+
+<th>Description</th>
+</tr>
+<tr>
+<td>XBASEXMLParser</td>
+
+<td>The XML Parser To Create DBF Files</td>
+
+<td>Used in conjunction with the XBASE.DTD file and a XML file built with
+the DTD specifications.</td>
+</tr>
+
+</table>
+
+
+<center>
+<h1>
+Publish or Perish</h1></center>
+
+</body>
+</html>
