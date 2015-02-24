@@ -64,6 +64,7 @@ package org.xBaseJ;
  *                             Now handles Clipper large Char fields (lengths > 256).
 */
 
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,7 +96,7 @@ import org.xBaseJ.indexes.MDXFile;
 import org.xBaseJ.indexes.NDX;
 
 
-public class DBF extends Object {
+public class DBF implements Closeable {
 
 	protected String dosname;
 	protected int current_record = 0;
@@ -1841,8 +1842,12 @@ public class DBF extends Object {
 		MDXfile = null;
 		unlock();
 
+		System.out.println("pre-truncate filesize: "+file.length());
+		long fileSize = (offset + (lrecl * count));
+		file.setLength(fileSize);
+		System.out.println("post-truncate filesize: "+file.length());
+		
 		file.close();
-
 	}
 
 	/**
