@@ -1841,11 +1841,10 @@ public class DBF implements Closeable {
 		jNDXes = null;
 		MDXfile = null;
 		unlock();
-
-		System.out.println("pre-truncate filesize: "+file.length());
+		
 		long fileSize = (offset + (lrecl * count));
 		file.setLength(fileSize);
-		System.out.println("post-truncate filesize: "+file.length());
+		update_dbhead();
 		
 		file.close();
 	}
