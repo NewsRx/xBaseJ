@@ -155,7 +155,11 @@ return format.toString();
 */
 public void put(String inValue) throws xBaseJException
   {
-
+	
+	if (inValue.trim().length() == 0) {
+		super.put("");
+		return;
+	}
 
   try {  Double.valueOf(inValue); }
   catch  (NumberFormatException nfe) {super.put(""); return; }
