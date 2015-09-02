@@ -36,6 +36,7 @@ package org.xBaseJ;
 */
 
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -273,6 +274,8 @@ public class Util extends Object {
                 	lastUpdate = propFile.lastModified();
                 	logr.debug("loading properties");
                 	props.load(propIS);
+                } else {
+                	propIS = new ByteArrayInputStream(new byte[0]);
                 }
             }
             else  if (propFile != null && recheckProperties == true) {
