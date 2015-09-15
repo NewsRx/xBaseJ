@@ -125,6 +125,10 @@ public class DBF implements Closeable {
 	public void setLanguage(byte language) {
 		this.language = language;
 	}
+	
+	public void setLanguage(int language) {
+		this.language = (byte)language;
+	}
 
 	protected byte reserve2[] = new byte[2];
 
