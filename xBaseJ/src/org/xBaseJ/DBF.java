@@ -118,6 +118,14 @@ public class DBF implements Closeable {
 	protected byte reserve[] = new byte[12];
 	protected byte MDX_exist = 0;
 	protected byte language = 0;
+	public byte getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(byte language) {
+		this.language = language;
+	}
+
 	protected byte reserve2[] = new byte[2];
 
 	protected Index jNDX;
