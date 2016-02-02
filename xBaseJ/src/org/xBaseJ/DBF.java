@@ -117,7 +117,7 @@ public class DBF implements Closeable {
 	protected byte encrypt_flag = 0;
 	protected byte reserve[] = new byte[12];
 	protected byte MDX_exist = 0;
-	protected byte language = 0;
+	protected byte language = 0x03;
 	public byte getLanguage() {
 		return language;
 	}
@@ -1939,7 +1939,7 @@ public class DBF implements Closeable {
 		lrecl = 1; /* length of a record includes the delete byte */
 		incomplete_transaction = 0;
 		encrypt_flag = 0;
-		language = 0;
+		//language = 0; //what the hell is this?
 
 		// flip it back
 
