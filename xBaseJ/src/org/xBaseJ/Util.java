@@ -312,20 +312,30 @@ public class Util extends Object {
 
     /**
      * returns true if org.xBaseJ.property dontTrimFields is "true" or "yes"
+     * or returns true if org.xBaseJ.property trimFields is "false" or "no".<br/>
+     * If not set, assumes we want the fields trimmed.
      * @return boolean false or true
      */
     public static boolean dontTrimFields()
     {
-    	String prop;
+    	String prop1;
+    	String prop2;
 		try {
-			prop = getxBaseJProperty("trimFields");
+			prop1 = getxBaseJProperty("trimFields");
 		} catch (IOException e) {
-			return false;
+			prop1 = "false";
 		}
-        if (prop.toLowerCase().compareTo("yes") == 0)
-        		return true;
-        if (prop.toLowerCase().compareTo("true") == 0)
-        		return true;
+		try {
+			prop2 = getxBaseJProperty("dontTrimFields");
+		} catch (IOException e) {
+			prop2 = "true";
+		}
+		if (prop1.equalsIgnoreCase("true")||prop2.equalsIgnoreCase("yes")) {
+        	return true;
+        }
+        if (prop2.equalsIgnoreCase("false")||prop2.equalsIgnoreCase("no")) {
+        	return true;
+        }
         return false;
     }
 

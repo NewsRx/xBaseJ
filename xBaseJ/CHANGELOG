@@ -1,3 +1,13 @@
+Release 20160202
+
+	1. Fixes incorrect evaluation of trimFields/dontTrimFields (michael@newsrx.com)
+	
+Release 20150915 
+
+	1. Fixes close to setlength so that FoxPro is happy with DBFs as not being "damaged". (michael@newsrx.com)
+	
+	2. Exposes a setLanguage call on the DBF object so that we can mark the DBF with a codepage! Fixes issue with FoxPro prompting for codepage selection when opening a DBF. (Use setLanguage(3) for CP1252) (michael@newsrx.com)
+	
 Release 20140411
 
 	1. Corrected put(Float) problem in NumField and FloatField.
