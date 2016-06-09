@@ -618,6 +618,7 @@ public class DBF implements Closeable {
 
 			tempDBF = new DBF(newName, format, true);
 			tempDBF.version =   format;
+			tempDBF.language = language;
 			tempDBF.MDX_exist = MDX_exist;
 
 		}
