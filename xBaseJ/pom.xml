@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.newsrx</groupId>
 	<artifactId>xBaseJ</artifactId>
-	<version>20160609</version>
+	<version>20160715</version>
 	<!-- use UTF-8 for everything -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
