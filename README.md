@@ -17,6 +17,8 @@ repositories {
   maven { url "https://jitpack.io" }
 }
 dependencies {
-  compile 'com.github.michael-newsrx:xBaseJ:20160715'
+  compile ('com.github.michael-newsrx:xBaseJ:20160715') {
+		exclude group: 'org.eclipse.swt'
+	}
 }
 ```
