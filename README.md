@@ -17,6 +17,6 @@ repositories {
   maven { url "https://jitpack.io" }
 }
 dependencies {
-  compile 'com.github.jitpack:gradle-simple:1.0'
+  compile 'com.github.michael-newsrx:xBaseJ:20160715'
 }
 ```
