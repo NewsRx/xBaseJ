@@ -22,3 +22,17 @@ dependencies {
 	}
 }
 ```
+
+or if you prefer the most recent code:
+
+```
+repositories {
+  jcenter()
+  maven { url "https://jitpack.io" }
+}
+dependencies {
+  compile ('com.github.michael-newsrx:xBaseJ:master-SNAPSHOT') {
+		exclude group: 'org.eclipse.swt'
+	}
+}
+```
