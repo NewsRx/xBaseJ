@@ -23,27 +23,8 @@ dependencies {
 }
 ```
 
-To use this project as a Maven dependency:
-```
-	<repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
-.
-.
-.
-	<dependency>
-	    <groupId>com.github.michael-newsrx</groupId>
-	    <artifactId>xBaseJ</artifactId>
-	    <version>20160715</version>
-	</dependency>
-```
-
 or if you prefer the most recent code:
 
-(Gradle)
 ```
 repositories {
   jcenter()
@@ -55,20 +36,5 @@ dependencies {
 	}
 }
 ```
-(Maven)
-```
-	<repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
-.
-.
-.
-	<dependency>
-	    <groupId>com.github.michael-newsrx</groupId>
-	    <artifactId>xBaseJ</artifactId>
-	    <version>master-SNAPSHOT</version>
-	</dependency>
-```
+
+Instructions on how to use this project with Maven, SBT, and Leiningen are available at: https://jitpack.io/#michael-newsrx/xBaseJ/20160715
