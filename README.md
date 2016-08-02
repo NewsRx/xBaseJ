@@ -37,4 +37,4 @@ dependencies {
 }
 ```
 
-Instructions on how to use this project with Maven, SBT, and Leiningen are available at: https://jitpack.io/#michael-newsrx/xBaseJ/
+Instructions on how to use this project with Maven, SBT, and Leiningen are available at: https://jitpack.io/#NewsRxTech/xBaseJ/
