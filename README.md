@@ -10,7 +10,10 @@ These are required to be able to create DBFs that can be read by Visual Foxpro 9
 
 -
 
-To use this project as a Gradle dependency:
+This project can easily be used with Gradle, Maven, SBT, and Leiningen: https://jitpack.io/#NewsRxTech/xBaseJ/
+
+Example Gradle config:
+
 ```
 repositories {
   jcenter()
@@ -23,18 +26,5 @@ dependencies {
 }
 ```
 
-or if you prefer the most recent code:
 
-```
-repositories {
-  jcenter()
-  maven { url "https://jitpack.io" }
-}
-dependencies {
-  compile ('com.github.NewsRxTech:xBaseJ:master-SNAPSHOT') {
-		exclude group: 'org.eclipse.swt'
-	}
-}
-```
 
-Instructions on how to use this project with Maven, SBT, and Leiningen are available at: https://jitpack.io/#NewsRxTech/xBaseJ/
