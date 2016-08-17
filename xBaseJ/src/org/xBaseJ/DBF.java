@@ -1860,7 +1860,7 @@ public class DBF implements Closeable {
 			 * reset file length if length doesn't match calculated length, this
 			 * is required for the DBF to be readable by Visual FoxPro 9.x
 			 */
-			long fileSize = (offset + (lrecl * count));
+			long fileSize = (offset + (lrecl * count))+1; //foxpro foxplus output is 1 byte longer than raw calculation?
 			if (file.getChannel().size() != fileSize) {
 				file.setLength(fileSize);
 			}
