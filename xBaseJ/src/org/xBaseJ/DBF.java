@@ -1855,10 +1855,17 @@ public class DBF implements Closeable {
 		MDXfile = null;
 		unlock();
 		
-		long fileSize = (offset + (lrecl * count));
-		file.setLength(fileSize);
+		if (!readonly) {
+			/**
+			 * reset file length if length doesn't match calculated length, this
+			 * is required for the DBF to be readable by Visual FoxPro 9.x
+			 */
+			long fileSize = (offset + (lrecl * count));
+			if (file.getChannel().size() != fileSize) {
+				file.setLength(fileSize);
+			}
+		}
 		update_dbhead();
-		
 		file.close();
 	}
 
