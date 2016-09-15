@@ -67,7 +67,7 @@ public boolean isMemoField() {return getType() == 'M';}
 public boolean isLogicalField() {return getType() == 'L';}
 public boolean isNumField() {return getType() == 'N';}
 public boolean isPictureField() {return getType() == 'P';}
-public boolean isCurrencyFIeld() {return getType() == 'Y';}
+public boolean isCurrencyField() {return getType() == 'Y';}
 
     /** used by externalize methods
      * @param in ObjectInput stream
