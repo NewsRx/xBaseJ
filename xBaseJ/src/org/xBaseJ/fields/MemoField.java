@@ -173,6 +173,7 @@ public class MemoField extends Field {
 
     /**
      * return the contents of the memo Field via its original byte array
+     * @deprecated Do NOT use this function! These bytes do NOT reflect the actual memo field's value!
      * 
      * @return byte[] - if not set a null is returned.
      */
@@ -211,6 +212,8 @@ public class MemoField extends Field {
      * 
      * @param inBytes
      *            byte array value to set Field to.
+     *            
+     * @deprecated Do NOT use this function! These bytes do NOT reflect the actual memo field's value! ONLY {@link #put(String)} works correctly!
      */
     public void put(byte inBytes[]) throws xBaseJException {
 	byteValue = inBytes;
