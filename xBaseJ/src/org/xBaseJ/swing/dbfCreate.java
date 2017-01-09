@@ -11,7 +11,9 @@ package org.xBaseJ.swing;
 *<br>1-919-846-2014
 *<br>http://www.americancoders.com
 @author Joe McVerry, American Coders Ltd.
-@Version 20140310
+@author Michael Joyner https://github.com/michael-newsrx
+@author Tyryshkin Alexander https://github.com/TYSDEV
+@Version 20170109
 *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library Lesser General Public
