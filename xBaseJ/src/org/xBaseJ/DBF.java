@@ -121,18 +121,13 @@ public class DBF implements Closeable, HasSize {
 	protected byte MDX_exist = 0;
 	protected byte language = 0x03;
 
-	public void setMemoBlockSize(int memoBlockSize) {
-		if (dbtobj==null) {
-			return; //noop
-		}
-		dbtobj.memoBlockSize=memoBlockSize;
-	}
 	public int getMemoBlockSize() {
-		if (dbtobj==null) {
+		if (dbtobj == null) {
 			return -1;
 		}
 		return dbtobj.memoBlockSize;
 	}
+
 	public long memoLength() throws IOException {
 		if (dbtobj == null) {
 			return -1;
@@ -149,27 +144,31 @@ public class DBF implements Closeable, HasSize {
 		}
 		return file.length();
 	}
-	
+
 	/**
-	 * Returns matching Visual Foxpro codepage, or {@value CodePage#NO_CODEPAGE} if none match the byte value.
+	 * Returns matching Visual Foxpro codepage, or {@value CodePage#NO_CODEPAGE}
+	 * if none match the byte value.
+	 * 
 	 * @return
 	 */
-	public CodePage getCodepage(){
-		for (CodePage cp: CodePage.values()) {
-			if (cp.getCode_page_identifier()==language) {
+	public CodePage getCodepage() {
+		for (CodePage cp : CodePage.values()) {
+			if (cp.getCode_page_identifier() == language) {
 				return cp;
 			}
 		}
 		return CodePage.NO_CODEPAGE;
 	}
-	
+
 	/**
-	 * Sets the codepage byte value in the DBF header and also switches the GLOBAL DBF to the new language if possible.
+	 * Sets the codepage byte value in the DBF header and also switches the
+	 * GLOBAL DBF to the new language if possible.
+	 * 
 	 * @param codepage
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void setCodepage(CodePage codepage) throws IOException {
-		language=codepage.getCode_page_identifier();
+		language = codepage.getCode_page_identifier();
 		setEncodingType(codepage.getJava_code_page());
 		update_dbhead();
 	}
@@ -214,6 +213,7 @@ public class DBF implements Closeable, HasSize {
 	public FileLock recordlock = null;
 	public long fileLockWait = 5000; // milliseconds
 	public ByteBuffer buffer;
+	private int memoFieldSize;
 
 	/**
 	 * creates a new DBF file or replaces an existing database file, w/o format
@@ -236,34 +236,55 @@ public class DBF implements Closeable, HasSize {
 	 */
 
 	public DBF(String DBFname, boolean destroy) throws xBaseJException, IOException, SecurityException {
-		createDBF(DBFname, DBFTypes.DBASEIII, destroy);
+		createDBF(DBFname, DBFTypes.DBASEIII, destroy, 512);
+	}
+
+	/**
+	 * creates a new DBF file or replaces an existing database file, w/o format
+	 * assumes dbaseiii file format.
+	 * 
+	 * @param DBFname
+	 * @param destroy
+	 * @param memoFieldSize
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	public DBF(String DBFname, boolean destroy, int memoFieldSize)
+			throws xBaseJException, IOException, SecurityException {
+		createDBF(DBFname, DBFTypes.DBASEIII, destroy, memoFieldSize);
 	}
 
 	/**
 	 * creates a new DBF file or replaces an existing database file.
-	 *
-	 *
+	 * 
 	 * @param DBFname
-	 *            a new or existing database file, can be full or partial
-	 *            pathname
 	 * @param format
-	 *            use class constants DBASEIII or DBASEIV
 	 * @param destroy
-	 *            permission to destroy an existing database file
-	 * @throws xBaseJException
-	 *             File does exist and told not to destroy it.
-	 * @throws xBaseJException
-	 *             Told to destroy but operating system can not destroy
-	 * @throws IOException
-	 *             Java error caused by called methods
 	 * @throws SecurityException
-	 *             Java error caused by called methods, most likely trying to
-	 *             create on a remote system
+	 * @throws xBaseJException
+	 * @throws IOException
 	 */
-
 	public DBF(String DBFname, DBFTypes format, boolean destroy)
+			throws SecurityException, xBaseJException, IOException {
+		this(DBFname, format, destroy, 0);
+	}
+
+	/**
+	 * creates a new DBF file or replaces an existing database file.
+	 * 
+	 * @param DBFname
+	 * @param format
+	 * @param destroy
+	 * @param memoFieldSize
+	 *            Standard values are: III = 512, IV = 512, FoxPro = 64
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	public DBF(String DBFname, DBFTypes format, boolean destroy, int memoFieldSize)
 			throws xBaseJException, IOException, SecurityException {
-		createDBF(DBFname, format, destroy);
+		createDBF(DBFname, format, destroy, memoFieldSize);
 	}
 
 	/**
@@ -303,7 +324,6 @@ public class DBF implements Closeable, HasSize {
 	 */
 
 	public DBF(String DBFname) throws xBaseJException, IOException {
-
 		readonly = false;
 		openDBF(DBFname);
 	}
@@ -311,32 +331,42 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * creates a new DBF file or replaces an existing database file, w/o format
 	 * assumes dbaseiii file format.
-	 *
 	 * @param DBFname
-	 *            a new or existing database file, can be full or partial
-	 *            pathname
 	 * @param destroy
-	 *            delete existing dbf.
+	 * @param inEncodeType
+	 * @param memoFieldSize
+	 * @throws IOException 
+	 * @throws xBaseJException 
+	 * @throws SecurityException 
+	 */
+	public DBF(String DBFname, boolean destroy, String inEncodeType) throws SecurityException, xBaseJException, IOException{
+		this(DBFname, destroy, inEncodeType, 512);
+	}
+	/**
+	 * creates a new DBF file or replaces an existing database file, w/o format
+	 * assumes dbaseiii file format.
+	 * 
+	 * @param DBFname
+	 * @param destroy
+	 * @param inEncodeType
+	 * @param memoFieldSize
+	 *            Standard Values: III, IV = 512, FPT = 64
 	 * @throws xBaseJException
-	 *             File does exist and told not to destroy it.
-	 * @throws xBaseJException
-	 *             Told to destroy but operating system can not destroy
 	 * @throws IOException
-	 *             Java error caused by called methods
 	 * @throws SecurityException
-	 *             Java error caused by called methods, most likely trying to
-	 *             create on a remote system
 	 */
 
-	public DBF(String DBFname, boolean destroy, String inEncodeType)
+	public DBF(String DBFname, boolean destroy, String inEncodeType, int memoFieldSize)
 			throws xBaseJException, IOException, SecurityException {
 		setEncodingType(inEncodeType);
-		createDBF(DBFname, DBFTypes.DBASEIII, destroy);
+		createDBF(DBFname, DBFTypes.DBASEIII, destroy, memoFieldSize);
 	}
 
 	/**
 	 * creates a new DBF file or replaces an existing database file.
 	 *
+	 * @param memoFieldSize
+	 *            Standard values: III, IV = 512, FPT = 64
 	 * @param DBFname
 	 *            a new or existing database file, can be full or partial
 	 *            pathname
@@ -357,10 +387,10 @@ public class DBF implements Closeable, HasSize {
 	 *             create on a remote system
 	 */
 
-	public DBF(String DBFname, DBFTypes format, boolean destroy, String inEncodeType)
+	public DBF(String DBFname, DBFTypes format, boolean destroy, String inEncodeType, int memoFieldSize)
 			throws xBaseJException, IOException, SecurityException {
 		setEncodingType(inEncodeType);
-		createDBF(DBFname, format, destroy);
+		createDBF(DBFname, format, destroy, memoFieldSize);
 	}
 
 	/**
@@ -511,8 +541,52 @@ public class DBF implements Closeable, HasSize {
 		}
 	}
 
+	/**
+	 * 
+	 * @param DBFname
+	 * @param format
+	 * @param destroy
+	 * @throws IOException
+	 * @throws xBaseJException
+	 * @throws SecurityException
+	 */
 	protected void createDBF(String DBFname, DBFTypes format, boolean destroy)
+			throws SecurityException, xBaseJException, IOException {
+		createDBF(DBFname, format, destroy, 0);
+	}
+
+	/**
+	 * 
+	 * @param DBFname
+	 * @param format
+	 * @param destroy
+	 * @param memoFieldSize
+	 *            Standard value for III, IV is 512 bytes. For FoxPro it is 64
+	 *            bytes.
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws SecurityException
+	 */
+	protected void createDBF(String DBFname, DBFTypes format, boolean destroy, int memoFieldSize)
 			throws xBaseJException, IOException, SecurityException {
+		if (memoFieldSize <= 0) {
+			switch (format) {
+			case DBASEIII:
+			case DBASEIII_WITH_MEMO:
+				memoFieldSize = 512;
+				break;
+			case DBASEIV:
+			case DBASEIV_WITH_MEMO:
+				memoFieldSize = 512;
+				break;
+			case FOXPRO_WITH_MEMO:
+				memoFieldSize = 64;
+				break;
+			default:
+				memoFieldSize = 512;
+			}
+		}
+		this.memoFieldSize = memoFieldSize;
 		jNDX = null;
 		jNDXes = new Vector<Index>(1);
 		jNDXID = new Vector<String>(1);
@@ -679,8 +753,7 @@ public class DBF implements Closeable, HasSize {
 			DBFTypes format = version;
 			if ((format == DBFTypes.DBASEIII) && (MDX_exist == 1))
 				format = DBFTypes.DBASEIV;
-
-			tempDBF = new DBF(newName, format, true);
+			tempDBF = new DBF(newName, format, true, memoFieldSize);
 			tempDBF.version = format;
 			tempDBF.language = language;
 			tempDBF.MDX_exist = MDX_exist;
@@ -690,26 +763,26 @@ public class DBF implements Closeable, HasSize {
 		if (newMemo) {
 			if (createTemp) {
 				if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO) && (MDX_exist == 0))
-					tempDBF.dbtobj = new DBT_iii(this, newName, true);
+					tempDBF.dbtobj = new DBT_iii(this, newName, true, memoFieldSize);
 				else if (version == DBFTypes.FOXPRO_WITH_MEMO)
-					tempDBF.dbtobj = new DBT_fpt(this, newName, true);
+					tempDBF.dbtobj = new DBT_fpt(this, newName, true, memoFieldSize);
 				else
-					tempDBF.dbtobj = new DBT_iv(this, newName, true);
+					tempDBF.dbtobj = new DBT_iv(this, newName, true, memoFieldSize);
 			} else {
 				if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO) && (MDX_exist == 0))
-					dbtobj = new DBT_iii(this, dosname, true);
+					dbtobj = new DBT_iii(this, dosname, true, memoFieldSize);
 				else if (version == DBFTypes.FOXPRO_WITH_MEMO)
-					dbtobj = new DBT_fpt(this, dosname, true);
+					dbtobj = new DBT_fpt(this, dosname, true, memoFieldSize);
 				else
-					dbtobj = new DBT_iv(this, dosname, true);
+					dbtobj = new DBT_iv(this, dosname, true, memoFieldSize);
 			}
 		} else if (createTemp && oldMemo) {
 			if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO) && (MDX_exist == 0))
-				tempDBF.dbtobj = new DBT_iii(this, newName, true);
+				tempDBF.dbtobj = new DBT_iii(this, newName, true, memoFieldSize);
 			else if (version == DBFTypes.FOXPRO_WITH_MEMO)
-				tempDBF.dbtobj = new DBT_fpt(this, newName, true);
+				tempDBF.dbtobj = new DBT_fpt(this, newName, true, memoFieldSize);
 			else
-				tempDBF.dbtobj = new DBT_iv(this, newName, true);
+				tempDBF.dbtobj = new DBT_iv(this, newName, true, memoFieldSize);
 		}
 
 		if (createTemp) {
@@ -842,17 +915,17 @@ public class DBF implements Closeable, HasSize {
 				if (dosname.endsWith("dbf"))
 					dbtobj = new DBT_iii(this, readonly);
 				else
-					dbtobj = new DBT_iii(this, dosname, true);
+					dbtobj = new DBT_iii(this, dosname, true, memoFieldSize);
 			} else if (version == DBFTypes.FOXPRO_WITH_MEMO) {
 				if (dosname.endsWith("dbf"))
 					dbtobj = new DBT_fpt(this, readonly);
 				else
-					dbtobj = new DBT_fpt(this, dosname, true);
+					dbtobj = new DBT_fpt(this, dosname, true, memoFieldSize);
 			} else {
 				if (dosname.endsWith("dbf"))
 					dbtobj = new DBT_iv(this, readonly);
 				else
-					dbtobj = new DBT_iv(this, dosname, true);
+					dbtobj = new DBT_iv(this, dosname, true, memoFieldSize);
 
 			}
 		}
@@ -2305,7 +2378,7 @@ public class DBF implements Closeable, HasSize {
 		File f = File.createTempFile("tempxbase", "tmp");
 		String tempname = f.getAbsolutePath();
 
-		DBF tempDBF = new DBF(tempname, version, true);
+		DBF tempDBF = new DBF(tempname, version, true, memoFieldSize);
 
 		tempDBF.reserve = reserve;
 		tempDBF.language = language;
