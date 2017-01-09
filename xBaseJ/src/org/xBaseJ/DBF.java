@@ -121,18 +121,6 @@ public class DBF implements Closeable, HasSize {
 	protected byte MDX_exist = 0;
 	protected byte language = 0x03;
 
-	public void setMemoBlockSize(int memoBlockSize) {
-		if (dbtobj==null) {
-			return; //noop
-		}
-		dbtobj.memoBlockSize=memoBlockSize;
-	}
-	public int getMemoBlockSize() {
-		if (dbtobj==null) {
-			return -1;
-		}
-		return dbtobj.memoBlockSize;
-	}
 	public long memoLength() throws IOException {
 		if (dbtobj == null) {
 			return -1;
