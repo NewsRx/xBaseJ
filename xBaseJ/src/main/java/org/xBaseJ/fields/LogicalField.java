@@ -124,7 +124,8 @@ public class LogicalField extends Field {
 	@Override
 	public void put(String inValue) throws xBaseJException {
 		if (inValue==null) {
-			inValue="F";
+			put(false);
+			return;
 		}
 		if (mapper!=null) {
 			inValue = mapper.map(inValue);
@@ -134,7 +135,7 @@ public class LogicalField extends Field {
 			value = inValue;
 
 		if (value.length() == 0) {
-			put(Boolean.FALSE);
+			put(false);
 			return;
 		} else if (value.length() == 1) {
 			put(value.charAt(0));

@@ -75,6 +75,10 @@ public class CurrencyField extends Field {
 	}
 
 	public void put(BigDecimal value) throws xBaseJException {
+		if (value==null) {
+			put("");
+			return;
+		}
 		super.put(currencyToByteArray(value));
 	}
 

@@ -385,8 +385,10 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
 	 */
 
 	public void put(byte inValue[]) throws xBaseJException {
+		if (inValue==null) {
+			inValue= new byte[0];
+		}
 		int i;
-
 		if (inValue.length > Length)
 			throw new xBaseJException("Field length too long");
 

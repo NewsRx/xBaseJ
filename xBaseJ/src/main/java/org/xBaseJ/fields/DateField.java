@@ -113,10 +113,8 @@ public class DateField extends Field {
 	public void put(String inValue) throws xBaseJException {
 		
 		if (inValue==null) {
-			inValue="";
-		}
-		if (mapper!=null) {
-			inValue = mapper.map(inValue);
+			put("");
+			return;
 		}
 
 		int i;
@@ -175,7 +173,10 @@ public class DateField extends Field {
 	 *             most likely a format error
 	 */
 	public void put(Date inValue) throws xBaseJException {
-
+		if (inValue==null) {
+			put("");
+			return;
+		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		super.put(sdf.format(inValue));
 
@@ -190,7 +191,10 @@ public class DateField extends Field {
 	 *             most likely a format error
 	 */
 	public void put(Calendar inValue) throws xBaseJException {
-
+		if (inValue==null) {
+			put("");
+			return;
+		}
 		put(inValue.getTime());
 	}
 

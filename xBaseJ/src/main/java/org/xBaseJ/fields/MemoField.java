@@ -237,7 +237,7 @@ public class MemoField extends Field {
 	@Deprecated
 	@Override
 	public void put(byte inBytes[]) throws xBaseJException {
-		byteValue = inBytes;
+		byteValue = inBytes==null?new byte[0]:inBytes;
 	}
 
 	@Override
