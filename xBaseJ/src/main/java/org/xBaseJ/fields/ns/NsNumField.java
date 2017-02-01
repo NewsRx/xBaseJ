@@ -19,15 +19,15 @@ public class NsNumField extends NumField {
 	public NsNumField(String iName, int iLength, int inDecPosition) throws xBaseJException, IOException {
 		super(iName, iLength, inDecPosition);
 	}
-	
+
 	@Override
 	public void put(byte[] inValue) throws xBaseJException {
-		super.put(inValue==null?new byte[0]:inValue);
+		super.put(inValue == null ? new byte[0] : inValue);
 	}
-	
+
 	@Override
 	public void put(String inValue) throws xBaseJException {
-		super.put(inValue==null?"":inValue);
+		super.put(inValue == null ? "" : inValue);
 	}
 
 }

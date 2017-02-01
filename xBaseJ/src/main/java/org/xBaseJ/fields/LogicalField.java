@@ -39,87 +39,89 @@ import java.nio.ByteBuffer;
 import org.xBaseJ.Util;
 import org.xBaseJ.xBaseJException;
 
+public class LogicalField extends Field {
 
-public class LogicalField extends Field{
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
+	public final static byte BYTETRUE = (byte) 'T';
+	public final static byte BYTEFALSE = (byte) 'F';
+	public static final char type = 'L';
 
-/**
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		LogicalField tField = (LogicalField) super.clone();
+		tField.Name = new String(Name);
+		tField.Length = 1;
+		return tField;
+	}
+
+	public LogicalField() {
+		super();
+	}
+
+	public LogicalField(String iName, ByteBuffer inBuffer) throws xBaseJException {
+		super();
+		super.setField(iName, 1, inBuffer);
+		put('F');
+
+	}
+
+	/**
+	 * public method for creating a LogicalField object. It is not associated
+	 * with a database but can be when used with some DBF methods.
+	 * 
+	 * @param iName
+	 *            the name of the field
+	 * @throws xBaseJException
+	 *             exception caused in calling methods
+	 * @throws IOException
+	 *             can not occur but defined for calling methods
+	 * @see Field
 	 *
 	 */
-	private static final long serialVersionUID = 1L;
-public final static byte BYTETRUE = (byte) 'T';
-public final static byte BYTEFALSE = (byte) 'F';
-public static final char type = 'L';
 
-public Object clone() throws  CloneNotSupportedException
-{
-  LogicalField tField = (LogicalField) super.clone();
-  tField.Name = new String(Name);
-  tField.Length = 1;
-  return tField;
-}
+	public LogicalField(String iName) throws xBaseJException, IOException {
+		super();
+		super.setField(iName, 1, null);
+	}
 
-public LogicalField() {super();}
+	/**
+	 * return the character 'L' indicating a logical Field
+	 */
 
-public LogicalField(String iName, ByteBuffer inBuffer) throws xBaseJException
-  {
-  super();
-  super.setField(iName, 1, inBuffer);
-  put('F');
+	@Override
+	public char getType() {
+		return type;
+	}
 
-  }
+	/**
+	 * allows input of Y, y, T, t and 1 for true, N, n, F, f, and 0 for false
+	 * 
+	 * @throws xBaseJException
+	 *             most likely a format exception
+	 */
 
-/**
- * public method for creating a LogicalField object.  It is not associated with a database
- * but can be when used with some DBF methods.
- * @param iName the name of the field
- * @throws xBaseJException
- *                     exception caused in calling methods
- * @throws IOException
- *                     can not occur but defined for calling methods
- * @see Field
- *
-*/
+	// public void put(String inValue) throws xBaseJException
+	// {
+	//
+	// String value = inValue.trim();
+	//
+	// if (Util.dontTrimFields() == false)
+	// value = inValue;
+	//
+	// if (value.length() == 0)
+	// value = "F";
+	//
+	// if (value.length() != 1)
+	// throw new xBaseJException("Field length incorrect");
+	//
+	// put(value.charAt(0));
+	//
+	// }
 
-public LogicalField(String iName) throws xBaseJException, IOException
-  {
-  super();
-  super.setField(iName, 1, null);
-  }
-
-/**
- * return the character 'L' indicating a logical Field
-*/
-
-public char getType()
-{
-return type;
-}
-
-/**
- *allows input of Y, y, T, t  and 1 for true, N, n, F, f, and 0 for false
- * @throws xBaseJException
- *                    most likely a format exception
-*/
-
-//public void put(String inValue) throws xBaseJException
-//  {
-//
-//   String value = inValue.trim();
-//
-//  if (Util.dontTrimFields() == false)
-//	  value = inValue;
-//
-//  if (value.length() == 0)
-//    value = "F";
-//
-//  if (value.length() != 1)
-//      throw new xBaseJException("Field length incorrect");
-//
-//  put(value.charAt(0));
-//
-//  }
-
-
+	@Override
 	public void put(String inValue) throws xBaseJException {
 		String value = inValue.trim();
 		if (Util.dontTrimFields() == false)
@@ -137,56 +139,54 @@ return type;
 	}
 
 	/**
- *allows input of Y, y, T, t  and 1 for true, N, n, F, f, and 0 for false
- * @throws xBaseJException
- *                    most likely a format exception
-*/
-public void put(char inValue) throws xBaseJException
- {
-  switch (inValue)
-   {
-     case 'Y':
-     case 'y':
-     case 'T':
-     case 't':
-     case '1':
-        buffer[0] = BYTETRUE;
-        break;
-     case 'N':
-     case 'n':
-     case 'F':
-     case 'f':
-     case '0':
-        buffer[0] = BYTEFALSE;
-        break;
-     default:
-            throw new xBaseJException("Invalid logical Field value");
-    }
-  }
+	 * allows input of Y, y, T, t and 1 for true, N, n, F, f, and 0 for false
+	 * 
+	 * @throws xBaseJException
+	 *             most likely a format exception
+	 */
+	public void put(char inValue) throws xBaseJException {
+		switch (inValue) {
+		case 'Y':
+		case 'y':
+		case 'T':
+		case 't':
+		case '1':
+			buffer[0] = BYTETRUE;
+			break;
+		case 'N':
+		case 'n':
+		case 'F':
+		case 'f':
+		case '0':
+			buffer[0] = BYTEFALSE;
+			break;
+		default:
+			throw new xBaseJException("Invalid logical Field value");
+		}
+	}
 
-/**
- * allows input true or false
-*/
-public void put(boolean inValue)
-  {
-    if (inValue) buffer[0] = BYTETRUE;
-    else buffer[0] = BYTEFALSE;
-  }
+	/**
+	 * allows input true or false
+	 */
+	public void put(boolean inValue) {
+		if (inValue)
+			buffer[0] = BYTETRUE;
+		else
+			buffer[0] = BYTEFALSE;
+	}
 
-/**
- * returns T for true and F for false
-*/
-public char getChar()
-{
-   return (char) buffer[0];
-}
+	/**
+	 * returns T for true and F for false
+	 */
+	public char getChar() {
+		return (char) buffer[0];
+	}
 
-/**
- * returns true or false
-*/
-public boolean getBoolean()
-{
-   return((buffer[0] == BYTETRUE));
-}
+	/**
+	 * returns true or false
+	 */
+	public boolean getBoolean() {
+		return ((buffer[0] == BYTETRUE));
+	}
 
 }

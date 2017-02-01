@@ -38,132 +38,124 @@ import java.io.UnsupportedEncodingException;
 import org.xBaseJ.DBF;
 import org.xBaseJ.Util;
 
-
-
 public class TagDescriptor
 
-
 {
 
-  static final short BLOCKLENGTH = 512;
-  static final short descriptorLength = 32;
-  int indheaderpage;    /* page number of Index header         */
-  byte tagname[] = new byte[11];        /* the tag name, in caps, null-filled  */
-  byte Fieldflag;        /* 10 if tag is a Field, else 0        */
-  byte forwardtag = 0;
-  byte forwardtag_greater = 0;
-  byte backwardtag = 0;
-  byte useless = 2;
-  byte keytype;    /* C, D, or N for key type             */
-  byte rsrvd[] = new byte[11];
+	static final short BLOCKLENGTH = 512;
+	static final short descriptorLength = 32;
+	int indheaderpage; /* page number of Index header */
+	byte tagname[] = new byte[11]; /* the tag name, in caps, null-filled */
+	byte Fieldflag; /* 10 if tag is a Field, else 0 */
+	byte forwardtag = 0;
+	byte forwardtag_greater = 0;
+	byte backwardtag = 0;
+	byte useless = 2;
+	byte keytype; /* C, D, or N for key type */
+	byte rsrvd[] = new byte[11];
 
-  String name;
-  RandomAccessFile nfile;
-  long pos;
+	String name;
+	RandomAccessFile nfile;
+	long pos;
 
+	public TagDescriptor(RandomAccessFile ifile, short ipos) throws IOException {
+		nfile = ifile;
+		pos = (BLOCKLENGTH) + (ipos * descriptorLength);
+		read();
+		try {
+			name = new String(tagname, DBF.encodedType).trim();
+		} catch (UnsupportedEncodingException UEE) {
+			name = new String(tagname).trim();
+		}
+	}
 
+	public TagDescriptor(MDXFile ifile, short ipos, String iName) throws IOException {
 
-public TagDescriptor(RandomAccessFile ifile, short ipos)throws IOException
-{
-nfile = ifile;
-pos = (long) ((BLOCKLENGTH) + (ipos * descriptorLength));
-read();
-try {name = new String(tagname,DBF.encodedType).trim();}
-catch (UnsupportedEncodingException UEE){name  = new String(tagname).trim();}
-}
+		nfile = ifile.getRAFile();
+		pos = (BLOCKLENGTH) + (ipos * descriptorLength);
+		name = iName;
+		byte tname[];
+		try {
+			tname = iName.getBytes(DBF.encodedType);
+		} catch (UnsupportedEncodingException UEE) {
+			tname = iName.getBytes();
+		}
+		for (int x = 0; x < tname.length; x++)
+			tagname[x] = tname[x];
 
-public  TagDescriptor(MDXFile ifile, short ipos, String iName)  throws IOException
-{
+		indheaderpage = ifile.getAnchor().get_nextavailable();
+		keytype = (byte) ' ';
+		if (ipos > 1)
+			backwardtag = (byte) (ipos - 1);
 
-nfile = ifile.getRAFile();
-pos = (long) ((BLOCKLENGTH) + (ipos * descriptorLength));
-name = iName;
-byte tname[];
-try {tname =  iName.getBytes(DBF.encodedType);}
-catch (UnsupportedEncodingException UEE){ tname =  iName.getBytes();}
-for (int x = 0; x < tname.length; x++)
-  tagname[x] = tname[x];
+		Fieldflag = 16;
 
-indheaderpage = ifile.getAnchor().get_nextavailable( );
-keytype = (byte) ' ';
-if (ipos > 1)
-   backwardtag = (byte) (ipos - 1);
+		write();
 
-Fieldflag = 16;
+	}
 
-write();
+	public void reset(RandomAccessFile ifile) {
+		nfile = ifile;
+	}
 
-}
+	public void setKeyType(char type) throws IOException {
+		keytype = (byte) type;
+		write();
 
-public void reset(RandomAccessFile ifile)
-{
-nfile = ifile;
-}
+	}
 
-public void setKeyType(char type) throws IOException
-{
-keytype = (byte) type;
-write();
+	public void resetPos(short ipos) {
+		pos = (BLOCKLENGTH) + (ipos * descriptorLength);
 
-}
+	}
 
-public void resetPos(short ipos)
-{
-pos = (long) ((BLOCKLENGTH) + (ipos * descriptorLength));
+	void read() throws IOException {
+		nfile.seek(pos);
+		indheaderpage = nfile.readInt();
+		nfile.read(tagname);
+		try {
+			name = new String(tagname, DBF.encodedType);
+		} catch (UnsupportedEncodingException UEE) {
+			name = new String(tagname);
+		}
+		Fieldflag = nfile.readByte();
+		forwardtag = nfile.readByte();
+		forwardtag_greater = nfile.readByte();
+		backwardtag = nfile.readByte();
+		useless = nfile.readByte();
+		keytype = nfile.readByte();
+		nfile.read(rsrvd);
+		redo_numbers();
+	}
 
-}
+	void write() throws IOException {
+		redo_numbers();
+		nfile.seek(pos);
+		nfile.writeInt(indheaderpage);
+		nfile.write(tagname);
+		nfile.writeByte(Fieldflag);
+		nfile.write(forwardtag);
+		nfile.write(forwardtag_greater);
+		nfile.write(backwardtag);
+		nfile.writeByte(useless);
+		nfile.writeByte(keytype);
+		nfile.write(rsrvd);
+		redo_numbers();
 
-void  read() throws IOException
-{
-  nfile.seek(pos);
-  indheaderpage = nfile.readInt();
-  nfile.read(tagname);
-  try {name = new String(tagname,DBF.encodedType);}
-  catch (UnsupportedEncodingException UEE){ name = new String(tagname);}
-  Fieldflag  = nfile.readByte();
-  forwardtag = nfile.readByte();
-  forwardtag_greater = nfile.readByte();
-  backwardtag = nfile.readByte();
-  useless = nfile.readByte();
-  keytype  = nfile.readByte();
-  nfile.read(rsrvd);
-  redo_numbers();
-}
+	}
 
+	void updateForwardTag(short pos) throws IOException {
+		forwardtag = (byte) pos;
+		write();
+	}
 
-void  write()  throws IOException
-{
-  redo_numbers();
-  nfile.seek(pos);
-  nfile.writeInt(indheaderpage);
-  nfile.write(tagname);
-  nfile.writeByte(Fieldflag);
-  nfile.write(forwardtag);
-  nfile.write(forwardtag_greater);
-  nfile.write(backwardtag);
-  nfile.writeByte(useless);
-  nfile.writeByte(keytype);
-  nfile.write(rsrvd);
-  redo_numbers();
+	void redo_numbers() {
 
+		indheaderpage = Util.x86(indheaderpage);
+	}
 
-}
-
-void updateForwardTag(short pos) throws IOException
-{
-  forwardtag  = (byte) pos;
-  write();
-}
-
-void redo_numbers()
-{
-
-  indheaderpage = Util.x86(indheaderpage);
-}
-
-public String getName() {
-	return name;
-}
+	public String getName() {
+		return name;
+	}
 
 }
-

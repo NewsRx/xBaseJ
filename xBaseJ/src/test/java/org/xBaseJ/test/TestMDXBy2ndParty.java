@@ -31,16 +31,14 @@ package org.xBaseJ.test;
  *
 */
 
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.xBaseJException;
 
 import junit.framework.TestCase;
 
-
 public class TestMDXBy2ndParty extends TestCase {
 
-	public void testMDX() {//test MDX updated by DBF Manager
+	public void testMDX() {// test MDX updated by DBF Manager
 		DBF aDB = null;
 		try {
 			aDB = new DBF("c:/temp/statezip.dbf");
@@ -59,7 +57,6 @@ public class TestMDXBy2ndParty extends TestCase {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-
 
 	}
 }

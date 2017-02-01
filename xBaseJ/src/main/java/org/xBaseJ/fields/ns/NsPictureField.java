@@ -19,15 +19,15 @@ public class NsPictureField extends PictureField {
 	public NsPictureField(String iName) throws xBaseJException, IOException {
 		super(iName);
 	}
-	
+
 	@Override
 	public void put(byte[] inBytes) throws xBaseJException {
-		super.put(inBytes==null?new byte[0]:inBytes);
+		super.put(inBytes == null ? new byte[0] : inBytes);
 	}
-	
+
 	@Override
 	public void put(String invalue) throws xBaseJException {
-		super.put(invalue==null?"":invalue);
+		super.put(invalue == null ? "" : invalue);
 	}
 
 }

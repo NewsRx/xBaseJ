@@ -37,63 +37,60 @@ import java.nio.ByteBuffer;
 
 import org.xBaseJ.xBaseJException;
 
+public class CharField extends Field {
 
-public class CharField extends Field{
-
-/**
- **
-	 */
+	/**
+	 **
+		 */
 	private static final long serialVersionUID = 1L;
 
 	public static final char type = 'C';
-	
-public Object clone() throws  CloneNotSupportedException
-{
-  CharField  tField = (CharField) super.clone();
-  tField.Name = new String(Name);
-  tField.Length = Length;
-  return tField;
-}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		CharField tField = (CharField) super.clone();
+		tField.Name = new String(Name);
+		tField.Length = Length;
+		return tField;
+	}
 
+	public CharField() {
+		super();
+	}
 
-public CharField() {super();}
+	public CharField(String iName, int iLength, ByteBuffer inBuffer) throws xBaseJException, IOException {
+		super();
+		super.setField(iName, iLength, inBuffer);
+		put("");
+	}
 
-public CharField(String iName, int iLength, ByteBuffer inBuffer) throws xBaseJException, IOException
-  {
-  super();
-  super.setField(iName, iLength, inBuffer);
-  put("");
-  }
+	/**
+	 * public method for creating a CharacterField object. It is not associated
+	 * with a database but can be when used with some DBF methods.
+	 * 
+	 * @param iName
+	 *            the name of the field
+	 * @param iLength
+	 *            length of Field, range 1 to 254 bytes
+	 * @throws xBaseJException
+	 *             invalid length
+	 * @throws IOException
+	 *             can not occur but defined for calling methods
+	 * @see Field
+	 *
+	 */
+	public CharField(String iName, int iLength) throws xBaseJException, IOException {
+		super();
+		super.setField(iName, iLength, null);
+	}
 
-/**
- * public method for creating a CharacterField object.  It is not associated with a database
- * but can be when used with some DBF methods.
- * @param iName the name of the field
- * @param iLength length of Field, range 1 to 254 bytes
- * @throws xBaseJException
- *                     invalid length
- * @throws IOException
- *                     can not occur but defined for calling methods
- * @see Field
- *
-*/
-public CharField(String iName, int iLength) throws  xBaseJException, IOException
-  {
-  super();
-  super.setField(iName, iLength, null);
-  }
+	/**
+	 * return the character 'C' indicating a character Field
+	 */
 
-
-
-/**
- * return the character 'C' indicating a character Field
-*/
-
-public char getType()
-{
-return type;
-}
-
+	@Override
+	public char getType() {
+		return type;
+	}
 
 }

@@ -18,15 +18,15 @@ public class NsFloatField extends FloatField {
 	public NsFloatField(String iName, int iLength, int DecPoint) throws xBaseJException, IOException {
 		super(iName, iLength, DecPoint);
 	}
-	
+
 	@Override
 	public void put(byte[] inBytes) throws xBaseJException {
-		super.put(inBytes==null?new byte[0]:inBytes);
+		super.put(inBytes == null ? new byte[0] : inBytes);
 	}
-	
+
 	@Override
 	public void put(String inValue) throws xBaseJException {
-		super.put(inValue==null?"":inValue);
+		super.put(inValue == null ? "" : inValue);
 	}
 
 }

@@ -31,7 +31,6 @@ package org.xBaseJ.test;
  *
 */
 
-
 import org.xBaseJ.fields.FloatField;
 import org.xBaseJ.fields.NumField;
 
@@ -39,58 +38,54 @@ import junit.framework.TestCase;
 
 public class NumTest extends TestCase {
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(NumTest.class);
-    }
+	public static void main(String[] args) {
+		junit.textui.TestRunner.run(NumTest.class);
+	}
 
+	public void testFDouble() {
+		try {
+			NumField nf = new NumField("name", 7, 3);
+			double a = 987.123f;
+			nf.put(a);
+			assertEquals(nf.get(), "987.123");
+			NumField numField = new NumField("N", 7, 3);
+			FloatField floatField = new FloatField("F", 7, 3);
+			float floatValue = 987.123f;
+			System.out.println("intial value before write = " + floatValue);
+			numField.put(floatValue);
+			assertEquals(numField.get(), "987.123");
+			floatField.put(floatValue);
+			assertEquals(floatField.get(), "987.123");
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 
-    public void testFDouble() {
-    	try {
-            NumField nf = new NumField("name", 7, 3);
-            double a = 987.123f;
-            nf.put(a);
-            assertEquals(nf.get(), "987.123");
-            NumField numField = new NumField("N", 7,3);
-            FloatField floatField = new FloatField("F", 7,3);
-            float floatValue = 987.123f;
-            System.out.println("intial value before write = "+floatValue);
-            numField.put(floatValue);
-            assertEquals(numField.get(), "987.123");
-            floatField.put(floatValue);
-            assertEquals(floatField.get(), "987.123");
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-    public void testDouble()
-    {
-        try {
-            NumField nf = new NumField("name", 6, 2);
-            double a = -50000000.36;
-            nf.put(a);
-            assertEquals(nf.get(), "-00.36");
-            a = 50000000.36;
-            nf.put(a);
-            assertEquals(nf.get(), "000.36");
-            a = -.36;
-            nf.put(a);
-            assertEquals(nf.get(), "  -.36");
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
+	public void testDouble() {
+		try {
+			NumField nf = new NumField("name", 6, 2);
+			double a = -50000000.36;
+			nf.put(a);
+			assertEquals(nf.get(), "-00.36");
+			a = 50000000.36;
+			nf.put(a);
+			assertEquals(nf.get(), "000.36");
+			a = -.36;
+			nf.put(a);
+			assertEquals(nf.get(), "  -.36");
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 
-
-    public void testNull()
-    {
-    	try {
-    		NumField nf = new NumField("name", 6, 2);
-    		nf.put("");
-    		assertEquals(nf.get(), "");
-    	}
-    	catch (Exception e) {
-    		fail(e.getMessage());
-    	}
-    }
+	public void testNull() {
+		try {
+			NumField nf = new NumField("name", 6, 2);
+			nf.put("");
+			assertEquals(nf.get(), "");
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 
 }

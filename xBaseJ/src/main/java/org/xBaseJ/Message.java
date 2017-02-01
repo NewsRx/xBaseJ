@@ -37,219 +37,202 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.Vector;
 
-public class Message extends Object
-{
+public class Message extends Object {
 
-   Vector<String> idVector;
-   Vector<String> dataVector;
+	Vector<String> idVector;
+	Vector<String> dataVector;
 
-/**
- * creates a message class used by the client/server objects
-*/
+	/**
+	 * creates a message class used by the client/server objects
+	 */
 
-public Message()
- {
-   idVector = new Vector<String>();
-   dataVector = new Vector<String>();
- }
+	public Message() {
+		idVector = new Vector<String>();
+		dataVector = new Vector<String>();
+	}
 
-/**
- * creates a message class used by the client/server objects
- * @param InStream data input
- * @throws IOException
- *                          communication line error
- * @throws xBaseJException
- *                          error conversing with server
-*/
+	/**
+	 * creates a message class used by the client/server objects
+	 * 
+	 * @param InStream
+	 *            data input
+	 * @throws IOException
+	 *             communication line error
+	 * @throws xBaseJException
+	 *             error conversing with server
+	 */
 
-public Message(DataInputStream InStream) throws IOException, xBaseJException
-{
-   int dataLen, j, i;
-   int waitLen;
-   String inString;
-   dataLen = 0;
+	public Message(DataInputStream InStream) throws IOException, xBaseJException {
+		int dataLen, j, i;
+		int waitLen;
+		String inString;
+		dataLen = 0;
 
-   do {
-   waitLen = InStream.available();
-   try { Thread.sleep(100); }
-   catch (InterruptedException e) { }
-   finally { }
-   } while (waitLen < 4);
+		do {
+			waitLen = InStream.available();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			} finally {
+			}
+		} while (waitLen < 4);
 
+		try {
+			dataLen = InStream.readInt();
+		} catch (EOFException e) {
+			System.out.println("caught a " + e.getMessage());
+		}
 
-   try { dataLen = InStream.readInt(); }
-   catch (EOFException e) {
-   System.out.println("caught a " + e.getMessage());
-   }
+		finally {
+		}
 
-   finally {   }
+		byte DataIn[] = new byte[dataLen];
+		waitLen = dataLen;
 
-   byte DataIn[] = new byte[dataLen];
-   waitLen = dataLen;
+		InStream.readFully(DataIn, 0, dataLen);
 
-   InStream.readFully(DataIn, 0, dataLen);
+		idVector = new Vector<String>();
+		dataVector = new Vector<String>();
 
+		for (i = 0; i < dataLen;) {
+			for (j = i; j < dataLen && DataIn[j] != 0; j++)
+				;
+			// 1.0inString = new String(DataIn, 0, i, j-i);
+			inString = new String(DataIn, i, j - i);
+			idVector.addElement(inString);
+			i = j + 1;
+			for (j = i; j < dataLen && DataIn[j] != 0; j++)
+				;
+			// 1.0 inString = new String(DataIn, 0, i, j-i);
+			inString = new String(DataIn, i, j - i);
+			dataVector.addElement(inString);
+			i = j + 1;
+		}
 
-   idVector = new Vector<String>();
-   dataVector = new Vector<String>();
+		inString = idVector.elementAt(0);
+		if (inString.compareTo("Exception") == 0) {
+			inString = dataVector.elementAt(0);
+			throw new xBaseJException(inString);
+		}
+		if (inString.compareTo("xBaseJException") == 0) {
+			inString = dataVector.elementAt(0);
+			throw new xBaseJException(inString);
+		}
 
+	}
 
-   for (i=0; i<dataLen; )
-     {
-        for (j=i;  j < dataLen && DataIn[j] != 0; j++);
-        //1.0inString = new String(DataIn, 0, i, j-i);
-        inString = new String(DataIn, i, j-i);
-        idVector.addElement(inString);
-        i = j + 1;
-        for (j=i;  j < dataLen && DataIn[j] != 0; j++);
-        //1.0 inString = new String(DataIn, 0, i, j-i);
-        inString = new String(DataIn, i, j-i);
-        dataVector.addElement(inString);
-        i = j +1;
-     }
+	/**
+	 * writes to the queue
+	 * 
+	 * @param OutStream
+	 *            data output
+	 * @throws IOException
+	 *             communication line error
+	 */
+	public void write(DataOutputStream OutStream) throws IOException {
 
-   inString = (String) idVector.elementAt(0);
-   if (inString.compareTo("Exception") == 0)
-      {
-         inString = (String) dataVector.elementAt(0);
-         throw new xBaseJException(inString);
-      }
-   if (inString.compareTo("xBaseJException") == 0)
-      {
-         inString = (String) dataVector.elementAt(0);
-         throw new xBaseJException(inString);
-      }
+		String tString;
+		int i, outLength = 0;
+		byte dataByteOut[];
+		for (i = 0; i < idVector.size(); i++) {
+			tString = idVector.elementAt(i);
+			outLength += tString.length();
+			tString = dataVector.elementAt(i);
+			outLength += tString.length();
+			outLength += 2;
+		}
 
-}
+		OutStream.writeInt(outLength);
 
-/**
- * writes to the queue
- * @param OutStream data output
- * @throws IOException
- *                           communication line error
-*/
-public void write(DataOutputStream OutStream) throws IOException
-{
+		for (i = 0; i < idVector.size(); i++) {
 
-   String tString;
-   int i, outLength = 0;
-   byte dataByteOut[];
-   for (i = 0; i < idVector.size(); i++)
-      {
-          tString = (String) idVector.elementAt(i);
-          outLength += tString.length();
-          tString = (String) dataVector.elementAt(i);
-          outLength += tString.length();
-          outLength += 2;
-      }
+			tString = idVector.elementAt(i);
+			dataByteOut = new byte[tString.length()];
 
+			// 1.0 tString.getBytes(0, tString.length(), dataByteOut, 0);
+			dataByteOut = tString.getBytes();
 
-   OutStream.writeInt(outLength);
+			// 1.0tString.getBytes(0, tString.length(), dataByteOut, 0);
+			dataByteOut = tString.getBytes();
 
-   for (i = 0; i < idVector.size(); i++)
-      {
+			OutStream.write(dataByteOut, 0, tString.length());
+			OutStream.writeByte(0);
+			tString = dataVector.elementAt(i);
+			dataByteOut = new byte[tString.length()];
 
-          tString = (String) idVector.elementAt(i);
-          dataByteOut = new byte[tString.length()];
+			// 1.0 tString.getBytes(0, tString.length(), dataByteOut, 0);
+			dataByteOut = tString.getBytes();
 
-          //1.0 tString.getBytes(0, tString.length(), dataByteOut, 0);
-          dataByteOut = tString.getBytes();
+			OutStream.write(dataByteOut, 0, tString.length());
+			OutStream.writeByte(0);
+		}
 
-          //1.0tString.getBytes(0, tString.length(), dataByteOut, 0);
-          dataByteOut = tString.getBytes();
+		OutStream.flush();
 
-          OutStream.write(dataByteOut, 0, tString.length());
-          OutStream.writeByte(0);
-          tString = (String) dataVector.elementAt(i);
-          dataByteOut = new byte[tString.length()];
+	}
 
-          //1.0 tString.getBytes(0, tString.length(), dataByteOut, 0);
-          dataByteOut = tString.getBytes();
+	/**
+	 * set header information
+	 */
+	public void setHeader(String ID, String DBFName) {
+		if (idVector.size() == 0) {
+			idVector.addElement(ID);
+			dataVector.addElement(DBFName);
+		} else {
+			idVector.setElementAt(ID, 0);
+			dataVector.setElementAt(DBFName, 0);
+		}
+		return;
+	}
 
-          OutStream.write(dataByteOut, 0, tString.length());
-          OutStream.writeByte(0);
-      }
+	public void setField(String ID, String FieldData) {
+		int i;
+		String idt;
+		for (i = 1; i < idVector.size(); i++) {
+			idt = idVector.elementAt(i);
+			if (idt.compareTo(ID) == 0) {
+				dataVector.setElementAt(FieldData, i);
+				return;
+			}
+		}
+		idVector.addElement(ID);
+		dataVector.addElement(FieldData);
+		return;
+	}
 
-   OutStream.flush();
+	public void setException(String ID, String FieldData) {
+		idVector.removeAllElements();
+		dataVector.removeAllElements();
+		idVector.addElement(ID);
+		dataVector.addElement(FieldData);
+		return;
+	}
 
+	public String getID(int i) {
+		return idVector.elementAt(i);
+	}
 
-}
+	public String getField(String ID) throws xBaseJException {
+		int i;
+		String idt;
+		for (i = 0; i < idVector.size(); i++) {
+			idt = idVector.elementAt(i);
+			if (idt.compareTo(ID) == 0) {
+				return dataVector.elementAt(i);
+			}
+		}
 
-/**
- * set header information
-*/
-public void setHeader(String ID, String DBFName)
- {
-  if ( idVector.size() == 0 )
-    {
-     idVector.addElement(ID);
-     dataVector.addElement(DBFName);
-    }
-  else
-    {
-     idVector.setElementAt(ID, 0);
-     dataVector.setElementAt(DBFName, 0);
-    }
-  return;
- }
+		throw new xBaseJException("Field " + ID + " not found");
 
-public void setField(String ID, String FieldData)
-{
- int i;
- String idt;
- for (i = 1; i < idVector.size(); i++)
-  {
-      idt = (String) idVector.elementAt(i);
-      if (idt.compareTo(ID) == 0)
-          {
-             dataVector.setElementAt(FieldData, i);
-             return;
-         }
-  }
- idVector.addElement(ID);
- dataVector.addElement(FieldData);
- return;
-}
+	}
 
-public void setException(String ID, String FieldData)
-{
- idVector.removeAllElements();
- dataVector.removeAllElements();
- idVector.addElement(ID);
- dataVector.addElement(FieldData);
- return;
-}
+	public String getField(int pos) throws xBaseJException {
+		return dataVector.elementAt(pos);
 
-public String getID(int i)
-{
-  return (String) idVector.elementAt(i);
-}
+	}
 
-public String getField(String ID) throws xBaseJException
-{
- int i;
- String idt;
- for (i = 0; i < idVector.size(); i++)
-  {
-      idt = (String) idVector.elementAt(i);
-      if (idt.compareTo(ID) == 0)
-          {
-             return (String) dataVector.elementAt(i);
-         }
-  }
-
- throw new xBaseJException("Field " + ID + " not found");
+	public int getCount() {
+		return dataVector.size();
+	}
 
 }
-
-public String getField(int pos) throws xBaseJException
-{
- return (String) dataVector.elementAt(pos);
-
-}
-
-public int getCount() {return dataVector.size();}
-
-}
-
-

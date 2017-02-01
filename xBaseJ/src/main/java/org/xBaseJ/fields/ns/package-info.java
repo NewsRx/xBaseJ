@@ -1,5 +1,6 @@
 /**
  * Null Safe string puts versions of Fields
+ * 
  * @author michael@newsrx.com
  *
  */

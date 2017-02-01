@@ -31,7 +31,6 @@ package org.xBaseJ.test;
  *
 */
 
-
 import java.io.IOException;
 
 import org.xBaseJ.DBF;
@@ -56,6 +55,7 @@ public class TestAdd extends TestCase {
 			e.printStackTrace();
 		}
 	}
+
 	public void testReaddSame() {
 
 		try {
@@ -65,9 +65,7 @@ public class TestAdd extends TestCase {
 			fail("shouldn't be able to add field again");
 		} catch (xBaseJException e) {
 			;
-		}
-		catch (IOException ei)
-		{
+		} catch (IOException ei) {
 			fail(ei.getMessage());
 		}
 	}

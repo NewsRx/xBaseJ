@@ -9,7 +9,7 @@ import org.xBaseJ.fields.DateField;
 
 import junit.framework.TestCase;
 
-public class TestDatePutCalendar  extends TestCase{
+public class TestDatePutCalendar extends TestCase {
 
 	public void testDatePutCalendar() {
 		try {
@@ -23,10 +23,8 @@ public class TestDatePutCalendar  extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	}
 
-	
+	}
 
 	public void testDatePutDate() {
 		try {
@@ -39,7 +37,7 @@ public class TestDatePutCalendar  extends TestCase{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	   
+
 }

@@ -27,14 +27,14 @@ public class NsMemoField extends MemoField {
 	public NsMemoField(String iName, boolean inFoxPro) throws xBaseJException, IOException {
 		super(iName, inFoxPro);
 	}
-	
+
 	@Override
 	public void put(byte[] inBytes) throws xBaseJException {
-		super.put(inBytes==null?new byte[0]:inBytes);
+		super.put(inBytes == null ? new byte[0] : inBytes);
 	}
-	
+
 	@Override
 	public void put(String inValue) {
-		super.put(inValue==null?"":inValue);
+		super.put(inValue == null ? "" : inValue);
 	}
 }

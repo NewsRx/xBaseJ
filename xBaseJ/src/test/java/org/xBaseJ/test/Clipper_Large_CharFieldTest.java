@@ -8,24 +8,24 @@ import org.xBaseJ.fields.CharField;
 
 public class Clipper_Large_CharFieldTest {
 
-//	@Test
-//	public void testWithBalsetFile() {
-//		try {
-//			DBF clipperDBF = new DBF("BALSET.DBF");
-//			for (int f=1; f <= clipperDBF.getFieldCount(); f++)
-//			{
-//				System.out.println(clipperDBF.getField(f).toString());
-//			}
-//			
-//			clipperDBF.copyTo("balsetII.dbf");
-//		} catch (xBaseJException e) {
-//			fail(e.getMessage());
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			fail(e.getMessage());
-//			e.printStackTrace();
-//		}
-//	}
+	// @Test
+	// public void testWithBalsetFile() {
+	// try {
+	// DBF clipperDBF = new DBF("BALSET.DBF");
+	// for (int f=1; f <= clipperDBF.getFieldCount(); f++)
+	// {
+	// System.out.println(clipperDBF.getField(f).toString());
+	// }
+	//
+	// clipperDBF.copyTo("balsetII.dbf");
+	// } catch (xBaseJException e) {
+	// fail(e.getMessage());
+	// e.printStackTrace();
+	// } catch (IOException e) {
+	// fail(e.getMessage());
+	// e.printStackTrace();
+	// }
+	// }
 	@Test
 	public void testBuildNew() {
 		try {
@@ -36,12 +36,11 @@ public class Clipper_Large_CharFieldTest {
 			newone.addField(lcf);
 			newone.close();
 			newone = new DBF("balsetIII.dbf");
-			
-			for (int f=1; f <= newone.getFieldCount(); f++)
-			{
+
+			for (int f = 1; f <= newone.getFieldCount(); f++) {
 				System.out.println(newone.getField(f).toString());
 			}
-			
+
 			StringBuffer sb = new StringBuffer();
 			for (int i = 0; i < 510; i++)
 				sb.append('s');
@@ -53,8 +52,8 @@ public class Clipper_Large_CharFieldTest {
 			System.out.println(newone.getField("long").get().length());
 		} catch (Exception e) {
 			fail(e.getMessage());
-		} 
-		
+		}
+
 	}
 
 }

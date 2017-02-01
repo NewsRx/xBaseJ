@@ -31,7 +31,6 @@ package org.xBaseJ.test;
  *
 */
 
-
 import java.io.File;
 
 import org.xBaseJ.DBF;
@@ -40,9 +39,7 @@ import org.xBaseJ.fields.CharField;
 
 import junit.framework.TestCase;
 
-
 public class TestMultiAdd extends TestCase {
-
 
 	public void testMultipleFieldAdd() {
 		CharField zip = null;
@@ -69,49 +66,45 @@ public class TestMultiAdd extends TestCase {
 
 		String termFieldStr = "TERM";
 
-
 		File File = new File("testfiles/test.dbf");
 		try {
 
-		DBF dbf = new DBF(File.getPath(), DBFTypes.DBASEIV, true);
+			DBF dbf = new DBF(File.getPath(), DBFTypes.DBASEIV, true);
 
-		zip = new CharField(zipFieldStr, 5);
-		dbf.addField(zip);
-		zip.put("12345");
-		dbf.write();
+			zip = new CharField(zipFieldStr, 5);
+			dbf.addField(zip);
+			zip.put("12345");
+			dbf.write();
 
-		preDir = new CharField(preDirFieldStr, 2);
-		dbf.addField(preDir);
-		preDir.put("12");
-		dbf.write();
+			preDir = new CharField(preDirFieldStr, 2);
+			dbf.addField(preDir);
+			preDir.put("12");
+			dbf.write();
 
-		street = new CharField(streetFieldStr, 28);
-		dbf.addField(street);
-		street.put("12345 through 28");
-		dbf.write();
+			street = new CharField(streetFieldStr, 28);
+			dbf.addField(street);
+			street.put("12345 through 28");
+			dbf.write();
 
-		suffix = new CharField(suffixFieldStr, 4);
-		dbf.addField(suffix);
-		suffix.put("1234");
-		dbf.write();
+			suffix = new CharField(suffixFieldStr, 4);
+			dbf.addField(suffix);
+			suffix.put("1234");
+			dbf.write();
 
-		postDir = new CharField(postDirFieldStr, 2);
-		dbf.addField(postDir);
-		postDir.put("12");
-		dbf.write();
+			postDir = new CharField(postDirFieldStr, 2);
+			dbf.addField(postDir);
+			postDir.put("12");
+			dbf.write();
 
-		term = new CharField(termFieldStr, 5);
-		dbf.addField(term);
-		term.put("12345");
-		dbf.write();
-		}
-		catch (Exception e)
-		{
+			term = new CharField(termFieldStr, 5);
+			dbf.addField(term);
+			term.put("12345");
+			dbf.write();
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 
 		}
-
 
 	}
 

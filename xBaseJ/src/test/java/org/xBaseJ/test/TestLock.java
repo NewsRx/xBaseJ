@@ -31,7 +31,6 @@ package org.xBaseJ.test;
  *
 */
 
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
@@ -41,8 +40,8 @@ import junit.framework.TestCase;
 /**
  * @author Joe McVerry - American Coders, Ltd.
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class TestLock extends TestCase {
 
@@ -50,28 +49,25 @@ public class TestLock extends TestCase {
 	 *
 	 */
 
-	public  void testLocking() {
-	 try {
-		 
-		DBF writer = new DBF("testfiles/temp.dbf", true);
-		Field str_field = new CharField("st", 10);
-		writer.addField(str_field);
-		writer.close();
-		writer = new DBF("testfiles/temp.dbf");
-		str_field = writer.getField(1);
-		str_field.put("abcd");
-		writer.write(true);
-		str_field.put("abcd2");
-		writer.write(true);
-		writer.close();
+	public void testLocking() {
+		try {
 
+			DBF writer = new DBF("testfiles/temp.dbf", true);
+			Field str_field = new CharField("st", 10);
+			writer.addField(str_field);
+			writer.close();
+			writer = new DBF("testfiles/temp.dbf");
+			str_field = writer.getField(1);
+			str_field.put("abcd");
+			writer.write(true);
+			str_field.put("abcd2");
+			writer.write(true);
+			writer.close();
 
-	 }
-	 catch (Exception e)
-	 {
-		e.printStackTrace();
-	 	fail(e.getMessage());
-	 }
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 
 	}
 }

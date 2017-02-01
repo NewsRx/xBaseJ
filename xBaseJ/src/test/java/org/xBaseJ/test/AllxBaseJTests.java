@@ -5,7 +5,7 @@ package org.xBaseJ.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
- 
+
 /**
  * @author joe
  *
@@ -14,10 +14,8 @@ public class AllxBaseJTests {
 
 	public static Test suite() {
 
-
-
 		TestSuite suite = new TestSuite("Test for org.xBaseJ.test");
-		//$JUnit-BEGIN$
+		// $JUnit-BEGIN$
 		suite.addTestSuite(TestDuplicateKey.class);
 		suite.addTestSuite(TestPack.class);
 		suite.addTestSuite(TestGetFieldTypes.class);
@@ -28,7 +26,7 @@ public class AllxBaseJTests {
 		suite.addTestSuite(TestCreate.class);
 		suite.addTestSuite(TestDBF.class);
 		suite.addTestSuite(TestFields.class);
-		//suite.addTestSuite(TestFoxPro.class);
+		// suite.addTestSuite(TestFoxPro.class);
 		suite.addTestSuite(TestLock.class);
 		suite.addTestSuite(TestLockRead.class);
 		suite.addTestSuite(TestLockUpdateClose.class);

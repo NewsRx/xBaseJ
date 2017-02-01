@@ -3,9 +3,10 @@ package org.xBaseJ.cp;
 public enum CodePage {
 	/**
 	 * See <em>Code Pages Supported by Visual FoxPro</em><br>
-	 * REF: 
+	 * REF:
 	 * {@linkplain https://msdn.microsoft.com/en-us/library/8t45x02s(v=vs.71).aspx}
-	 * and {@linkplain https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html}
+	 * and
+	 * {@linkplain https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html}
 	 */
 	NO_CODEPAGE((byte) 0x0, "UTF-8"), US_MSDOS((byte) 0x1, "Cp437"), MAZOVIA_MSDOS((byte) 0x69, "?"), //
 	GREEK_MSDOS((byte) 0x6a, "Cp737"), INTERNATIONAL_MSDOS((byte) 0x02, "Cp850"), //
@@ -27,7 +28,7 @@ public enum CodePage {
 
 	private CodePage(byte code_page_identifier, String java_code_page) {
 		this.code_page_identifier = code_page_identifier;
-		this.java_code_page=java_code_page;
+		this.java_code_page = java_code_page;
 	}
 
 	public String getJava_code_page() {

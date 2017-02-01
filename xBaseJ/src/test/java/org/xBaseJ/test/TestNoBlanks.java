@@ -31,7 +31,6 @@ package org.xBaseJ.test;
  *
 */
 
-
 import java.io.IOException;
 
 import org.xBaseJ.Util;
@@ -41,14 +40,13 @@ import org.xBaseJ.fields.DateField;
 
 import junit.framework.TestCase;
 
-
-
 public class TestNoBlanks extends TestCase {
 
 	public TestNoBlanks(String arg0) {
 		super(arg0);
 	}
 
+	@Override
 	public void setUp() {
 		try {
 			super.setUp();
@@ -65,21 +63,16 @@ public class TestNoBlanks extends TestCase {
 		}
 	}
 
+	public void testBlank() {
 
-	public void testBlank(){
-
-		assertTrue(org.xBaseJ.Util.dontTrimFields()==false);
+		assertTrue(org.xBaseJ.Util.dontTrimFields() == false);
 		/*
-		try {
-			Util.setxBaseJProperty("fieldFilledWithSpaces", "true");
-		} catch (IOException e1) {
-
-			e1.printStackTrace();
-			fail(e1.getMessage());
-		}*/
+		 * try { Util.setxBaseJProperty("fieldFilledWithSpaces", "true"); }
+		 * catch (IOException e1) {
+		 * 
+		 * e1.printStackTrace(); fail(e1.getMessage()); }
+		 */
 		assertTrue(org.xBaseJ.Util.fieldFilledWithSpaces());
-
-
 
 		try {
 			CharField f = new CharField("char", 5);
@@ -96,6 +89,7 @@ public class TestNoBlanks extends TestCase {
 
 	}
 
+	@Override
 	public void tearDown() {
 		try {
 			Util.closexBaseJProperty();

@@ -12,14 +12,14 @@ public class NsField extends Field {
 	public char getType() {
 		return 0;
 	}
-	
+
 	@Override
 	public void put(byte[] inBytes) throws xBaseJException {
-		super.put(inBytes==null?new byte[0]:inBytes);
+		super.put(inBytes == null ? new byte[0] : inBytes);
 	}
-	
+
 	@Override
 	public void put(String inValue) throws xBaseJException {
-		super.put(inValue==null?"":inValue);
+		super.put(inValue == null ? "" : inValue);
 	}
 }

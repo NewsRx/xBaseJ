@@ -31,7 +31,6 @@ package org.xBaseJ.test;
  *
 */
 
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.Util;
 import org.xBaseJ.fields.CharField;

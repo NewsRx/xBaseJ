@@ -40,32 +40,30 @@ import junit.framework.TestCase;
 public class TestCreate extends TestCase {
 
 	public void testCreateDBF() {
-	try{
-		DBF d1 = new DBF("testfiles/temp.tmp", true);
-		CharField c = new CharField("C3", 10);
-		d1.addField(c);
-		c = new CharField("C33", 10);
-		d1.addField(c);
-		MemoField m = new MemoField("c333");
-		d1.addField(m);
-		m.put("firstone");
-		d1.write();
-		m = new MemoField("c3333");
-		d1.addField(m);
-		m.put("secondone");
-		d1.write();
-		d1.gotoRecord(1);
-		assertEquals(d1.getField("c333").get(), "firstone");
-		assertEquals(d1.getField("c3333").get(), "");
-		d1.read();
-		assertEquals(d1.getField("c333").get(), "firstone");
-		assertEquals(d1.getField("c3333").get(), "secondone");
+		try {
+			DBF d1 = new DBF("testfiles/temp.tmp", true);
+			CharField c = new CharField("C3", 10);
+			d1.addField(c);
+			c = new CharField("C33", 10);
+			d1.addField(c);
+			MemoField m = new MemoField("c333");
+			d1.addField(m);
+			m.put("firstone");
+			d1.write();
+			m = new MemoField("c3333");
+			d1.addField(m);
+			m.put("secondone");
+			d1.write();
+			d1.gotoRecord(1);
+			assertEquals(d1.getField("c333").get(), "firstone");
+			assertEquals(d1.getField("c3333").get(), "");
+			d1.read();
+			assertEquals(d1.getField("c333").get(), "firstone");
+			assertEquals(d1.getField("c3333").get(), "secondone");
 
-
-	}
-	catch (Exception e){
-		e.printStackTrace();
-		fail(e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
 		}
 	}
 

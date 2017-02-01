@@ -18,15 +18,15 @@ public class NsLogicalField extends LogicalField {
 	public NsLogicalField(String iName) throws xBaseJException, IOException {
 		super(iName);
 	}
-	
+
 	@Override
 	public void put(byte[] inBytes) throws xBaseJException {
-		super.put(inBytes==null?new byte[0]:inBytes);
+		super.put(inBytes == null ? new byte[0] : inBytes);
 	}
-	
+
 	@Override
 	public void put(String inValue) throws xBaseJException {
-		super.put(inValue==null?"":inValue);
+		super.put(inValue == null ? "" : inValue);
 	}
 
 }

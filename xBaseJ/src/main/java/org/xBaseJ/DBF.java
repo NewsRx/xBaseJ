@@ -122,6 +122,7 @@ public class DBF implements Closeable, HasSize {
 	protected byte MDX_exist = 0;
 	protected byte language = 0x03;
 
+	@Override
 	public long memoLength() throws IOException {
 		if (dbtobj == null) {
 			return -1;
@@ -132,33 +133,38 @@ public class DBF implements Closeable, HasSize {
 		return dbtobj.file.length();
 	}
 
+	@Override
 	public long dbfLength() throws IOException {
 		if (file == null) {
 			return -1;
 		}
 		return file.length();
 	}
-	
+
 	/**
-	 * Returns matching Visual Foxpro codepage, or {@value CodePage#NO_CODEPAGE} if none match the byte value.
+	 * Returns matching Visual Foxpro codepage, or {@value CodePage#NO_CODEPAGE}
+	 * if none match the byte value.
+	 * 
 	 * @return
 	 */
-	public CodePage getCodepage(){
-		for (CodePage cp: CodePage.values()) {
-			if (cp.getCode_page_identifier()==language) {
+	public CodePage getCodepage() {
+		for (CodePage cp : CodePage.values()) {
+			if (cp.getCode_page_identifier() == language) {
 				return cp;
 			}
 		}
 		return CodePage.NO_CODEPAGE;
 	}
-	
+
 	/**
-	 * Sets the codepage byte value in the DBF header and also switches the GLOBAL DBF to the new language if possible.
+	 * Sets the codepage byte value in the DBF header and also switches the
+	 * GLOBAL DBF to the new language if possible.
+	 * 
 	 * @param codepage
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void setCodepage(CodePage codepage) throws IOException {
-		language=codepage.getCode_page_identifier();
+		language = codepage.getCode_page_identifier();
 		setEncodingType(codepage.getJava_code_page());
 		update_dbhead();
 	}
@@ -492,6 +498,7 @@ public class DBF implements Closeable, HasSize {
 
 	}
 
+	@Override
 	public void finalize() throws Throwable {
 		try {
 			close();
@@ -590,7 +597,7 @@ public class DBF implements Closeable, HasSize {
 			flds[i] = aField.get(i);
 		addField(flds);
 	}
-	
+
 	/**
 	 * adds a collection of new Fields to a database
 	 * 
@@ -744,7 +751,7 @@ public class DBF implements Closeable, HasSize {
 				aField[i].setBuffer(tempDBF.buffer);
 				tempDBF.fld_root.addElement(aField[i]);
 				tempDBF.write_Field_header(aField[i]);
-				tField = (Field) aField[i];
+				tField = aField[i];
 				if (tField.isMemoField())
 					((MemoField) tField).setDBTObj(tempDBF.dbtobj);
 				if (tField.isPictureField())
@@ -779,7 +786,7 @@ public class DBF implements Closeable, HasSize {
 			update_dbhead();
 
 			for (i = 1; i <= savefldcnt; i++) {
-				tField = (Field) getField(i);
+				tField = getField(i);
 				if (tField.isMemoField())
 					((MemoField) tField).setDBTObj(dbtobj);
 				if (tField.isPictureField())
@@ -789,7 +796,7 @@ public class DBF implements Closeable, HasSize {
 
 			for (i = 0; i < aField.length; i++) {
 				aField[i].setBuffer(buffer);
-				tField = (Field) aField[i];
+				tField = aField[i];
 				if (tField.isMemoField())
 					((MemoField) tField).setDBTObj(dbtobj);
 				if (tField.isPictureField()) {
@@ -879,7 +886,7 @@ public class DBF implements Closeable, HasSize {
 		fldcount = (short) ((offset - 1) / 32 - 1);
 
 		for (i = 1; i <= fldcount; i++) {
-			tField = (Field) getField(i);
+			tField = getField(i);
 			tField.setBuffer(buffer);
 			if (tField.isMemoField())
 				((MemoField) tField).setDBTObj(dbtobj);
@@ -1140,7 +1147,7 @@ public class DBF implements Closeable, HasSize {
 			throw new xBaseJException("Index position too small");
 		if (indexPosition > jNDXes.size())
 			throw new xBaseJException("Index position too large");
-		return (Index) jNDXes.elementAt(indexPosition - 1);
+		return jNDXes.elementAt(indexPosition - 1);
 
 	}
 
@@ -1161,7 +1168,7 @@ public class DBF implements Closeable, HasSize {
 		int i;
 		Index NDXes;
 		for (i = 1; i <= jNDXes.size(); i++) {
-			NDXes = (Index) jNDXes.elementAt(i - 1);
+			NDXes = jNDXes.elementAt(i - 1);
 			if (NDXes.getName().compareTo(filename) == 0) {
 				jNDX = NDXes;
 				return jNDX;
@@ -1209,7 +1216,7 @@ public class DBF implements Closeable, HasSize {
 		int i;
 		Index NDXes;
 		for (i = 1; i <= jNDXes.size(); i++) {
-			NDXes = (Index) jNDXes.elementAt(i - 1);
+			NDXes = jNDXes.elementAt(i - 1);
 			if (NDXes == ndx) {
 				jNDX = NDXes;
 				return NDXes;
@@ -1232,10 +1239,10 @@ public class DBF implements Closeable, HasSize {
 		int i;
 		String NDXes;
 		for (i = 1; i <= jNDXID.size(); i++) {
-			NDXes = (String) jNDXID.elementAt(i - 1);
+			NDXes = jNDXID.elementAt(i - 1);
 			if (NDXes.compareTo(ID) == 0) {
-				jNDX = (Index) jNDXes.elementAt(i - 1);
-				return (Index) jNDXes.elementAt(i - 1);
+				jNDX = jNDXes.elementAt(i - 1);
+				return jNDXes.elementAt(i - 1);
 			}
 		}
 		throw new xBaseJException("Unknown Index " + ID);
@@ -1336,7 +1343,7 @@ public class DBF implements Closeable, HasSize {
 			throw new xBaseJException("No MDX file associated with this database");
 		jNDX = MDXfile.createTag(tagname, tagIndex, unique);
 		jNDXes.addElement(jNDX);
-		return (MDX) jNDX;
+		return jNDX;
 	}
 
 	/**
@@ -1684,13 +1691,13 @@ public class DBF implements Closeable, HasSize {
 
 		delete_ind = buffer.get();
 		for (i = 0; i < fldcount; i++) {
-			tField = (Field) fld_root.elementAt(i);
+			tField = fld_root.elementAt(i);
 			tField.read();
 		}
 
 		Index NDXes;
 		for (i = 1; i <= jNDXes.size(); i++) {
-			NDXes = (Index) jNDXes.elementAt(i - 1);
+			NDXes = jNDXes.elementAt(i - 1);
 			NDXes.set_active_key(NDXes.build_key());
 		}
 
@@ -1775,7 +1782,7 @@ public class DBF implements Closeable, HasSize {
 
 		Index NDXes;
 		for (i = 1; i <= jNDXes.size(); i++) {
-			NDXes = (Index) jNDXes.elementAt(i - 1);
+			NDXes = jNDXes.elementAt(i - 1);
 			NDXes.check_for_duplicates(Index.findFirstMatchingKey);
 		}
 		if (lock)
@@ -1789,7 +1796,7 @@ public class DBF implements Closeable, HasSize {
 		buffer.put(delete_ind);
 
 		for (i = 0; i < fldcount; i++) {
-			tField = (Field) fld_root.elementAt(i);
+			tField = fld_root.elementAt(i);
 			tField.write();
 		}
 
@@ -1809,7 +1816,7 @@ public class DBF implements Closeable, HasSize {
 		}
 
 		for (i = 1; i <= jNDXes.size(); i++) {
-			NDXes = (Index) jNDXes.elementAt(i - 1);
+			NDXes = jNDXes.elementAt(i - 1);
 			NDXes.add_entry((count + 1));
 		}
 
@@ -1869,19 +1876,19 @@ public class DBF implements Closeable, HasSize {
 		Index NDXes;
 
 		for (i = 1; i <= jNDXes.size(); i++) {
-			NDXes = (Index) jNDXes.elementAt(i - 1);
+			NDXes = jNDXes.elementAt(i - 1);
 			NDXes.check_for_duplicates(current_record);
 		}
 
 		for (i = 1; i <= jNDXes.size(); i++) // reposition record pointer and
 												// current key for index update
 		{
-			NDXes = (Index) jNDXes.elementAt(i - 1);
+			NDXes = jNDXes.elementAt(i - 1);
 			NDXes.find_entry(NDXes.get_active_key(), current_record);
 		}
 
 		for (i = 0; i < fldcount; i++) {
-			tField = (Field) fld_root.elementAt(i);
+			tField = fld_root.elementAt(i);
 			if (tField.isMemoField())
 				tField.update();
 			else
@@ -1892,7 +1899,7 @@ public class DBF implements Closeable, HasSize {
 		channel.write(buffer);
 
 		for (i = 1; i <= jNDXes.size(); i++) {
-			NDXes = (Index) jNDXes.elementAt(i - 1);
+			NDXes = jNDXes.elementAt(i - 1);
 			NDXes.update(current_record);
 		}
 
@@ -1969,6 +1976,7 @@ public class DBF implements Closeable, HasSize {
 	 *             Java error caused by called methods
 	 */
 
+	@Override
 	public void close() throws IOException {
 
 		short i;
@@ -1981,7 +1989,7 @@ public class DBF implements Closeable, HasSize {
 
 		if (jNDXes != null) {
 			for (i = 1; i <= jNDXes.size(); i++) {
-				NDXes = (Index) jNDXes.elementAt(i - 1);
+				NDXes = jNDXes.elementAt(i - 1);
 				if (NDXes instanceof NDX) {
 					n = (NDX) NDXes;
 					n.close();
@@ -2029,7 +2037,7 @@ public class DBF implements Closeable, HasSize {
 			throw new xBaseJException("Invalid Field number");
 		}
 
-		return (Field) fld_root.elementAt(i - 1);
+		return fld_root.elementAt(i - 1);
 	}
 
 	/**
@@ -2046,7 +2054,7 @@ public class DBF implements Closeable, HasSize {
 		Field tField;
 
 		for (i = 0; i < fldcount; i++) {
-			tField = (Field) fld_root.elementAt(i);
+			tField = fld_root.elementAt(i);
 			if (name.toUpperCase().compareTo(tField.getName().toUpperCase()) == 0) {
 				return tField;
 			}
@@ -2194,9 +2202,9 @@ public class DBF implements Closeable, HasSize {
 
 		length = file.readByte();
 		if (length > 0)
-			iLength = (int) length;
+			iLength = length;
 		else
-			iLength = 256 + (int) length;
+			iLength = 256 + length;
 		decpoint = file.readByte();
 
 		file.readFully(byter, 0, 14);
@@ -2259,15 +2267,15 @@ public class DBF implements Closeable, HasSize {
 		if (nameLength < 10)
 			file.write(byter, 0, 10 - nameLength);
 
-		file.writeByte((int) tField.getType());
+		file.writeByte(tField.getType());
 
 		file.write(byter, 0, 4);
 
 		if (tField.isCharField() && tField.getLength() > 256) {
-			file.writeByte((int) tField.getLength() % 256);
-			file.writeByte((int) tField.getLength() / 256);
+			file.writeByte(tField.getLength() % 256);
+			file.writeByte(tField.getLength() / 256);
 		} else {
-			file.writeByte((int) tField.getLength());
+			file.writeByte(tField.getLength());
 			file.writeByte(tField.getDecimalPositionCount());
 		}
 
@@ -2378,11 +2386,11 @@ public class DBF implements Closeable, HasSize {
 			current_record = 0;
 		} else {
 			for (i = 1; i <= jNDXes.size(); i++) {
-				NDXes = (Index) jNDXes.elementAt(i - 1);
+				NDXes = jNDXes.elementAt(i - 1);
 				NDXes.reIndex();
 
 			}
-			NDXes = (Index) jNDXes.elementAt(0);
+			NDXes = jNDXes.elementAt(0);
 			if (count > 0)
 				startTop();
 		}

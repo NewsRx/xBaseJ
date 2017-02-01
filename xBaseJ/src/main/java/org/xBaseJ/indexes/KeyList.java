@@ -31,32 +31,35 @@ package org.xBaseJ.indexes;
  *
 */
 
-
 import java.util.Comparator;
 
 /**
  * @author Joe McVerry - American Coders, Ltd.
  *
- * a comparator class for keylist objects
+ *         a comparator class for keylist objects
  */
 public class KeyList implements Comparator<Object> {
-    NodeKey value;
-    int where;
+	NodeKey value;
+	int where;
+
 	/**
 	 *
 	 */
 	public KeyList(NodeKey v, int i) {
 		value = v;
-		where=i;
+		where = i;
 	}
 
-	public int getWhere(){
+	public int getWhere() {
 		return where;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public int compare(Object arg0, Object arg1) {
 		KeyList a = (KeyList) arg0;
 		KeyList b = (KeyList) arg1;
