@@ -47,8 +47,23 @@ import java.nio.ByteBuffer;
 import org.xBaseJ.DBF;
 import org.xBaseJ.Util;
 import org.xBaseJ.xBaseJException;
+import org.xBaseJ.cp.CharsetMapper;
 
 public abstract class Field extends Object implements Cloneable, Externalizable {
+
+	/**
+	 * A custom mapping function before conversion to the target codepage. <br/>
+	 * If set to NULL no mapping is done.
+	 */
+	protected CharsetMapper mapper=null;
+	
+	public CharsetMapper getMapper() {
+		return mapper;
+	}
+
+	public void setMapper(CharsetMapper mapper) {
+		this.mapper = mapper;
+	}
 
 	public String Name;
 	public int Length = 0;
@@ -282,6 +297,34 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
 	public void update() throws IOException, xBaseJException {
 		bytebuffer.put(buffer);
 	}
+	
+	/**
+	 * set field contents, no database updates until a DBF update or write is
+	 * issued
+	 * 
+	 * @param inValue
+	 *            value to set
+	 * @throws xBaseJException
+	 *             value length too long
+	 */
+
+	public void put(char inValue) throws xBaseJException {
+		put(String.valueOf(inValue));
+	}
+	
+	/**
+	 * set field contents, no database updates until a DBF update or write is
+	 * issued
+	 * 
+	 * @param inValue
+	 *            value to set
+	 * @throws xBaseJException
+	 *             value length too long
+	 */
+
+	public void put(CharSequence inValue) throws xBaseJException {
+		put(inValue==null?null:inValue.toString());
+	}
 
 	/**
 	 * set field contents, no database updates until a DBF update or write is
@@ -294,6 +337,15 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
 	 */
 
 	public void put(String inValue) throws xBaseJException {
+		
+		if (inValue==null) {
+			inValue="";
+		}
+		
+		if (mapper!=null) {
+			inValue = mapper.map(inValue);
+		}
+		
 		byte b[];
 		int i;
 		try {
