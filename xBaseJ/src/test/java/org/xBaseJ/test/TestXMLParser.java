@@ -2,10 +2,10 @@ package org.xBaseJ.test;
 
 import java.io.PrintWriter;
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.XBASEXMLParser;
+
+import junit.framework.TestCase;
 
 
 public class TestXMLParser  extends TestCase{

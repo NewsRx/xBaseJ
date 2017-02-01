@@ -1,9 +1,10 @@
 package org.xBaseJ.fields;
 
-import org.xBaseJ.xBaseJException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+
+import org.xBaseJ.xBaseJException;
 /**
  * xBaseJ - Java access to dBase files
  *<p>Copyright 1997-2014 - American Coders, LTD  - Raleigh NC USA

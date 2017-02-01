@@ -35,13 +35,13 @@ package org.xBaseJ.test;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.DBFTypes;
 import org.xBaseJ.Util;
 import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.CharField;
+
+import junit.framework.TestCase;
 
 public class MissingMDX extends TestCase {
 

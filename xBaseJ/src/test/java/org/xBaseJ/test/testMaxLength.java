@@ -32,11 +32,11 @@ package org.xBaseJ.test;
 */
 
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.Util;
 import org.xBaseJ.fields.CharField;
+
+import junit.framework.TestCase;
 
 public class testMaxLength extends TestCase {
 

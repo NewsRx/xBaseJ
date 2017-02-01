@@ -34,12 +34,12 @@ package org.xBaseJ.test;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.Util;
 import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
+
+import junit.framework.TestCase;
 
 
 

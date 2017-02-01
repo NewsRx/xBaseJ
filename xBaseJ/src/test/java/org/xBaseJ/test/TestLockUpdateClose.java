@@ -35,11 +35,11 @@ package org.xBaseJ.test;
 import java.io.IOException;
 import java.nio.channels.OverlappingFileLockException;
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
+
+import junit.framework.TestCase;
 
 /**
  * @author Joe McVerry - American Coders, Ltd.

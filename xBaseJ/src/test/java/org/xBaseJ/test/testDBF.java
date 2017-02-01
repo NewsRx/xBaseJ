@@ -34,12 +34,12 @@ package org.xBaseJ.test;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.MemoField;
+
+import junit.framework.TestCase;
 
 
 public class testDBF extends TestCase {

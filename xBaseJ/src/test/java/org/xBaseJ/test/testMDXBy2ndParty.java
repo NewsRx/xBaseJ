@@ -32,10 +32,10 @@ package org.xBaseJ.test;
 */
 
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.xBaseJException;
+
+import junit.framework.TestCase;
 
 
 public class testMDXBy2ndParty extends TestCase {

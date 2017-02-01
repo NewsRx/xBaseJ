@@ -32,10 +32,10 @@ package org.xBaseJ.test;
 */
 
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.fields.FloatField;
 import org.xBaseJ.fields.NumField;
+
+import junit.framework.TestCase;
 
 public class NumTest extends TestCase {
 

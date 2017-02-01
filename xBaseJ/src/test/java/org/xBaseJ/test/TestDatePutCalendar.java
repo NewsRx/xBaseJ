@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.DateField;
+
+import junit.framework.TestCase;
 
 public class TestDatePutCalendar  extends TestCase{
 

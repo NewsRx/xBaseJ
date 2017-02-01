@@ -37,12 +37,12 @@ package org.xBaseJ.test;
 */
 
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
 import org.xBaseJ.fields.NumField;
+
+import junit.framework.TestCase;
 
 public class TestConcurrInsert extends TestCase {
 

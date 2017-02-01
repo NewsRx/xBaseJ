@@ -1,12 +1,9 @@
 package org.xBaseJ.test;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.xBaseJ.DBF;
-import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.CharField;
 
 public class Clipper_Large_CharFieldTest {

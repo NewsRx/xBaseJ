@@ -35,8 +35,6 @@ package org.xBaseJ.test;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.CharField;
@@ -46,6 +44,8 @@ import org.xBaseJ.fields.FloatField;
 import org.xBaseJ.fields.LogicalField;
 import org.xBaseJ.fields.NumField;
 import org.xBaseJ.fields.PictureField;
+
+import junit.framework.TestCase;
 
 
 public class TestFields extends TestCase {

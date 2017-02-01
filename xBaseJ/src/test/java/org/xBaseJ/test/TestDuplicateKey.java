@@ -17,15 +17,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.xBaseJ.DBF;
- 
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
- 
-
-
-
-
-
 
 import junit.framework.TestCase;
 
