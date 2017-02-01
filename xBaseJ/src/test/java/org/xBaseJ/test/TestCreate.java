@@ -37,7 +37,7 @@ import org.xBaseJ.fields.MemoField;
 
 import junit.framework.TestCase;
 
-public class testCreate extends TestCase {
+public class TestCreate extends TestCase {
 
 	public void testCreateDBF() {
 	try{

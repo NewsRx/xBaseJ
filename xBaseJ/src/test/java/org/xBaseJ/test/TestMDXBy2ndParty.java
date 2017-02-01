@@ -32,43 +32,34 @@ package org.xBaseJ.test;
 */
 
 
-import java.io.IOException;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.xBaseJException;
-import org.xBaseJ.fields.CharField;
 
 import junit.framework.TestCase;
 
-public class testAdd extends TestCase {
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(testAdd.class);
-	}
+public class TestMDXBy2ndParty extends TestCase {
 
-	public void testNewCharField() {
-
+	public void testMDX() {//test MDX updated by DBF Manager
+		DBF aDB = null;
 		try {
-			DBF d1 = new DBF("testfiles/a.dbf", true);
-			CharField c = new CharField("C3", 10);
-			d1.addField(c);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	public void testReaddSame() {
-
-		try {
-			DBF d1 = new DBF("testfiles/a.dbf");
-			CharField c = new CharField("C3", 10);
-			d1.addField(c);
-			fail("shouldn't be able to add field again");
+			aDB = new DBF("c:/temp/statezip.dbf");
+			aDB.useTag("zip");
+			assertFalse(aDB.find("06461"));
+			assertFalse(aDB.find("06824"));
+			assertFalse(aDB.find("06825"));
+			aDB.pack();
+			assertTrue(aDB.find("06461"));
+			assertTrue(aDB.find("06824"));
+			assertTrue(aDB.find("06825"));
+		} catch (SecurityException e) {
+			fail(e.getMessage());
 		} catch (xBaseJException e) {
-			;
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
 		}
-		catch (IOException ei)
-		{
-			fail(ei.getMessage());
-		}
+
+
 	}
 }

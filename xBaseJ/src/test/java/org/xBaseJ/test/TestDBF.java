@@ -42,7 +42,7 @@ import org.xBaseJ.fields.MemoField;
 import junit.framework.TestCase;
 
 
-public class testDBF extends TestCase {
+public class TestDBF extends TestCase {
 
 	public void testBuildDBF() {
 		DBF aDB = null;

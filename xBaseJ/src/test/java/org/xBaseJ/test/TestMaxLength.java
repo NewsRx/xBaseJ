@@ -38,7 +38,7 @@ import org.xBaseJ.fields.CharField;
 
 import junit.framework.TestCase;
 
-public class testMaxLength extends TestCase {
+public class TestMaxLength extends TestCase {
 
 	public void testMaxFieldLength() {
 		try {
