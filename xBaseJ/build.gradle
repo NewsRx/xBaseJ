@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'eclipse-wtp'
 
 group = 'com.github.NewsRxTech'
-version = '20170201'
+version = '20170201B'
 
 sourceCompatibility = 1.7
 compileJava.options.encoding = 'UTF-8'
