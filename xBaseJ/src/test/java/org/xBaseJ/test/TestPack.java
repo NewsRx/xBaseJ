@@ -32,17 +32,14 @@ package org.xBaseJ.test;
 */
 
 
-import junit.framework.TestCase;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.xBaseJ.DBF;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
 import org.xBaseJ.fields.LogicalField;
 import org.xBaseJ.fields.MemoField;
 import org.xBaseJ.fields.NumField;
+
+import junit.framework.TestCase;
 
 /**
  * test packing logic
