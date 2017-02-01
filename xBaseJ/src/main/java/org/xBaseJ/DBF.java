@@ -81,6 +81,7 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Vector;
 
 import org.xBaseJ.cp.CodePage;
@@ -588,6 +589,22 @@ public class DBF implements Closeable, HasSize {
 		for (int i = 0; i < flds.length; i++)
 			flds[i] = aField.get(i);
 		addField(flds);
+	}
+	
+	/**
+	 * adds a collection of new Fields to a database
+	 * 
+	 * @param fields
+	 *            a collection of predefined Field objects
+	 * @see Field
+	 * @throws xBaseJException
+	 *             passed an empty array or other error
+	 * @throws IOException
+	 *             Java error caused by called methods
+	 */
+
+	public void addFields(Collection<Field> fields) throws xBaseJException, IOException {
+		addField(fields.toArray(new Field[0]));
 	}
 
 	/**
