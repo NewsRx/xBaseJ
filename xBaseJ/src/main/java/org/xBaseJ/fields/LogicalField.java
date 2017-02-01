@@ -123,6 +123,12 @@ public class LogicalField extends Field {
 
 	@Override
 	public void put(String inValue) throws xBaseJException {
+		if (inValue==null) {
+			inValue="F";
+		}
+		if (mapper!=null) {
+			inValue = mapper.map(inValue);
+		}
 		String value = inValue.trim();
 		if (Util.dontTrimFields() == false)
 			value = inValue;

@@ -102,6 +102,13 @@ public class FloatField extends NumField {
 	 */
 	@Override
 	public void put(String inValue) throws xBaseJException {
+		
+		if (inValue==null) {
+			inValue="";
+		}
+		if (mapper!=null) {
+			inValue = mapper.map(inValue);
+		}
 
 		boolean signOn = false;
 		if (inValue.trim().length() == 0) {

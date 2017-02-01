@@ -207,12 +207,19 @@ public class MemoField extends Field {
 	 * sets the contents of the memo Field, variant of the field.put method data
 	 * not written into DBF until an update or write is issued.
 	 * 
-	 * @param invalue
+	 * @param inValue
 	 *            value to set Field to.
 	 */
 	@Override
-	public void put(String invalue) {
-		value = new String(invalue);
+	public void put(String inValue) {
+		if (inValue==null) {
+			inValue="";
+		}
+		if (mapper!=null) {
+			inValue = mapper.map(inValue);
+		}
+		
+		value = new String(inValue);
 		byteValue = value.getBytes();
 	}
 
