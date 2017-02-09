@@ -7,6 +7,7 @@ version = '20170201-2'
 
 sourceCompatibility = 1.7
 compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
 
 install {
     repositories.mavenInstaller {
