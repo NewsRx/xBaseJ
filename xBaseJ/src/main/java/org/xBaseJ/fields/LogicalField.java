@@ -171,6 +171,20 @@ public class LogicalField extends Field {
 			throw new xBaseJException("Invalid logical Field value");
 		}
 	}
+	
+	/**
+	 * allows input of Y, y, T, t and 1 for true, N, n, F, f, and 0 for false
+	 * 
+	 * @throws xBaseJException
+	 *             most likely a format exception
+	 */
+	public void put(Character inValue) throws xBaseJException {
+		if (inValue==null) {
+			put("");
+			return;
+		}
+		put(inValue.charValue());
+	}
 
 	/**
 	 * allows input true or false
@@ -180,6 +194,17 @@ public class LogicalField extends Field {
 			buffer[0] = BYTETRUE;
 		else
 			buffer[0] = BYTEFALSE;
+	}
+	/**
+	 * allows input true or false
+	 * @throws xBaseJException 
+	 */
+	public void put(Boolean inValue) throws xBaseJException {
+		if (inValue==null) {
+			put("");
+			return;
+		}
+		put(inValue.booleanValue());
 	}
 
 	/**
