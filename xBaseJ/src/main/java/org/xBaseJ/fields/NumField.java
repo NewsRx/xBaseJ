@@ -296,6 +296,22 @@ public class NumField extends Field {
 	public void put(long inValue) throws xBaseJException {
 		put(String.valueOf(inValue));
 	}
+	
+	/**
+	 * sets the field contents.
+	 * 
+	 * @param inValue
+	 *            long
+	 * @throws xBaseJException
+	 *             most likely a format exception
+	 */
+	public void put(Long inValue) throws xBaseJException {
+		if (inValue==null) {
+			put("");
+			return;
+		}
+		put(String.valueOf(inValue));
+	}
 
 	/**
 	 * sets the field contents.
@@ -306,6 +322,22 @@ public class NumField extends Field {
 	 *             most likely a format exception
 	 */
 	public void put(int inValue) throws xBaseJException {
+		put(String.valueOf(inValue));
+	}
+	
+	/**
+	 * sets the field contents.
+	 * 
+	 * @param inValue
+	 *            int
+	 * @throws xBaseJException
+	 *             most likely a format exception
+	 */
+	public void put(Integer inValue) throws xBaseJException {
+		if (inValue==null) {
+			put("");
+			return;
+		}
 		put(String.valueOf(inValue));
 	}
 
@@ -321,6 +353,39 @@ public class NumField extends Field {
 
 		double toDouble = inValue;
 		put(toDouble);
+	}
+	
+	/**
+	 * sets the field contents.
+	 * 
+	 * @param inValue
+	 *            float
+	 * @throws xBaseJException
+	 *             most likely a format exception
+	 */
+	public void put(Float inValue) throws xBaseJException {
+		if (inValue==null) {
+			put("");
+			return;
+		}
+		double toDouble = inValue;
+		put(toDouble);
+	}
+	
+	/**
+	 * sets the field contents.
+	 * 
+	 * @param inValue
+	 *            double
+	 * @throws xBaseJException
+	 *             most likely a format exception
+	 */
+	public void put(Double inValue) throws xBaseJException {
+		if (inValue==null) {
+			put("");
+			return;
+		}
+		put(inValue.doubleValue());
 	}
 
 	/**
