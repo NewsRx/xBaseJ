@@ -22,7 +22,7 @@ repositories {
   maven { url "https://jitpack.io" }
 }
 dependencies {
-  compile ('com.github.NewsRxTech:xBaseJ:20170215') {
+  compile ('com.github.NewsRxTech:xBaseJ:20170215-2') {
 		exclude group: 'org.eclipse.swt'
 	}
 }
