@@ -8,6 +8,8 @@ It also contains an explicit api call to set the codepage marker value for the D
 
 These are required to be able to create DBFs that can be read by Visual Foxpro 9/Sedna without having to jump through special hoops.
 
+Additionally several of the field setters have been made "null safe".
+
 -
 
 This project can easily be used with Gradle, Maven, SBT, and Leiningen: https://jitpack.io/#NewsRxTech/xBaseJ/
