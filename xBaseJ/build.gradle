@@ -139,6 +139,7 @@ configurations.all {
     test {
   // enable TestNG support (default is JUnit)
   //useTestNG()
+  maxHeapSize = "6144m"
   systemProperty 'debug', 'true'
   testLogging.showStandardStreams = true
   
