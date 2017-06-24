@@ -355,7 +355,7 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
 		}
 
 		if (b.length > Length)
-			throw new xBaseJException("Field length too long");
+			throw new xBaseJException("Field length overflow: Have "+b.length+" data bytes. Field is "+Length+" bytes.");
 
 		i = Math.min(b.length, Length);
 
