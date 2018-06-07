@@ -16,7 +16,7 @@ This project can easily be used with Gradle, Maven, SBT, and Leiningen: https://
 
 Example Gradle config:
 
-```
+```Java
 repositories {
   jcenter()
   maven { url "https://jitpack.io" }
