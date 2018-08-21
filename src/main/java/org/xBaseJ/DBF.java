@@ -79,7 +79,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Vector;
@@ -95,7 +94,6 @@ import org.xBaseJ.fields.MemoField;
 import org.xBaseJ.fields.NumField;
 import org.xBaseJ.fields.PictureField;
 import org.xBaseJ.indexes.Index;
-import org.xBaseJ.indexes.MDX;
 import org.xBaseJ.indexes.MDXFile;
 import org.xBaseJ.indexes.NDX;
 import org.xBaseJ.intf.HasSize;
@@ -142,8 +140,8 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * Returns matching Visual Foxpro codepage, or {@value CodePage#NO_CODEPAGE}
-	 * if none match the byte value.
+	 * Returns matching Visual Foxpro codepage, or {@value CodePage#NO_CODEPAGE} if
+	 * none match the byte value.
 	 * 
 	 * @return
 	 */
@@ -157,13 +155,16 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * Sets the codepage byte value in the DBF header and also switches the
-	 * GLOBAL DBF to the new language if possible.
+	 * Sets the codepage byte value in the DBF header and also switches the GLOBAL
+	 * DBF to the new language if possible.
 	 * 
 	 * @param codepage
 	 * @throws IOException
 	 */
 	public void setCodepage(CodePage codepage) throws IOException {
+		if (readonly) {
+			throw new IOException("READ ONLY");
+		}
 		language = codepage.getCode_page_identifier();
 		setEncodingType(codepage.getJava_code_page());
 		update_dbhead();
@@ -214,20 +215,15 @@ public class DBF implements Closeable, HasSize {
 	 * creates a new DBF file or replaces an existing database file, w/o format
 	 * assumes dbaseiii file format.
 	 *
-	 * @param DBFname
-	 *            a new or existing database file, can be full or partial
-	 *            pathname
-	 * @param destroy
-	 *            delete existing dbf.
-	 * @throws xBaseJException
-	 *             File does exist and told not to destroy it.
-	 * @throws xBaseJException
-	 *             Told to destroy but operating system can not destroy
-	 * @throws IOException
-	 *             Java error caused by called methods
-	 * @throws SecurityException
-	 *             Java error caused by called methods, most likely trying to
-	 *             create on a remote system
+	 * @param DBFname a new or existing database file, can be full or partial
+	 *                pathname
+	 * @param destroy delete existing dbf.
+	 * @throws xBaseJException   File does exist and told not to destroy it.
+	 * @throws xBaseJException   Told to destroy but operating system can not
+	 *                           destroy
+	 * @throws IOException       Java error caused by called methods
+	 * @throws SecurityException Java error caused by called methods, most likely
+	 *                           trying to create on a remote system
 	 */
 
 	public DBF(String DBFname, boolean destroy) throws xBaseJException, IOException, SecurityException {
@@ -238,22 +234,16 @@ public class DBF implements Closeable, HasSize {
 	 * creates a new DBF file or replaces an existing database file.
 	 *
 	 *
-	 * @param DBFname
-	 *            a new or existing database file, can be full or partial
-	 *            pathname
-	 * @param format
-	 *            use class constants DBASEIII or DBASEIV
-	 * @param destroy
-	 *            permission to destroy an existing database file
-	 * @throws xBaseJException
-	 *             File does exist and told not to destroy it.
-	 * @throws xBaseJException
-	 *             Told to destroy but operating system can not destroy
-	 * @throws IOException
-	 *             Java error caused by called methods
-	 * @throws SecurityException
-	 *             Java error caused by called methods, most likely trying to
-	 *             create on a remote system
+	 * @param DBFname a new or existing database file, can be full or partial
+	 *                pathname
+	 * @param format  use class constants DBASEIII or DBASEIV
+	 * @param destroy permission to destroy an existing database file
+	 * @throws xBaseJException   File does exist and told not to destroy it.
+	 * @throws xBaseJException   Told to destroy but operating system can not
+	 *                           destroy
+	 * @throws IOException       Java error caused by called methods
+	 * @throws SecurityException Java error caused by called methods, most likely
+	 *                           trying to create on a remote system
 	 */
 
 	public DBF(String DBFname, DBFTypes format, boolean destroy)
@@ -264,41 +254,31 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * creates an DBF object and opens existing database file in readonly mode.
 	 *
-	 * @param DBFname
-	 *            an existing database file, can be full or partial pathname
-	 * @param readOnly
-	 *            see DBF.READ_ONLY
-	 * @throws xBaseJException
-	 *             Can not find database
-	 * @throws xBaseJException
-	 *             database not dbaseIII format
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param DBFname  an existing database file, can be full or partial pathname
+	 * @param readOnly see DBF.READ_ONLY
+	 * @throws xBaseJException Can not find database
+	 * @throws xBaseJException database not dbaseIII format
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public DBF(String DBFname, char readOnly) throws xBaseJException, IOException {
-		if (readOnly != DBF.READ_ONLY)
+		if (readOnly != DBF.READ_ONLY) {
 			throw new xBaseJException("Unknown readOnly indicator <" + readOnly + ">");
+		}
 		readonly = true;
 		openDBF(DBFname);
 	}
 
 	/**
-	 * creates an DBF object and opens existing database file in read/write
-	 * mode.
+	 * creates an DBF object and opens existing database file in read/write mode.
 	 *
-	 * @param DBFname
-	 *            an existing database file, can be full or partial pathname
-	 * @throws xBaseJException
-	 *             Can not find database
-	 * @throws xBaseJException
-	 *             database not dbaseIII format
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param DBFname an existing database file, can be full or partial pathname
+	 * @throws xBaseJException Can not find database
+	 * @throws xBaseJException database not dbaseIII format
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public DBF(String DBFname) throws xBaseJException, IOException {
-
 		readonly = false;
 		openDBF(DBFname);
 	}
@@ -307,20 +287,15 @@ public class DBF implements Closeable, HasSize {
 	 * creates a new DBF file or replaces an existing database file, w/o format
 	 * assumes dbaseiii file format.
 	 *
-	 * @param DBFname
-	 *            a new or existing database file, can be full or partial
-	 *            pathname
-	 * @param destroy
-	 *            delete existing dbf.
-	 * @throws xBaseJException
-	 *             File does exist and told not to destroy it.
-	 * @throws xBaseJException
-	 *             Told to destroy but operating system can not destroy
-	 * @throws IOException
-	 *             Java error caused by called methods
-	 * @throws SecurityException
-	 *             Java error caused by called methods, most likely trying to
-	 *             create on a remote system
+	 * @param DBFname a new or existing database file, can be full or partial
+	 *                pathname
+	 * @param destroy delete existing dbf.
+	 * @throws xBaseJException   File does exist and told not to destroy it.
+	 * @throws xBaseJException   Told to destroy but operating system can not
+	 *                           destroy
+	 * @throws IOException       Java error caused by called methods
+	 * @throws SecurityException Java error caused by called methods, most likely
+	 *                           trying to create on a remote system
 	 */
 
 	public DBF(String DBFname, boolean destroy, String inEncodeType)
@@ -332,24 +307,17 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * creates a new DBF file or replaces an existing database file.
 	 *
-	 * @param DBFname
-	 *            a new or existing database file, can be full or partial
-	 *            pathname
-	 * @param format
-	 *            use class constants DBASEIII or DBASEIV
-	 * @param destroy
-	 *            permission to destroy an existing database file
-	 * @param inEncodeType
-	 *            file encoding value
-	 * @throws xBaseJException
-	 *             File does exist and told not to destroy it.
-	 * @throws xBaseJException
-	 *             Told to destroy but operating system can not destroy
-	 * @throws IOException
-	 *             Java error caused by called methods
-	 * @throws SecurityException
-	 *             Java error caused by called methods, most likely trying to
-	 *             create on a remote system
+	 * @param DBFname      a new or existing database file, can be full or partial
+	 *                     pathname
+	 * @param format       use class constants DBASEIII or DBASEIV
+	 * @param destroy      permission to destroy an existing database file
+	 * @param inEncodeType file encoding value
+	 * @throws xBaseJException   File does exist and told not to destroy it.
+	 * @throws xBaseJException   Told to destroy but operating system can not
+	 *                           destroy
+	 * @throws IOException       Java error caused by called methods
+	 * @throws SecurityException Java error caused by called methods, most likely
+	 *                           trying to create on a remote system
 	 */
 
 	public DBF(String DBFname, DBFTypes format, boolean destroy, String inEncodeType)
@@ -361,18 +329,13 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * creates an DBF object and opens existing database file in readonly mode.
 	 *
-	 * @param DBFname
-	 *            an existing database file, can be full or partial pathname
-	 * @param readOnly
-	 *            see DBF.READ_ONLY
-	 * @param inEncodeType
-	 *            file encoding value
-	 * @throws xBaseJException
-	 *             Can not find database
-	 * @throws xBaseJException
-	 *             database not dbaseIII format
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param DBFname      an existing database file, can be full or partial
+	 *                     pathname
+	 * @param readOnly     see DBF.READ_ONLY
+	 * @param inEncodeType file encoding value
+	 * @throws xBaseJException Can not find database
+	 * @throws xBaseJException database not dbaseIII format
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public DBF(String DBFname, char readOnly, String inEncodeType) throws xBaseJException, IOException {
@@ -384,23 +347,17 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * creates an DBF object and opens existing database file in read/write
-	 * mode.
+	 * creates an DBF object and opens existing database file in read/write mode.
 	 *
-	 * @param DBFname
-	 *            an existing database file, can be full or partial pathname
-	 * @param inEncodeType
-	 *            file encoding value
-	 * @throws xBaseJException
-	 *             Can not find database
-	 * @throws xBaseJException
-	 *             database not dbaseIII format
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param DBFname      an existing database file, can be full or partial
+	 *                     pathname
+	 * @param inEncodeType file encoding value
+	 * @throws xBaseJException Can not find database
+	 * @throws xBaseJException database not dbaseIII format
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public DBF(String DBFname, String inEncodeType) throws xBaseJException, IOException {
-
 		readonly = false;
 		setEncodingType(inEncodeType);
 		openDBF(DBFname);
@@ -409,14 +366,10 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * opens an existing database file.
 	 *
-	 * @param DBFname
-	 *            an existing database file, can be full or partial pathname
-	 * @throws xBaseJException
-	 *             Can not find database
-	 * @throws xBaseJException
-	 *             database not dbaseIII format
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param DBFname an existing database file, can be full or partial pathname
+	 * @throws xBaseJException Can not find database
+	 * @throws xBaseJException database not dbaseIII format
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	protected void openDBF(String DBFname) throws IOException, xBaseJException {
@@ -562,13 +515,10 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * adds a new Field to a database
 	 * 
-	 * @param aField
-	 *            a predefined Field object
+	 * @param aField a predefined Field object
 	 * @see Field
-	 * @throws xBaseJException
-	 *             org.xBaseJ error caused by called methods
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ error caused by called methods
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void addField(Field aField) throws xBaseJException, IOException {
@@ -580,34 +530,12 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * adds an arrayList of new Fields to a database
-	 * 
-	 * @param aField
-	 *            an arrayList of predefined Field object
-	 * @see Field
-	 * @throws xBaseJException
-	 *             passed an empty array or other error
-	 * @throws IOException
-	 *             Java error caused by called methods
-	 */
-
-	public void addField(ArrayList<Field> aField) throws xBaseJException, IOException {
-		Field[] flds = new Field[aField.size()];
-		for (int i = 0; i < flds.length; i++)
-			flds[i] = aField.get(i);
-		addField(flds);
-	}
-
-	/**
 	 * adds a collection of new Fields to a database
 	 * 
-	 * @param fields
-	 *            a collection of predefined Field objects
+	 * @param fields a collection of predefined Field objects
 	 * @see Field
-	 * @throws xBaseJException
-	 *             passed an empty array or other error
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException passed an empty array or other error
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void addFields(Collection<Field> fields) throws xBaseJException, IOException {
@@ -617,13 +545,10 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * adds an array of new Fields to a database
 	 * 
-	 * @param aField
-	 *            an array of predefined Field object
+	 * @param aField an array of predefined Field object
 	 * @see Field
-	 * @throws xBaseJException
-	 *             passed an empty array or other error
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException passed an empty array or other error
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void addField(Field aField[]) throws xBaseJException, IOException {
@@ -912,8 +837,7 @@ public class DBF implements Closeable, HasSize {
 	 * defaults to 5000 milliseconds <br>
 	 * if negative value will not be set
 	 * 
-	 * @param inLongWait
-	 *            long milliseconds
+	 * @param inLongWait long milliseconds
 	 */
 	public void setFileLockWait(long inLongWait) {
 		if (inLongWait > -1)
@@ -922,14 +846,11 @@ public class DBF implements Closeable, HasSize {
 
 	/**
 	 * locks the entire database <br>
-	 * will try 5 times within the fileLockTimeOut specified in
-	 * org.xBaseJ.property fileLockTimeOut, default 5000 milliseconds (5
-	 * seconds)
+	 * will try 5 times within the fileLockTimeOut specified in org.xBaseJ.property
+	 * fileLockTimeOut, default 5000 milliseconds (5 seconds)
 	 * 
-	 * @throws IOException
-	 *             - related to java.nio.channels and filelocks
-	 * @throws xBaseJException
-	 *             - file lock wait timed out,
+	 * @throws IOException     - related to java.nio.channels and filelocks
+	 * @throws xBaseJException - file lock wait timed out,
 	 * @since 2.1
 	 */
 	public void lock() throws IOException, xBaseJException {
@@ -962,14 +883,11 @@ public class DBF implements Closeable, HasSize {
 
 	/**
 	 * locks the current record, exclusively <br>
-	 * will try 5 times within the fileLockTimeOut specified in
-	 * org.xBaseJ.property fileLockTimeOut, default 5000 milliseconds (5
-	 * seconds)
+	 * will try 5 times within the fileLockTimeOut specified in org.xBaseJ.property
+	 * fileLockTimeOut, default 5000 milliseconds (5 seconds)
 	 * 
-	 * @throws IOException
-	 *             - related to java.nio.channels and filelocks
-	 * @throws xBaseJException
-	 *             - file lock wait timed out,
+	 * @throws IOException     - related to java.nio.channels and filelocks
+	 * @throws xBaseJException - file lock wait timed out,
 	 * @since 2.1
 	 */
 	public void lockRecord() throws IOException, xBaseJException {
@@ -979,16 +897,12 @@ public class DBF implements Closeable, HasSize {
 
 	/**
 	 * locks a particular record, exclusively <br>
-	 * will try 5 times within the fileLockTimeOut specified in
-	 * org.xBaseJ.property fileLockTimeOut, default 5000 milliseconds (5
-	 * seconds)
+	 * will try 5 times within the fileLockTimeOut specified in org.xBaseJ.property
+	 * fileLockTimeOut, default 5000 milliseconds (5 seconds)
 	 * 
-	 * @param recno
-	 *            record # to be locked
-	 * @throws IOException
-	 *             - related to java.nio.channels and filelocks
-	 * @throws xBaseJException
-	 *             - file lock wait timed out,
+	 * @param recno record # to be locked
+	 * @throws IOException     - related to java.nio.channels and filelocks
+	 * @throws xBaseJException - file lock wait timed out,
 	 */
 	public void lockRecord(int recno) throws IOException, xBaseJException {
 
@@ -1017,8 +931,7 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * unlocks the entire database
 	 * 
-	 * @throws IOException
-	 *             - related to java.nio.channels and filelocks
+	 * @throws IOException - related to java.nio.channels and filelocks
 	 * @since 2.1
 	 */
 	public void unlock() throws IOException {
@@ -1032,8 +945,7 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * unlocks the current locked record
 	 * 
-	 * @throws IOException
-	 *             - related to java.nio.channels and filelocks
+	 * @throws IOException - related to java.nio.channels and filelocks
 	 * @since 2.1
 	 */
 	public void unlockRecord() throws IOException {
@@ -1047,13 +959,10 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * removes a Field from a database NOT FULLY IMPLEMENTED
 	 * 
-	 * @param aField
-	 *            a field in the database
+	 * @param aField a field in the database
 	 * @see Field
-	 * @throws xBaseJException
-	 *             Field is not part of the database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException Field is not part of the database
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void dropField(Field aField) throws xBaseJException, IOException {
@@ -1071,15 +980,11 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * changes a Field in a database NOT FULLY IMPLEMENTED
 	 * 
-	 * @param oldField
-	 *            a Field object
-	 * @param newField
-	 *            a Field object
+	 * @param oldField a Field object
+	 * @param newField a Field object
 	 * @see Field
-	 * @throws xBaseJException
-	 *             org.xBaseJ error caused by called methods
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ error caused by called methods
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public void changeField(Field oldField, Field newField) throws xBaseJException, IOException {
 		int i, j;
@@ -1134,13 +1039,12 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * gets an Index object associated with the database. This index does not
-	 * become the primary index. Written for the makeDBFBean application.
-	 * Position is relative to 1.
+	 * gets an Index object associated with the database. This index does not become
+	 * the primary index. Written for the makeDBFBean application. Position is
+	 * relative to 1.
 	 * 
 	 * @param indexPosition
-	 * @throws xBaseJException
-	 *             index value incorrect
+	 * @throws xBaseJException index value incorrect
 	 */
 	public Index getIndex(int indexPosition) throws xBaseJException {
 		if (indexPosition < 1)
@@ -1155,14 +1059,11 @@ public class DBF implements Closeable, HasSize {
 	 * opens an Index file associated with the database. This index becomes the
 	 * primary index used in subsequent find methods.
 	 * 
-	 * @param filename
-	 *            an existing ndx file(can be full or partial pathname) or mdx
-	 *            tag
-	 * @throws xBaseJException
-	 *             org.xBaseJ Fields defined in index do not match fields in
-	 *             database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param filename an existing ndx file(can be full or partial pathname) or mdx
+	 *                 tag
+	 * @throws xBaseJException org.xBaseJ Fields defined in index do not match
+	 *                         fields in database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public Index useIndex(String filename) throws xBaseJException, IOException {
 		int i;
@@ -1185,15 +1086,11 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * opens an Index file associated with the database
 	 * 
-	 * @param filename
-	 *            an existing Index file, can be full or partial pathname
-	 * @param ID
-	 *            a unique id to define Index at run-time.
-	 * @throws xBaseJException
-	 *             org.xBaseJ Fields defined in Index do not match Fields in
-	 *             database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param filename an existing Index file, can be full or partial pathname
+	 * @param ID       a unique id to define Index at run-time.
+	 * @throws xBaseJException org.xBaseJ Fields defined in Index do not match
+	 *                         Fields in database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public Index useIndex(String filename, String ID) throws xBaseJException, IOException {
 		useIndex(filename);
@@ -1205,12 +1102,10 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * used to indicate the primary Index
 	 * 
-	 * @param ndx
-	 *            an Index object
-	 * @throws xBaseJException
-	 *             org.xBaseJ Index not opened or not part of the database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param ndx an Index object
+	 * @throws xBaseJException org.xBaseJ Index not opened or not part of the
+	 *                         database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public Index useIndex(Index ndx) throws xBaseJException, IOException {
 		int i;
@@ -1229,10 +1124,9 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * used to indicate the primary Index.
 	 * 
-	 * @param ID
-	 *            String index name
-	 * @throws xBaseJException
-	 *             org.xBaseJ Index not opened or not part of the database
+	 * @param ID String index name
+	 * @throws xBaseJException org.xBaseJ Index not opened or not part of the
+	 *                         database
 	 * @see DBF#useIndex(String,String)
 	 */
 	public Index useIndexByID(String ID) throws xBaseJException {
@@ -1252,10 +1146,8 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * associates all Index operations with an existing tag.
 	 * 
-	 * @param tagname
-	 *            an existing tag name in the production MDX file
-	 * @throws xBaseJException
-	 *             no MDX file tagname not found
+	 * @param tagname an existing tag name in the production MDX file
+	 * @throws xBaseJException no MDX file tagname not found
 	 */
 	public Index useTag(String tagname) throws xBaseJException {
 		if (MDXfile == null)
@@ -1267,14 +1159,10 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * associates all Index operations with an existing tag.
 	 * 
-	 * @param tagname
-	 *            an existing tag name in the production MDX file
-	 * @param ID
-	 *            a unique id to define Index at run-time.
-	 * @throws xBaseJException
-	 *             no MDX file tagname not found
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param tagname an existing tag name in the production MDX file
+	 * @param ID      a unique id to define Index at run-time.
+	 * @throws xBaseJException no MDX file tagname not found
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public Index useTag(String tagname, String ID) throws xBaseJException, IOException {
 		useTag(tagname);
@@ -1286,16 +1174,11 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * creates a new Index as a NDX file, assumes NDX file does not exist.
 	 * 
-	 * @param filename
-	 *            a new Index file name
-	 * @param index
-	 *            string identifying Fields used in Index
-	 * @param unique
-	 *            boolean to indicate if the key is always unique
-	 * @throws xBaseJException
-	 *             NDX file already exists
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param filename a new Index file name
+	 * @param index    string identifying Fields used in Index
+	 * @param unique   boolean to indicate if the key is always unique
+	 * @throws xBaseJException NDX file already exists
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public Index createIndex(String filename, String index, boolean unique) throws xBaseJException, IOException {
 		return createIndex(filename, index, false, unique);
@@ -1304,18 +1187,12 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * creates a new Index as a NDX file.
 	 * 
-	 * @param filename
-	 *            a new Index file name
-	 * @param index
-	 *            string identifying Fields used in Index
-	 * @param destroy
-	 *            permission to destory NDX if file exists
-	 * @param unique
-	 *            boolean to indicate if the key is always unique
-	 * @throws xBaseJException
-	 *             NDX file already exists
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param filename a new Index file name
+	 * @param index    string identifying Fields used in Index
+	 * @param destroy  permission to destory NDX if file exists
+	 * @param unique   boolean to indicate if the key is always unique
+	 * @throws xBaseJException NDX file already exists
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public Index createIndex(String filename, String index, boolean destroy, boolean unique)
 			throws xBaseJException, IOException {
@@ -1327,16 +1204,11 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * creates a tag in the MDX file.
 	 * 
-	 * @param tagname
-	 *            a non-existing tag name in the production MDX file
-	 * @param tagIndex
-	 *            string identifying Fields used in Index
-	 * @param unique
-	 *            boolean to indicate if the key is always unique
-	 * @throws xBaseJException
-	 *             no MDX file tagname already exists
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param tagname  a non-existing tag name in the production MDX file
+	 * @param tagIndex string identifying Fields used in Index
+	 * @param unique   boolean to indicate if the key is always unique
+	 * @throws xBaseJException no MDX file tagname already exists
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public Index createTag(String tagname, String tagIndex, boolean unique) throws xBaseJException, IOException {
 		if (MDXfile == null)
@@ -1347,18 +1219,14 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to find a record with an equal or greater string value. when done
-	 * the record pointer and field contents will be changed.
+	 * used to find a record with an equal or greater string value. when done the
+	 * record pointer and field contents will be changed.
 	 * 
-	 * @param keyString
-	 *            a search string
-	 * @param lock
-	 *            boolean lock record indicator
+	 * @param keyString a search string
+	 * @param lock      boolean lock record indicator
 	 * @return boolean indicating if the record found contains the exact key
-	 * @throws xBaseJException
-	 *             org.xBaseJ no Indexs opened with database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ no Indexs opened with database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public boolean find(String keyString, boolean lock) throws xBaseJException, IOException {
 		if (jNDX == null)
@@ -1377,36 +1245,29 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to find a record with an equal or greater string value. when done
-	 * the record pointer and field contents will be changed.
+	 * used to find a record with an equal or greater string value. when done the
+	 * record pointer and field contents will be changed.
 	 * 
-	 * @param keyString
-	 *            a search string
+	 * @param keyString a search string
 	 * @return boolean indicating if the record found contains the exact key
-	 * @throws xBaseJException
-	 *             org.xBaseJ no Indexs opened with database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ no Indexs opened with database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public boolean find(String keyString) throws xBaseJException, IOException {
 		return find(keyString, false);
 	}
 
 	/**
-	 * used to find a record with an equal and at the particular record. when
-	 * done the record pointer and field contents will be changed.
+	 * used to find a record with an equal and at the particular record. when done
+	 * the record pointer and field contents will be changed.
 	 * 
-	 * @param keyString
-	 *            a search string
-	 * @param recno
-	 *            - int record number
-	 * @param lock
-	 *            - boolean lock record indicator
+	 * @param keyString a search string
+	 * @param recno     - int record number
+	 * @param lock      - boolean lock record indicator
 	 * @return boolean indicating if the record found contains the exact key
-	 * @throws xBaseJException
-	 *             org.xBaseJ Index not opened or not part of the database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ Index not opened or not part of the
+	 *                         database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public boolean find(String keyString, int recno, boolean lock) throws xBaseJException, IOException {
 		if (jNDX == null)
@@ -1426,16 +1287,14 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to find a record with an equal and at the particular record. when
-	 * done the record pointer and field contents will be changed.
+	 * used to find a record with an equal and at the particular record. when done
+	 * the record pointer and field contents will be changed.
 	 * 
-	 * @param keyString
-	 *            a search string
+	 * @param keyString a search string
 	 * @return boolean indicating if the record found contains the exact key
-	 * @throws xBaseJException
-	 *             org.xBaseJ Index not opened or not part of the database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ Index not opened or not part of the
+	 *                         database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public boolean find(String keyString, int recno) throws xBaseJException, IOException {
 
@@ -1445,18 +1304,13 @@ public class DBF implements Closeable, HasSize {
 
 	/**
 	 * used to find a record with an equal string value. when done the record
-	 * pointer and field contents will be changed only if the exact key is
-	 * found.
+	 * pointer and field contents will be changed only if the exact key is found.
 	 * 
-	 * @param keyString
-	 *            a search string
-	 * @param lock
-	 *            - boolean lock record indiator
+	 * @param keyString a search string
+	 * @param lock      - boolean lock record indiator
 	 * @return boolean indicating if the record found contains the exact key
-	 * @throws xBaseJException
-	 *             org.xBaseJ no Indexs opened with database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ no Indexs opened with database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public boolean findExact(String keyString, boolean lock) throws xBaseJException, IOException {
 		if (jNDX == null)
@@ -1477,16 +1331,12 @@ public class DBF implements Closeable, HasSize {
 
 	/**
 	 * used to find a record with an equal string value. when done the record
-	 * pointer and field contents will be changed only if the exact key is
-	 * found.
+	 * pointer and field contents will be changed only if the exact key is found.
 	 * 
-	 * @param keyString
-	 *            a search string
+	 * @param keyString a search string
 	 * @return boolean indicating if the record found contains the exact key
-	 * @throws xBaseJException
-	 *             org.xBaseJ no Indexs opened with database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ no Indexs opened with database
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public boolean findExact(String keyString) throws xBaseJException, IOException {
 		return findExact(keyString, false);
@@ -1494,16 +1344,13 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to get the next record in the index list. when done the record
-	 * pointer and field contents will be changed.
+	 * used to get the next record in the index list. when done the record pointer
+	 * and field contents will be changed.
 	 * 
-	 * @param lock
-	 *            - boolean lock record indicator
-	 * @throws xBaseJException
-	 *             org.xBaseJ Index not opened or not part of the database eof -
-	 *             end of file
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param lock - boolean lock record indicator
+	 * @throws xBaseJException org.xBaseJ Index not opened or not part of the
+	 *                         database eof - end of file
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void findNext(boolean lock) throws xBaseJException, IOException {
@@ -1519,14 +1366,12 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to get the next record in the index list. when done the record
-	 * pointer and field contents will be changed
+	 * used to get the next record in the index list. when done the record pointer
+	 * and field contents will be changed
 	 * 
-	 * @throws xBaseJException
-	 *             org.xBaseJ Index not opened or not part of the database eof -
-	 *             end of file
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ Index not opened or not part of the
+	 *                         database eof - end of file
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void findNext() throws xBaseJException, IOException {
@@ -1537,13 +1382,10 @@ public class DBF implements Closeable, HasSize {
 	 * used to get the previous record in the index list. when done the record
 	 * pointer and field contents will be changed.
 	 * 
-	 * @param lock
-	 *            boolean lock record indicator
-	 * @throws xBaseJException
-	 *             org.xBaseJ Index not opened or not part of the database tof -
-	 *             top of file
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param lock boolean lock record indicator
+	 * @throws xBaseJException org.xBaseJ Index not opened or not part of the
+	 *                         database tof - top of file
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public void findPrev(boolean lock) throws xBaseJException, IOException {
 		if (jNDX == null)
@@ -1563,11 +1405,9 @@ public class DBF implements Closeable, HasSize {
 	 * used to get the previous record in the index list. when done the record
 	 * pointer and field contents will be changed.
 	 * 
-	 * @throws xBaseJException
-	 *             org.xBaseJ Index not opened or not part of the database tof -
-	 *             top of file
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException org.xBaseJ Index not opened or not part of the
+	 *                         database tof - top of file
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public void findPrev() throws xBaseJException, IOException {
 		findPrev(false);
@@ -1575,15 +1415,11 @@ public class DBF implements Closeable, HasSize {
 
 	/**
 	 * used to read the next record, after the current record pointer, in the
-	 * database. when done the record pointer and field contents will be
-	 * changed.
+	 * database. when done the record pointer and field contents will be changed.
 	 * 
-	 * @param lock
-	 *            - boolean lock record indicator
-	 * @throws xBaseJException
-	 *             usually the end of file condition
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param lock - boolean lock record indicator
+	 * @throws xBaseJException usually the end of file condition
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public void read(boolean lock) throws xBaseJException, IOException {
 
@@ -1601,13 +1437,10 @@ public class DBF implements Closeable, HasSize {
 
 	/**
 	 * used to read the next record, after the current record pointer, in the
-	 * database. when done the record pointer and field contents will be
-	 * changed.
+	 * database. when done the record pointer and field contents will be changed.
 	 * 
-	 * @throws xBaseJException
-	 *             usually the end of file condition
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException usually the end of file condition
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public void read() throws xBaseJException, IOException {
 		read(false);
@@ -1615,16 +1448,12 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to read the previous record, before the current record pointer, in
-	 * the database. when done the record pointer and field contents will be
-	 * changed.
+	 * used to read the previous record, before the current record pointer, in the
+	 * database. when done the record pointer and field contents will be changed.
 	 * 
-	 * @param lock
-	 *            - boolean lock record indicator
-	 * @throws xBaseJException
-	 *             usually the top of file condition
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param lock - boolean lock record indicator
+	 * @throws xBaseJException usually the top of file condition
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void readPrev(boolean lock) throws xBaseJException, IOException {
@@ -1640,14 +1469,11 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to read the previous record, before the current record pointer, in
-	 * the database. when done the record pointer and field contents will be
-	 * changed.
+	 * used to read the previous record, before the current record pointer, in the
+	 * database. when done the record pointer and field contents will be changed.
 	 * 
-	 * @throws xBaseJException
-	 *             usually the top of file condition
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException usually the top of file condition
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void readPrev() throws xBaseJException, IOException {
@@ -1655,18 +1481,14 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to read a record at a particular place in the database. when done
-	 * the record pointer and field contents will be changed.
+	 * used to read a record at a particular place in the database. when done the
+	 * record pointer and field contents will be changed.
 	 * 
-	 * @param recno
-	 *            the relative position of the record to read
-	 * @param lock
-	 *            - boolean lock record indicator
-	 * @throws xBaseJException
-	 *             passed an negative number, 0 or value greater than the number
-	 *             of records in database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param recno the relative position of the record to read
+	 * @param lock  - boolean lock record indicator
+	 * @throws xBaseJException passed an negative number, 0 or value greater than
+	 *                         the number of records in database
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void gotoRecord(int recno, boolean lock) throws xBaseJException, IOException {
@@ -1704,16 +1526,13 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to read a record at a particular place in the database. when done
-	 * the record pointer and field contents will be changed.
+	 * used to read a record at a particular place in the database. when done the
+	 * record pointer and field contents will be changed.
 	 * 
-	 * @param recno
-	 *            the relative position of the record to read
-	 * @throws xBaseJException
-	 *             passed an negative number, 0 or value greater than the number
-	 *             of records in database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param recno the relative position of the record to read
+	 * @throws xBaseJException passed an negative number, 0 or value greater than
+	 *                         the number of records in database
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void gotoRecord(int recno) throws xBaseJException, IOException {
@@ -1723,16 +1542,14 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to position record pointer at the first record or index in the
-	 * database. when done the record pointer will be changed. NO RECORD IS
-	 * READ. Your program should follow this with either a read (for non-index
-	 * reads) or findNext (for index processing)
+	 * used to position record pointer at the first record or index in the database.
+	 * when done the record pointer will be changed. NO RECORD IS READ. Your program
+	 * should follow this with either a read (for non-index reads) or findNext (for
+	 * index processing)
 	 * 
 	 * @return String starting index
-	 * @throws xBaseJException
-	 *             most likely no records in database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException most likely no records in database
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void startTop() throws xBaseJException, IOException {
@@ -1743,16 +1560,14 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to position record pointer at the last record or index in the
-	 * database. when done the record pointer will be changed. NO RECORD IS
-	 * READ. Your program should follow this with either a read (for non-index
-	 * reads) or findPrev (for index processing)
+	 * used to position record pointer at the last record or index in the database.
+	 * when done the record pointer will be changed. NO RECORD IS READ. Your program
+	 * should follow this with either a read (for non-index reads) or findPrev (for
+	 * index processing)
 	 * 
 	 * @return String terminal index
-	 * @throws xBaseJException
-	 *             most likely no records in database
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException most likely no records in database
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void startBottom() throws xBaseJException, IOException {
@@ -1763,16 +1578,13 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to write a new record in the database. when done the record pointer
-	 * is at the end of the database.
+	 * used to write a new record in the database. when done the record pointer is
+	 * at the end of the database.
 	 * 
-	 * @param lock
-	 *            - boolean lock indicator - locks the entire file during the
-	 *            write process and then unlocks the file.
-	 * @throws xBaseJException
-	 *             any one of several errors
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param lock - boolean lock indicator - locks the entire file during the write
+	 *             process and then unlocks the file.
+	 * @throws xBaseJException any one of several errors
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public void write(boolean lock) throws xBaseJException, IOException {
 		/** writes a new record in the database */
@@ -1831,13 +1643,11 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	/**
-	 * used to write a new record in the database. when done the record pointer
-	 * is at the end of the database.
+	 * used to write a new record in the database. when done the record pointer is
+	 * at the end of the database.
 	 * 
-	 * @throws xBaseJException
-	 *             any one of several errors
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException any one of several errors
+	 * @throws IOException     Java error caused by called methods
 	 */
 	public void write() throws xBaseJException, IOException {
 		write(false);
@@ -1846,14 +1656,11 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * updates the record at the current position.
 	 * 
-	 * @param lock
-	 *            - boolean lock indicator - locks the entire file during the
-	 *            write process and then unlocks the file. Also record lock will
-	 *            be released, regardless of parameter value
-	 * @throws xBaseJException
-	 *             any one of several errors
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @param lock - boolean lock indicator - locks the entire file during the write
+	 *             process and then unlocks the file. Also record lock will be
+	 *             released, regardless of parameter value
+	 * @throws xBaseJException any one of several errors
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void update(boolean lock) throws xBaseJException, IOException {
@@ -1913,10 +1720,8 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * updates the record at the current position.
 	 * 
-	 * @throws xBaseJException
-	 *             any one of several errors
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException any one of several errors
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void update() throws xBaseJException, IOException {
@@ -1932,10 +1737,8 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * marks the current records as deleted.
 	 * 
-	 * @throws xBaseJException
-	 *             usually occurs when no record has been read
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException usually occurs when no record has been read
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void delete() throws IOException, xBaseJException {
@@ -1952,10 +1755,8 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * marks the current records as not deleted.
 	 * 
-	 * @throws xBaseJException
-	 *             usually occurs when no record has been read.
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException usually occurs when no record has been read.
+	 * @throws IOException     Java error caused by called methods
 	 */
 
 	public void undelete() throws IOException, xBaseJException {
@@ -1972,8 +1773,7 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * closes the database.
 	 * 
-	 * @throws IOException
-	 *             Java error caused by called methods
+	 * @throws IOException Java error caused by called methods
 	 */
 
 	@Override
@@ -2005,31 +1805,34 @@ public class DBF implements Closeable, HasSize {
 		MDXfile = null;
 		unlock();
 
+		/**
+		 * reset file length if length doesn't match calculated length, this is required
+		 * for the DBF to be readable by Visual FoxPro 9.x
+		 */
 		if (!readonly) {
-			/**
-			 * reset file length if length doesn't match calculated length, this
-			 * is required for the DBF to be readable by Visual FoxPro 9.x
+			/*
+			 * foxpro foxplus output is 1 byte longer than raw calculation?
 			 */
-			long fileSize = (offset + (lrecl * count)) + 1; // foxpro foxplus
-															// output is 1 byte
-															// longer than raw
-															// calculation?
+			long fileSize = (offset + (lrecl * count)) + 1;
 			if (file.getChannel().size() != fileSize) {
 				file.setLength(fileSize);
 			}
 		}
-		update_dbhead();
+		/**
+		 * Only update "header" if not marked as "readonly".
+		 */
+		if (!readonly) {
+			update_dbhead();
+		}
 		file.close();
 	}
 
 	/**
 	 * returns a Field object by its relative position.
 	 * 
-	 * @param i
-	 *            Field number
-	 * @throws xBaseJException
-	 *             usually occurs when Field number is less than 1 or greater
-	 *             than the number of fields
+	 * @param i Field number
+	 * @throws xBaseJException usually occurs when Field number is less than 1 or
+	 *                         greater than the number of fields
 	 */
 
 	public Field getField(int i) throws ArrayIndexOutOfBoundsException, xBaseJException {
@@ -2043,10 +1846,8 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * returns a Field object by its name in the database.
 	 * 
-	 * @param name
-	 *            Field name
-	 * @throws xBaseJException
-	 *             Field name is not correct
+	 * @param name Field name
+	 * @throws xBaseJException Field name is not correct
 	 */
 
 	public Field getField(String name) throws xBaseJException, ArrayIndexOutOfBoundsException {
@@ -2293,14 +2094,12 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * packs a DBF by removing deleted records and memo fields.
 	 * 
-	 * @throws xBaseJException
-	 *             File does exist and told not to destroy it.
-	 * @throws xBaseJException
-	 *             Told to destroy but operating system can not destroy
-	 * @throws IOException
-	 *             Java error caused by called methods
-	 * @throws CloneNotSupportedException
-	 *             Java error caused by called methods
+	 * @throws xBaseJException            File does exist and told not to destroy
+	 *                                    it.
+	 * @throws xBaseJException            Told to destroy but operating system can
+	 *                                    not destroy
+	 * @throws IOException                Java error caused by called methods
+	 * @throws CloneNotSupportedException Java error caused by called methods
 	 */
 
 	public void pack() throws xBaseJException, IOException, SecurityException, CloneNotSupportedException {
@@ -2411,8 +2210,7 @@ public class DBF implements Closeable, HasSize {
 	 * sets the character encoding variable. <br>
 	 * do this prior to opening any dbfs.
 	 * 
-	 * @param inType
-	 *            encoding type, default is "8859_1" could use "CP850" others
+	 * @param inType encoding type, default is "8859_1" could use "CP850" others
 	 */
 
 	public static void setEncodingType(String inType) {
@@ -2432,8 +2230,7 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * generates an xml string representation using xbase.dtd
 	 * 
-	 * @param inFileName
-	 *            - String
+	 * @param inFileName - String
 	 * @return File, file is closed when returned.
 	 */
 
@@ -2452,8 +2249,7 @@ public class DBF implements Closeable, HasSize {
 	/**
 	 * generates an xml string representation using xbase.dtd
 	 * 
-	 * @param pw
-	 *            - PrinterWriter
+	 * @param pw - PrinterWriter
 	 */
 	public void getXML(PrintWriter pw) throws IOException, xBaseJException {
 		pw.println("<?xml version=\"1.0\"?>");
