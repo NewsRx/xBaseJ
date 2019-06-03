@@ -22,6 +22,7 @@ git remote add origin "ssh://git@www.newsrx.com/home/git/${REPO}/" || true
 touch .gitignore
 
 cat > .gitignore << EOT
+*~
 /build/
 *.pydevproject
 .metadata
@@ -50,8 +51,10 @@ sort .gitignore |uniq > .gitignore.tmp
 mv -v .gitignore.tmp .gitignore
 
 if [ -f "build.gradle" ]; then
-	gradle :wrapper
-	gradle :create-dirs
+    mv -v "build.gradle" "build.gradle.tmp"
+	gradle :wrapper --gradle-version 4.10.3 --distribution-type all
+	mv -v "build.gradle.tmp" "build.gradle"
+	./gradlew :create-dirs
 	find src | while read folder; do
 		if [ ! -d "$folder" ]; then continue; fi
 		touch "$folder"/.gitignore
@@ -78,4 +81,5 @@ printf "DONE: "
 read a;
 
 exit 0
+
 
