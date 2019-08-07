@@ -12,12 +12,36 @@ if [ ! -d .git ]; then
 	exit -1
 fi
 
-export REPO="$(basename "$(pwd)")"
+export repo="$(basename "$(pwd)")"
 
-echo "Running: 'cd ~; git git init --bare --share '${REPO}'; exit'"
-ssh git@www.newsrx.com 'cd ~; git init --bare --share '${REPO}'; exit'
+ORG=NewSRX-Tech-LLC
+GITBUCKET_HTTP_HOST="www.newsrx.com"
+GITBUCKET_SSH_HOST="tomcat-0002.newsrx.com"
+PORT=29418
 
-git remote add origin "ssh://git@www.newsrx.com/home/git/${REPO}/" || true
+if [ ! -f ~/git/gitbucket-info.sh ]; then
+	echo "create the file gitbucket-info.sh - place into the file: export gb_userpass='username:password'"
+	exit -1
+fi
+
+. ~/git/gitbucket-info.sh
+
+# create repo
+curl -k -X POST --user "$gb_userpass" \
+	"https://$GITBUCKET_HTTP_HOST/gitbucket/api/v3/orgs/$ORG/repos" \
+	-d "{\"name\":\"$repo\", \"private\":true}"
+
+# assign collaborators
+for u in jason michael; do
+	curl -k -X PUT --user "$gb_userpass" \
+		"https://$GITBUCKET_HTTP_HOST/gitbucket/api/v3/repos/$ORG/$repo/collaborators/$u" \
+		-d "{\"permission\":\"admin\"}" || true
+done
+
+git remote add origin "ssh://migrate@$GITBUCKET_SSH_HOST:$PORT/$ORG/$repo.git" 2> /dev/null || true
+git remote set-url origin "ssh://git@$GITBUCKET_SSH_HOST:$PORT/$ORG/$repo.git"
+
+#git remote add origin "ssh://git@www.newsrx.com/home/git/${REPO}/" || true
 
 touch .gitignore
 
