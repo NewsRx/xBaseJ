@@ -217,7 +217,7 @@ public class Util extends Object {
 	}
 
 	/**
-	 * normlizes the string to remove XML characters.
+	 * Normalizes the string to remove XML characters.
 	 *
 	 * @param inString
 	 *            String to be normalized
@@ -433,6 +433,7 @@ public class Util extends Object {
 						}
 					}
 					if (is != null) {
+						System.err.println("properties file loaded from classpath");
 						logr.debug("properties file loaded from classpath");
 						return is;
 					} else {
