@@ -38,8 +38,9 @@ package org.xBaseJ;
  *          Change History
  **/
 public enum DBFTypes {
-	DBASEIII((byte) 3), DBASEIV((byte) 4), DBASEIII_WITH_MEMO((byte) -125), DBASEIV_WITH_MEMO(
-			(byte) -117), FOXPRO_WITH_MEMO((byte) -11);
+	DBASEIII((byte) 3), DBASEIV((byte) 4), DBASEIII_WITH_MEMO((byte) -125), //
+	DBASEIV_WITH_MEMO((byte) -117), FOXPRO_WITH_MEMO((byte) -11), //
+	VISUAL_FOXPRO((byte) 0x30), VISUAL_FOXPRO_AUTOINCREMENT((byte) 0x31), VISUAL_FOXPRO_VARCHAR((byte)0x32);
 
 	private final byte type;
 

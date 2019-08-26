@@ -39,9 +39,6 @@ import org.xBaseJ.xBaseJException;
 
 public class CharField extends Field {
 
-	/**
-	 **
-		 */
 	private static final long serialVersionUID = 1L;
 
 	public static final char type = 'C';
@@ -65,17 +62,13 @@ public class CharField extends Field {
 	}
 
 	/**
-	 * public method for creating a CharacterField object. It is not associated
-	 * with a database but can be when used with some DBF methods.
+	 * public method for creating a CharacterField object. It is not associated with
+	 * a database but can be when used with some DBF methods.
 	 * 
-	 * @param iName
-	 *            the name of the field
-	 * @param iLength
-	 *            length of Field, range 1 to 254 bytes
-	 * @throws xBaseJException
-	 *             invalid length
-	 * @throws IOException
-	 *             can not occur but defined for calling methods
+	 * @param iName   the name of the field
+	 * @param iLength length of Field, range 1 to 254 bytes
+	 * @throws xBaseJException invalid length
+	 * @throws IOException     can not occur but defined for calling methods
 	 * @see Field
 	 *
 	 */

@@ -396,15 +396,17 @@ public class DBF implements Closeable, HasSize {
 
 		buffer = ByteBuffer.allocateDirect(lrecl + 1);
 
-		fldcount = (short) ((offset - 1) / 32 - 1);
+		fldcount = 0;
 
 		if ((version != DBFTypes.DBASEIII) && (version != DBFTypes.DBASEIII_WITH_MEMO) && (version != DBFTypes.DBASEIV)
 				&& (version != DBFTypes.DBASEIV_WITH_MEMO) && (version != DBFTypes.FOXPRO_WITH_MEMO)) {
 			String mismatch = Util.getxBaseJProperty("ignoreVersionMismatch").toLowerCase();
-			if (mismatch != null && (mismatch.compareTo("true") == 0 || mismatch.compareTo("yes") == 0))
-				System.err.println("Wrong Version " + version);
-			else
+			if (mismatch != null && (mismatch.compareTo("true") == 0 || mismatch.compareTo("yes") == 0)) {
+				// System.err.println("Wrong Version " + version);
+				// ignore
+			} else {
 				throw new xBaseJException("Wrong Version " + version);
+			}
 		}
 
 		if (version == DBFTypes.FOXPRO_WITH_MEMO)
@@ -414,10 +416,11 @@ public class DBF implements Closeable, HasSize {
 		else if (version == DBFTypes.DBASEIV_WITH_MEMO)
 			dbtobj = new DBT_iv(this, readonly);
 
-		fld_root = new Vector<Field>(new Long(fldcount).intValue());
+		fld_root = new Vector<Field>();
 
-		for (i = 0; i < fldcount; i++) {
-			fld_root.addElement(read_Field_header());
+		for (Field field = read_Field_header(); field != null; field = read_Field_header()) {
+			fldcount++;
+			fld_root.addElement(field);
 		}
 
 		if (MDX_exist == 1) {
@@ -737,66 +740,68 @@ public class DBF implements Closeable, HasSize {
 
 		tempDBF.update_dbhead();
 		tempDBF.close();
-		tempDBF = new DBF(newName);
 
-		for (j = 1; j <= count; j++) {
-			Field old1;
-			Field new1;
-			gotoRecord(j);
-			for (i = 1; i <= fldcount; i++) {
-				old1 = getField(i);
-				new1 = tempDBF.getField(i);
-				new1.put(old1.get());
+		try (DBF tempDBF2 = new DBF(newName)) {
+
+			for (j = 1; j <= count; j++) {
+				Field old1;
+				Field new1;
+				gotoRecord(j);
+				for (i = 1; i <= fldcount; i++) {
+					old1 = getField(i);
+					new1 = tempDBF2.getField(i);
+					new1.put(old1.get());
+				}
+				for (i = 0; i < aField.length; i++) {
+					new1 = aField[i];
+					new1.put("");
+				}
+
+				tempDBF2.write();
 			}
-			for (i = 0; i < aField.length; i++) {
-				new1 = aField[i];
-				new1.put("");
+
+			tempDBF2.update_dbhead();
+
+			file.close();
+			ffile.delete();
+
+			if (dbtobj != null) {
+				dbtobj.file.close();
+				dbtobj.thefile.delete();
 			}
+			if (tempDBF2.dbtobj != null) {
+				tempDBF2.dbtobj.file.close();
+				if (newName != null && newName.length() > 4) {
+					String tempMDXFilename = newName.substring(0, newName.length() - 4) + ".mdx";
+					File tempMDXFile = new File(tempMDXFilename);
+					if (tempMDXFile.exists()) {
+						tempMDXFile.deleteOnExit();
+					}
+				}
+				tempDBF2.dbtobj.rename(dosname);
+				if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO) && (MDX_exist == 0)) {
+					if (dosname.endsWith("dbf"))
+						dbtobj = new DBT_iii(this, readonly);
+					else
+						dbtobj = new DBT_iii(this, dosname, true);
+				} else if (version == DBFTypes.FOXPRO_WITH_MEMO) {
+					if (dosname.endsWith("dbf"))
+						dbtobj = new DBT_fpt(this, readonly);
+					else
+						dbtobj = new DBT_fpt(this, dosname, true);
+				} else {
+					if (dosname.endsWith("dbf"))
+						dbtobj = new DBT_iv(this, readonly);
+					else
+						dbtobj = new DBT_iv(this, dosname, true);
 
-			tempDBF.write();
-		}
-
-		tempDBF.update_dbhead();
-
-		file.close();
-		ffile.delete();
-
-		if (dbtobj != null) {
-			dbtobj.file.close();
-			dbtobj.thefile.delete();
-		}
-		if (tempDBF.dbtobj != null) {
-			tempDBF.dbtobj.file.close();
-			if (newName != null && newName.length() > 4) {
-				String tempMDXFilename = newName.substring(0, newName.length() - 4) + ".mdx";
-				File tempMDXFile = new File(tempMDXFilename);
-				if (tempMDXFile.exists()) {
-					tempMDXFile.deleteOnExit();
 				}
 			}
-			tempDBF.dbtobj.rename(dosname);
-			if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO) && (MDX_exist == 0)) {
-				if (dosname.endsWith("dbf"))
-					dbtobj = new DBT_iii(this, readonly);
-				else
-					dbtobj = new DBT_iii(this, dosname, true);
-			} else if (version == DBFTypes.FOXPRO_WITH_MEMO) {
-				if (dosname.endsWith("dbf"))
-					dbtobj = new DBT_fpt(this, readonly);
-				else
-					dbtobj = new DBT_fpt(this, dosname, true);
-			} else {
-				if (dosname.endsWith("dbf"))
-					dbtobj = new DBT_iv(this, readonly);
-				else
-					dbtobj = new DBT_iv(this, dosname, true);
 
-			}
+			tempDBF2.renameTo(dosname);
+			buffer = ByteBuffer.allocateDirect(tempDBF2.buffer.capacity());
 		}
-
-		tempDBF.renameTo(dosname);
-		buffer = ByteBuffer.allocateDirect(tempDBF.buffer.capacity());
-		tempDBF = null;
+		// tempDBF2 = null;
 		ffile = new File(dosname);
 		file = new RandomAccessFile(dosname, "rw");
 		channel = file.getChannel();
@@ -1913,18 +1918,13 @@ public class DBF implements Closeable, HasSize {
 
 		file.seek(0);
 		byte fileVersion = file.readByte();
-		if (fileVersion == DBFTypes.DBASEIII.getValue())
-			version = DBFTypes.DBASEIII;
-		else if (fileVersion == DBFTypes.DBASEIII_WITH_MEMO.getValue())
-			version = DBFTypes.DBASEIII_WITH_MEMO;
-		else if (fileVersion == DBFTypes.DBASEIV.getValue())
-			version = DBFTypes.DBASEIV;
-		else if (fileVersion == DBFTypes.DBASEIV_WITH_MEMO.getValue())
-			version = DBFTypes.DBASEIV_WITH_MEMO;
-		else if (fileVersion == DBFTypes.FOXPRO_WITH_MEMO.getValue())
-			version = DBFTypes.FOXPRO_WITH_MEMO;
-		else
-			version = DBFTypes.DBASEIII;
+		version = DBFTypes.DBASEIII;
+		for (DBFTypes dbftype : DBFTypes.values()) {
+			if (fileVersion == dbftype.getValue()) {
+				version = dbftype;
+				break;
+			}
+		}
 
 		file.read(l_update, 0, 3);
 
@@ -1989,6 +1989,10 @@ public class DBF implements Closeable, HasSize {
 		int decpoint;
 
 		file.readFully(byter, 0, 11);
+		if (byter[0] == 0x0d) {
+			return null;
+		}
+
 		for (i = 0; i < 12 && byter[i] != 0; i++)
 			;
 		try {
@@ -2038,7 +2042,14 @@ public class DBF implements Closeable, HasSize {
 			tField = new CurrencyField(name, buffer);
 			break;
 		default:
-			throw new xBaseJException("Unknown Field type '" + type + "' for " + name);
+			tField = new Field() {
+				@Override
+				public char getType() {
+					return '?';
+				}
+			};
+			tField.Name = name;
+			// throw new xBaseJException("Unknown Field type '" + type + "' for " + name);
 		} /* endswitch */
 
 		return tField;
@@ -2117,54 +2128,54 @@ public class DBF implements Closeable, HasSize {
 		File f = File.createTempFile("tempxbase", "tmp");
 		String tempname = f.getAbsolutePath();
 
-		DBF tempDBF = new DBF(tempname, version, true);
+		try (DBF tempDBF = new DBF(tempname, version, true)) {
 
-		tempDBF.reserve = reserve;
-		tempDBF.language = language;
-		tempDBF.reserve2 = reserve2;
+			tempDBF.reserve = reserve;
+			tempDBF.language = language;
+			tempDBF.reserve2 = reserve2;
 
-		tempDBF.MDX_exist = MDX_exist;
-		tempDBF.addField(Fields);
+			tempDBF.MDX_exist = MDX_exist;
+			tempDBF.addField(Fields);
 
-		Field t, p;
-		for (i = 1; i <= count; i++) {
-			gotoRecord(i);
-			if (deleted()) {
-				continue;
+			Field t, p;
+			for (i = 1; i <= count; i++) {
+				gotoRecord(i);
+				if (deleted()) {
+					continue;
+				}
+				tempDBF.buffer.position(1);
+				for (j = 1; j <= fldcount; j++) {
+					t = tempDBF.getField(j);
+					p = getField(j);
+					t.put(p.get());
+				}
+				tempDBF.write();
 			}
-			tempDBF.buffer.position(1);
-			for (j = 1; j <= fldcount; j++) {
-				t = tempDBF.getField(j);
-				p = getField(j);
-				t.put(p.get());
+
+			file.close();
+			ffile.delete();
+			tempDBF.renameTo(dosname);
+
+			if (dbtobj != null) {
+				dbtobj.file.close();
+				dbtobj.thefile.delete();
 			}
-			tempDBF.write();
-		}
 
-		file.close();
-		ffile.delete();
-		tempDBF.renameTo(dosname);
-
-		if (dbtobj != null) {
-			dbtobj.file.close();
-			dbtobj.thefile.delete();
-		}
-
-		if (tempDBF.dbtobj != null) {
-			// tempDBF.dbtobj.file.close();
-			tempDBF.dbtobj.rename(dosname);
-			dbtobj = tempDBF.dbtobj;
-			Field tField;
-			MemoField mField;
-			for (i = 1; i <= fldcount; i++) {
-				tField = getField(i);
-				if (tField.isMemoField()) {
-					mField = (MemoField) tField;
-					mField.setDBTObj(dbtobj);
+			if (tempDBF.dbtobj != null) {
+				// tempDBF.dbtobj.file.close();
+				tempDBF.dbtobj.rename(dosname);
+				dbtobj = tempDBF.dbtobj;
+				Field tField;
+				MemoField mField;
+				for (i = 1; i <= fldcount; i++) {
+					tField = getField(i);
+					if (tField.isMemoField()) {
+						mField = (MemoField) tField;
+						mField.setDBTObj(dbtobj);
+					}
 				}
 			}
 		}
-
 		ffile = new File(dosname);
 
 		file = new RandomAccessFile(dosname, "rw");
