@@ -74,19 +74,20 @@ public class Util extends Object {
 		try {
 
 			String test = getxBaseJProperty("checkPropertyFileForChanges");
-			if (test.length() > 0)
+			if (!test.isEmpty()) {
 				recheckProperties = (test.compareToIgnoreCase("true") == 0 || test.compareToIgnoreCase("yes") == 0);
+			}
 		} catch (Exception e) {
 			logr.error(e.getMessage(), e);
 		} finally {
 			logr.debug("recheckProperties is " + recheckProperties);
-
 		}
 	}
 
 	public static long x86(long in) {
-		if (x86Architecture)
+		if (x86Architecture) {
 			return in;
+		}
 
 		boolean negative = false;
 		long is;
@@ -140,8 +141,9 @@ public class Util extends Object {
 			in &= 0x7fffffff;
 		}
 		first = in >>> 24;
-		if (negative == true)
+		if (negative == true) {
 			first |= 0x80;
+		}
 		in = save & 0x00ff0000;
 		second = in >>> 16;
 		in = save & 0x0000ff00;
@@ -152,8 +154,9 @@ public class Util extends Object {
 	}
 
 	public static short x86(short in) {
-		if (x86Architecture)
+		if (x86Architecture) {
 			return in;
+		}
 		short is, save = in;
 		boolean negative = false;
 		int first, second;
@@ -162,8 +165,9 @@ public class Util extends Object {
 			in &= 0x7fff;
 		}
 		first = in >>> 8;
-		if (negative == true)
+		if (negative == true) {
 			first |= 0x80;
+		}
 		second = save & 0x00ff;
 		is = (short) ((second << 8) + first);
 		return is;
@@ -176,12 +180,14 @@ public class Util extends Object {
 	public static double doubleDate(String s) {
 		int i;
 
-		if (s.trim().length() == 0)
+		if (s.isEmpty()) {
 			return 1e100;
+		}
 
 		int year = Integer.parseInt(s.substring(0, 4));
-		if (year == 0)
+		if (year == 0) {
 			return 1e100;
+		}
 
 		int days[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
@@ -201,12 +207,14 @@ public class Util extends Object {
 			daydif += ((year - 1800) / 4);
 			daydif -= ((year - 1800) % 100); // leap years don't occur in 00
 												// years
-			if (year > 1999) // except in 2000
+			if (year > 1999) { // except in 2000 
 				daydif++;
+			}
 		} else {
 			daydif -= (days[month] - day + 1);
-			for (i = 11; i >= month; i--)
+			for (i = 11; i >= month; i--) {
 				daydif -= days[i + 1];
+			}
 			daydif -= (1799 - year) * 365;
 			daydif -= (1799 - year) / 4;
 		}
@@ -219,8 +227,7 @@ public class Util extends Object {
 	/**
 	 * Normalizes the string to remove XML characters.
 	 *
-	 * @param inString
-	 *            String to be normalized
+	 * @param inString String to be normalized
 	 * @return String normalized String
 	 */
 	public static String normalize(String inString) {
@@ -244,19 +251,20 @@ public class Util extends Object {
 				sb.append("&apos;");
 				break;
 			default:
-				if (inString.charAt(i) < ' ') // what to do with control codes
+				if (inString.charAt(i) < ' ') {// what to do with control codes
 					sb.append(inString.charAt(i) + '\uee00');
-				else
-					sb.append(inString.charAt(i));
+				} else {
+					sb.append(inString.charAt(i));}
 			}
 
 		return new String(sb);
 	}
 
 	/*
-	 * returns a value of a name in the org.xBaseJ.properties file. will return
-	 * null if property not found @param String name @return String value of
-	 * name
+	 * returns a value of a name in the org.xBaseJ.properties file. <b>Will return
+	 * the empty string if property not found.</b>
+	 * 
+	 * @param String name @return String value of name
 	 * 
 	 * @throws IOException
 	 */
@@ -286,11 +294,7 @@ public class Util extends Object {
 				}
 			}
 			String rets = props.getProperty(inString);
-			if (rets != null)
-				rets = rets.trim();
-			else
-				rets = "";
-			return rets;
+			return rets == null ? "" : rets.trim();
 		}
 	}
 
@@ -304,42 +308,39 @@ public class Util extends Object {
 	public static void setxBaseJProperty(String inName, String inValue) throws IOException {
 		synchronized (props) {
 			props.put(inName, inValue);
-
 		}
-
 	}
 
 	/**
-	 * returns true if org.xBaseJ.property dontTrimFields is "true" or "yes" or
-	 * returns true if org.xBaseJ.property trimFields is "false" or "no".<br/>
-	 * If not set, assumes we want the fields trimmed.
+	 * returns true if org.xBaseJ.property#dontTrimFields is "true" or "yes" or if
+	 * org.xBaseJ.property#trimFields is "false" or "no".<br>
+	 * <b>If not set, assume the fields are to be trimmed.</b>
 	 * 
 	 * @return boolean false or true
 	 */
 	public static boolean dontTrimFields() {
-		String prop1;
-		String prop2;
+		String prop1 = "true";
+		String prop2 = "false";
 		try {
 			prop1 = getxBaseJProperty("trimFields");
 		} catch (IOException e) {
-			prop1 = "false";
+			//ignore
 		}
 		try {
 			prop2 = getxBaseJProperty("dontTrimFields");
 		} catch (IOException e) {
-			prop2 = "true";
+			//ignore
 		}
-		if (prop1.equalsIgnoreCase("true") || prop2.equalsIgnoreCase("yes")) {
-			return true;
-		}
-		if (prop2.equalsIgnoreCase("false") || prop2.equalsIgnoreCase("no")) {
+		if (prop1.equalsIgnoreCase("false") || prop1.equalsIgnoreCase("no") //
+				|| prop2.equalsIgnoreCase("true") || prop2.equalsIgnoreCase("yes")) {
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * returns true if org.xBaseJ.property fieldFilled is "true" or "yes"
+	 * Returns false only if org.xBaseJ.property fieldFilled is "false" or "no". <b>If not
+	 * set, returns true to match FoxPro space filling behavior.</b>
 	 * 
 	 * @return boolean false or true
 	 */
@@ -348,7 +349,7 @@ public class Util extends Object {
 		try {
 			prop = getxBaseJProperty("fieldFilledWithSpaces");
 		} catch (IOException e) {
-			return false;
+			return true;
 		}
 		if (prop.toLowerCase().compareTo("yes") == 0)
 			return true;
@@ -370,8 +371,7 @@ public class Util extends Object {
 	 * </ul>
 	 *
 	 * @return InputStream org.xBaseJ.properties file
-	 * @throws xBaseJException
-	 *             io error most likely
+	 * @throws xBaseJException io error most likely
 	 */
 	private static InputStream getPropertiesFile() {
 		String xBaseJPropertiesFileName = "org.xBaseJ.properties";
@@ -433,7 +433,6 @@ public class Util extends Object {
 						}
 					}
 					if (is != null) {
-						System.err.println("properties file loaded from classpath");
 						logr.debug("properties file loaded from classpath");
 						return is;
 					} else {
@@ -451,14 +450,12 @@ public class Util extends Object {
 	}
 
 	/**
-	 * use this if you need to reset the property file which is usually left
-	 * open
+	 * use this if you need to reset the property file which is usually left open
 	 *
 	 *
 	 */
 	public static void closexBaseJProperty() {
 		synchronized (props) {
-
 			propFile = null;
 			if (propIS != null) {
 				try {
@@ -469,7 +466,6 @@ public class Util extends Object {
 				propIS = null;
 			}
 			props = new java.util.Properties();
-
 		}
 	}
 
@@ -480,7 +476,6 @@ public class Util extends Object {
 			fos.write(b);
 		fos.close();
 		fis.close();
-
 	}
 
 }
