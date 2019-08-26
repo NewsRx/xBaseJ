@@ -351,11 +351,11 @@ public class Util extends Object {
 		} catch (IOException e) {
 			return true;
 		}
-		if (prop.toLowerCase().compareTo("yes") == 0)
-			return true;
-		if (prop.toLowerCase().compareTo("true") == 0)
-			return true;
-		return false;
+		if (prop.toLowerCase().compareTo("no") == 0)
+			return false;
+		if (prop.toLowerCase().compareTo("false") == 0)
+			return false;
+		return true;
 	}
 
 	/**
