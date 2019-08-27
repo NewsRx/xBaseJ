@@ -77,7 +77,7 @@ public class MemoField extends Field {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		try {
-			MemoField tField = new MemoField(Name, null, null);
+			MemoField tField = new MemoField(Name, getLength(), null, null);
 			return tField;
 		} catch (xBaseJException e) {
 			return null;
@@ -86,9 +86,9 @@ public class MemoField extends Field {
 		}
 	}
 
-	public MemoField(String Name, ByteBuffer inBuffer, DBTFile indbtobj) throws xBaseJException, IOException {
+	public MemoField(String Name, int iLength, ByteBuffer inBuffer, DBTFile indbtobj) throws xBaseJException, IOException {
 		super();
-		super.setField(Name, 10, inBuffer);
+		super.setField(Name, iLength, inBuffer);
 		dbtobj = indbtobj;
 		value = new String("");
 	}

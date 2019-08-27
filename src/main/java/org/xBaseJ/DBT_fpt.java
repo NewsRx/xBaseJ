@@ -62,7 +62,6 @@ public class DBT_fpt extends DBTFile {
 
 	@Override
 	public void rename(String name) throws IOException {
-
 		String tname = new String(name.substring(0, name.length() - 3) + "fpt");
 		file.close();
 		File nfile = new File(tname);
@@ -79,7 +78,6 @@ public class DBT_fpt extends DBTFile {
 
 	@Override
 	public byte[] readBytes(byte[] input) throws IOException, xBaseJException {
-
 		int i;
 		for (i = 0; i < 10; i++) {
 			if (input[i] >= BYTEZERO && input[i] <= '9')
@@ -196,5 +194,4 @@ public class DBT_fpt extends DBTFile {
 
 		return ten;
 	}
-
 }

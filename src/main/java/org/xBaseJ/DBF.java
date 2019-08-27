@@ -383,10 +383,11 @@ public class DBF implements Closeable, HasSize {
 			throw new xBaseJException("Unknown database file " + DBFname);
 		} /* endif */
 
-		if (readonly)
+		if (readonly) {
 			file = new RandomAccessFile(DBFname, "r");
-		else
+		} else {
 			file = new RandomAccessFile(DBFname, "rw");
+		}
 
 		dosname = DBFname;
 		// ffile.getAbsolutePath(); // getName();
@@ -423,6 +424,56 @@ public class DBF implements Closeable, HasSize {
 			fld_root.addElement(field);
 		}
 
+		/*
+		 * If there is a memo field, then assume there is a memo file, period.
+		 */
+		if (dbtobj == null) {
+			for (Field fld : fld_root) {
+				if (fld.getType() == MemoField.type) {
+					switch (version) {
+					case DBASEIII:
+						dbtobj = new DBT_iii(this, readonly);
+						version = DBFTypes.DBASEIII_WITH_MEMO;
+						break;
+					case DBASEIII_WITH_MEMO:
+						dbtobj = new DBT_iii(this, readonly);
+						break;
+					case DBASEIV:
+						dbtobj = new DBT_iv(this, readonly);
+						version = DBFTypes.DBASEIV_WITH_MEMO;
+						break;
+					case DBASEIV_WITH_MEMO:
+						dbtobj = new DBT_iv(this, readonly);
+						break;
+					case FOXPRO2:
+						dbtobj = new DBT_fpt(this, readonly);
+						version = DBFTypes.FOXPRO_WITH_MEMO;
+						break;
+					case FOXPRO_WITH_MEMO:
+						dbtobj = new DBT_fpt(this, readonly);
+						break;
+					case VISUAL_FOXPRO:
+						dbtobj = new DBT_fpt(this, readonly);
+						break;
+					case VISUAL_FOXPRO_AUTOINCREMENT:
+						dbtobj = new DBT_fpt(this, readonly);
+						break;
+					case VISUAL_FOXPRO_VARCHAR:
+						dbtobj = new DBT_fpt(this, readonly);
+						break;
+					}
+					break;
+				}
+			}
+			if (dbtobj!=null) {
+				for (Field fld : fld_root) {
+					if (fld.isMemoField()) {
+						((MemoField)fld).setDBTObj(dbtobj);
+					}
+				}
+			}
+		}
+
 		if (MDX_exist == 1) {
 			try {
 				if (readonly)
@@ -447,7 +498,7 @@ public class DBF implements Closeable, HasSize {
 			file.readByte();
 			// temp = file.readByte();
 		} catch (EOFException IOE) {
-			; // nop some dbase clones don't use the last two bytes
+			// ignore: some dbase clones don't use the last two bytes
 		}
 
 		current_record = 0;
@@ -459,7 +510,7 @@ public class DBF implements Closeable, HasSize {
 		try {
 			close();
 		} catch (Exception e) {
-			;
+			// ignore
 		}
 	}
 
@@ -471,19 +522,20 @@ public class DBF implements Closeable, HasSize {
 		ffile = new File(DBFname);
 
 		if (format != DBFTypes.DBASEIII && format != DBFTypes.DBASEIV && format != DBFTypes.DBASEIII_WITH_MEMO
-				&& format != DBFTypes.DBASEIV_WITH_MEMO && format != DBFTypes.FOXPRO_WITH_MEMO)
+				&& format != DBFTypes.DBASEIV_WITH_MEMO && format != DBFTypes.FOXPRO_WITH_MEMO) {
 			throw new xBaseJException("Invalid format specified");
+		}
 
-		if (destroy == false)
-			if (ffile.exists())
-				throw new xBaseJException("File exists, can't destroy");
+		if (destroy == false && ffile.exists()) {
+			throw new xBaseJException("File exists, can't destroy");
+		}
 
 		if (destroy == true) {
 			if (ffile.exists())
-				if (ffile.delete() == false)
+				if (ffile.delete() == false) {
 					throw new xBaseJException("Can't delete old DBF file");
+				}
 			ffile = new File(DBFname);
-
 		}
 
 		FileOutputStream tFOS = new FileOutputStream(ffile);
@@ -498,20 +550,21 @@ public class DBF implements Closeable, HasSize {
 		buffer = ByteBuffer.allocateDirect(lrecl + 1);
 
 		fld_root = new Vector<Field>(0);
-		if (format == DBFTypes.DBASEIV || format == DBFTypes.DBASEIV_WITH_MEMO)
+		if (format == DBFTypes.DBASEIV || format == DBFTypes.DBASEIV_WITH_MEMO) {
 			MDX_exist = 1;
+		}
 
 		boolean memoExists = (format == DBFTypes.DBASEIII_WITH_MEMO || format == DBFTypes.DBASEIV_WITH_MEMO
 				|| format == DBFTypes.FOXPRO_WITH_MEMO);
 
 		db_offset(format, memoExists);
-
 		update_dbhead();
 		file.writeByte(13);
 		file.writeByte(26);
 
-		if (MDX_exist == 1)
+		if (MDX_exist == 1) {
 			MDXfile = new MDXFile(DBFname, this, destroy);
+		}
 
 	}
 
@@ -1886,31 +1939,18 @@ public class DBF implements Closeable, HasSize {
 	}
 
 	protected void db_offset(DBFTypes format, boolean memoPresent) {
-
-		if (format == DBFTypes.FOXPRO_WITH_MEMO)
-			if (memoPresent)
-				version = DBFTypes.FOXPRO_WITH_MEMO;
-			else
-				version = DBFTypes.DBASEIV;
-		else if (format == DBFTypes.DBASEIV_WITH_MEMO || format == DBFTypes.DBASEIV || MDX_exist == 1)
-			if (memoPresent)
-				version = DBFTypes.DBASEIV_WITH_MEMO;
-			else
-				version = DBFTypes.DBASEIII; // DBASEIV;
-		else if (memoPresent)
-			version = DBFTypes.DBASEIII_WITH_MEMO;
-		else
-			version = DBFTypes.DBASEIII;
-
+		if (format == DBFTypes.FOXPRO_WITH_MEMO) {
+			version = memoPresent ? DBFTypes.FOXPRO_WITH_MEMO : DBFTypes.DBASEIV;
+		} else if (format == DBFTypes.DBASEIV_WITH_MEMO || format == DBFTypes.DBASEIV || MDX_exist == 1) {
+			version = memoPresent ? DBFTypes.DBASEIV_WITH_MEMO : DBFTypes.DBASEIII; // DBASEIV;
+		} else {
+			version = memoPresent ? DBFTypes.DBASEIII_WITH_MEMO : DBFTypes.DBASEIII;
+		}
 		count = 0; /* number of records in file */
 		offset = 33; /* length of the offset includes the \r at end */
 		lrecl = 1; /* length of a record includes the delete byte */
 		incomplete_transaction = 0;
 		encrypt_flag = 0;
-		// language = 0; //what the hell is this?
-
-		// flip it back
-
 	}
 
 	protected void read_dbhead() throws IOException {
@@ -2030,7 +2070,7 @@ public class DBF implements Closeable, HasSize {
 			tField = new LogicalField(name, buffer);
 			break;
 		case MemoField.type:
-			tField = new MemoField(name, buffer, dbtobj);
+			tField = new MemoField(name, iLength, buffer, dbtobj);
 			break;
 		case NumField.type:
 			tField = new NumField(name, iLength, decpoint, buffer);
