@@ -150,4 +150,6 @@ public abstract class DBTFile extends Object {
 		file.close();
 
 	}
+
+	public abstract byte[] readBytesByInt(byte[] bs) throws IOException, xBaseJException;
 }

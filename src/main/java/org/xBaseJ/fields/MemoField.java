@@ -193,7 +193,11 @@ public class MemoField extends Field {
 	public void read() throws IOException, xBaseJException {
 		super.read();
 
-		byteValue = dbtobj.readBytes(super.buffer);
+		if (Length==4) {
+			byteValue = dbtobj.readBytesByInt(super.buffer);
+		} else {
+			byteValue = dbtobj.readBytes(super.buffer);
+		}
 		value = "";
 		originalSize = 0;
 

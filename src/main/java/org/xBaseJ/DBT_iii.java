@@ -33,6 +33,7 @@ package org.xBaseJ;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
 
 public class DBT_iii extends DBTFile {
 
@@ -69,14 +70,14 @@ public class DBT_iii extends DBTFile {
 		byte[] bTemp3 = null;
 		int workLength = 0;
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < input.length; i++) {
 			if (input[i] >= BYTEZERO && input[i] <= '9')
 				break;
 			input[i] = BYTEZERO;
 		}
 
 		String sPos;
-		sPos = new String(input, 0, 10);
+		sPos = new String(input, 0, input.length);
 		long lPos = Long.parseLong(sPos);
 		if (lPos == 0)
 			return null;
@@ -199,6 +200,60 @@ public class DBT_iii extends DBTFile {
 			ten[pos] = newTen[x];
 
 		return ten;
+	}
+
+	@Override
+	public byte[] readBytesByInt(byte[] input) throws IOException, xBaseJException {
+		byte[] bTemp = new byte[513];
+		boolean work = true;
+		boolean onefound = false;
+		byte[] bTemp2 = null;
+		byte[] bTemp3 = null;
+		int workLength = 0;
+
+		long lPos = (java.nio.ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN).getInt()& 0x00000000ffffffffL);
+		if (lPos == 0) {
+			return null;
+		}
+		file.seek(lPos * memoBlockSize);
+		int i;
+
+		do {
+			file.read(bTemp, 0, memoBlockSize);
+			for (i = 0; i < memoBlockSize; i++) {
+				if (bTemp[i] == 0x1a) {
+					if (onefound == true) {
+						work = false;
+						bTemp[i] = 0;
+						i--;
+						break;
+					}
+					work = false;
+					onefound = true;
+					break;
+				} else if (bTemp[i] == 0x00) {
+					if (onefound == true) {
+						work = false;
+						break;
+					}
+					onefound = false;
+				} else
+					onefound = false;
+			}
+			if (workLength > 0) {
+				bTemp3 = new byte[workLength];
+				System.arraycopy(bTemp2, 0, bTemp3, 0, workLength);
+			}
+			bTemp2 = new byte[workLength + i];
+			if (workLength > 0)
+				System.arraycopy(bTemp3, 0, bTemp2, 0, workLength);
+			System.arraycopy(bTemp, 0, bTemp2, workLength, i);
+			workLength += i;
+
+			if (workLength > file.length())
+				throw new xBaseJException("error reading dtb file, reading exceeds length of file");
+		} while (work);
+		return bTemp2;
 	}
 
 }

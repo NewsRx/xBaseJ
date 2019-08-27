@@ -34,6 +34,7 @@ package org.xBaseJ;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
 
 public class DBT_iv extends DBTFile {
 
@@ -64,11 +65,11 @@ public class DBT_iv extends DBTFile {
 
 	@Override
 	public byte[] readBytes(byte[] input) throws IOException, xBaseJException {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < input.length; i++) {
 			if (input[i] == 0)
 				input[i] = BYTESPACE;
 		}
-		String sPos = new String(input, 0, 10).trim();
+		String sPos = new String(input, 0, input.length).trim();
 		if (sPos.length() == 0)
 			return null;
 		long lPos = Long.parseLong(sPos.trim());
@@ -217,6 +218,39 @@ public class DBT_iv extends DBTFile {
 			ten[pos] = b[x];
 
 		return ten;
+	}
+
+	@Override
+	public byte[] readBytesByInt(byte[] input) throws IOException, xBaseJException {
+		
+		long lPos = (java.nio.ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN).getInt()& 0x00000000ffffffffL);
+		
+		if (lPos == 0)
+			return null;
+		if (lPos * memoBlockSize >= file.length())
+			return null;
+
+		file.seek(lPos * memoBlockSize);
+
+		int orisize;
+
+		orisize = 0;
+
+		int lastind = Util.x86(file.readInt());
+
+		if (lastind != LAST_IND)
+			throw new xBaseJException("Unexpected encounter in read text file");
+
+		int size = Util.x86(file.readInt());
+
+		orisize = size - 8;
+
+		byte work_buffer[] = new byte[orisize + 1];
+		file.read(work_buffer, 0, orisize);
+
+		work_buffer[orisize] = (byte) '\0';
+
+		return work_buffer;
 	}
 
 }

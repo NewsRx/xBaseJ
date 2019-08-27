@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
 
 public class DBT_fpt extends DBTFile {
 
@@ -79,14 +80,14 @@ public class DBT_fpt extends DBTFile {
 	@Override
 	public byte[] readBytes(byte[] input) throws IOException, xBaseJException {
 		int i;
-		for (i = 0; i < 10; i++) {
+		for (i = 0; i < input.length; i++) {
 			if (input[i] >= BYTEZERO && input[i] <= '9')
 				break;
 			if (input[i] == BYTESPACE)
 				input[i] = BYTEZERO;
 		}
 
-		String sPos = new String(input, 0, 10);
+		String sPos = new String(input, 0, input.length);
 
 		for (i = 0; i < sPos.length(); i++)
 			if (sPos.charAt(i) != BYTESPACE)
@@ -193,5 +194,27 @@ public class DBT_fpt extends DBTFile {
 			ten[pos] = b[x];
 
 		return ten;
+	}
+
+	@Override
+	public byte[] readBytesByInt(byte[] input) throws IOException, xBaseJException {
+
+		long longpos = (java.nio.ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN).getInt()& 0x00000000ffffffffL);
+		System.out.println("longpos="+longpos);
+		file.seek(longpos * memoBlockSize);
+
+		int orisize;
+
+		orisize = 0;
+
+		file.skipBytes(4); /* [ 1985813 ] Bug in DBT_fpt.java */
+		int size = file.readInt();
+
+		orisize = size;
+
+		byte work_buffer[] = new byte[orisize];
+		file.read(work_buffer, 0, orisize);
+
+		return work_buffer;
 	}
 }
