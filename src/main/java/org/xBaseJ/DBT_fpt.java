@@ -200,7 +200,9 @@ public class DBT_fpt extends DBTFile {
 	public byte[] readBytesByInt(byte[] input) throws IOException, xBaseJException {
 
 		long longpos = (java.nio.ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN).getInt()& 0x00000000ffffffffL);
-		System.out.println("longpos="+longpos);
+		if (longpos==0) {
+			return null;
+		}
 		file.seek(longpos * memoBlockSize);
 
 		int orisize;
