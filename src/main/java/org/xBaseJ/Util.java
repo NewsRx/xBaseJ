@@ -276,7 +276,7 @@ public class Util extends Object {
 
 				propIS = getPropertiesFile();
 				if (propIS != null) {
-					lastUpdate = propFile.lastModified();
+					lastUpdate = 0;
 					logr.debug("loading properties");
 					props.load(propIS);
 				} else {
