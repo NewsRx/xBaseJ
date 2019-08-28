@@ -42,8 +42,8 @@ public class Message extends Object {
 
   /** creates a message class used by the client/server objects */
   public Message() {
-    idVector = new Vector<String>();
-    dataVector = new Vector<String>();
+    idVector = new Vector<>();
+    dataVector = new Vector<>();
   }
 
   /**
@@ -80,16 +80,18 @@ public class Message extends Object {
 
     InStream.readFully(DataIn, 0, dataLen);
 
-    idVector = new Vector<String>();
-    dataVector = new Vector<String>();
+    idVector = new Vector<>();
+    dataVector = new Vector<>();
 
     for (i = 0; i < dataLen; ) {
-      for (j = i; j < dataLen && DataIn[j] != 0; j++) ;
+      for (j = i; j < dataLen && DataIn[j] != 0; j++) {;
+      }
       // 1.0inString = new String(DataIn, 0, i, j-i);
       inString = new String(DataIn, i, j - i);
       idVector.addElement(inString);
       i = j + 1;
-      for (j = i; j < dataLen && DataIn[j] != 0; j++) ;
+      for (j = i; j < dataLen && DataIn[j] != 0; j++) {;
+      }
       // 1.0 inString = new String(DataIn, 0, i, j-i);
       inString = new String(DataIn, i, j - i);
       dataVector.addElement(inString);

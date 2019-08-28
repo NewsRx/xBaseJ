@@ -55,7 +55,9 @@ public class DBT_fpt extends DBTFile {
     file.writeByte(0);
     memoBlockSize = 64;
     file.writeShort(memoBlockSize);
-    for (int i = 0; i < 504; i += 4) file.writeInt(0);
+    for (int i = 0; i < 504; i += 4) {
+      file.writeInt(0);
+    }
   }
 
   @Override
@@ -76,20 +78,32 @@ public class DBT_fpt extends DBTFile {
   public byte[] readBytes(byte[] input) throws IOException, xBaseJException {
     int i;
     for (i = 0; i < input.length; i++) {
-      if (input[i] >= BYTEZERO && input[i] <= '9') break;
-      if (input[i] == BYTESPACE) input[i] = BYTEZERO;
+      if (input[i] >= BYTEZERO && input[i] <= '9') {
+        break;
+      }
+      if (input[i] == BYTESPACE) {
+        input[i] = BYTEZERO;
+      }
     }
 
     String sPos = new String(input, 0, input.length);
 
-    for (i = 0; i < sPos.length(); i++) if (sPos.charAt(i) != BYTESPACE) break;
-    if (i == sPos.length()) return null;
+    for (i = 0; i < sPos.length(); i++) {
+      if (sPos.charAt(i) != BYTESPACE) {
+        break;
+      }
+    }
+    if (i == sPos.length()) {
+      return null;
+    }
 
     int lPos = Integer.parseInt(sPos.trim());
 
-    if (lPos == 0) return null;
+    if (lPos == 0) {
+      return null;
+    }
     long longpos = lPos;
-    file.seek((longpos * memoBlockSize));
+    file.seek(longpos * memoBlockSize);
 
     int orisize;
 
@@ -131,14 +145,17 @@ public class DBT_fpt extends DBTFile {
       return breturn;
     }
 
-    if ((originalSize == 0) && (inBytes.length > 0)) madebigger = true;
-    else if (((inBytes.length / memoBlockSize) + 1) > ((originalSize / memoBlockSize) + 1))
+    if (originalSize == 0 && inBytes.length > 0) {
       madebigger = true;
-    else madebigger = false;
+    } else if (inBytes.length / memoBlockSize + 1 > originalSize / memoBlockSize + 1) {
+      madebigger = true;
+    } else {
+      madebigger = false;
+    }
 
     if (madebigger || write) {
       startPos = nextBlock;
-      nextBlock += ((inBytes.length + 2) / memoBlockSize) + 1;
+      nextBlock += (inBytes.length + 2) / memoBlockSize + 1;
 
       file.seek(0);
       file.writeInt(nextBlock);
@@ -150,10 +167,10 @@ public class DBT_fpt extends DBTFile {
 
     length = inBytes.length;
 
-    pos = (length / memoBlockSize) + 1;
+    pos = length / memoBlockSize + 1;
 
     long longpos = startPos;
-    file.seek((longpos * memoBlockSize));
+    file.seek(longpos * memoBlockSize);
 
     int inType = 1;
     file.writeInt(inType);
@@ -162,19 +179,27 @@ public class DBT_fpt extends DBTFile {
     byte buffer[] = inBytes;
     file.write(buffer, 0, length);
 
-    length = memoBlockSize - ((length) % memoBlockSize);
+    length = memoBlockSize - length % memoBlockSize;
 
-    if (length < memoBlockSize) while (length-- > 0) file.write(0);
+    if (length < memoBlockSize) {
+      while (length-- > 0) {
+        file.write(0);
+      }
+    }
 
     String returnString = new String(Long.toString(startPos));
 
     byte ten[] = new byte[10];
 
-    for (pos = 0; pos < (10 - returnString.length()); pos++) ten[pos] = BYTEZERO;
+    for (pos = 0; pos < 10 - returnString.length(); pos++) {
+      ten[pos] = BYTEZERO;
+    }
 
     byte b[];
     b = returnString.getBytes();
-    for (int x = 0; x < b.length; x++, pos++) ten[pos] = b[x];
+    for (int x = 0; x < b.length; x++, pos++) {
+      ten[pos] = b[x];
+    }
 
     return ten;
   }
@@ -183,8 +208,8 @@ public class DBT_fpt extends DBTFile {
   public byte[] readBytesByInt(byte[] input) throws IOException, xBaseJException {
 
     long longpos =
-        (java.nio.ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN).getInt()
-            & 0x00000000ffffffffL);
+        java.nio.ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN).getInt()
+            & 0x00000000ffffffffL;
     if (longpos == 0) {
       return null;
     }

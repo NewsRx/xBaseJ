@@ -86,7 +86,7 @@ public abstract class Index {
 
   public Index() {
     key_definition = new byte[488];
-    keyControl = new Vector<Field>();
+    keyControl = new Vector<>();
     dosname = new String("");
     activeKey = null;
   }
@@ -94,14 +94,16 @@ public abstract class Index {
   public boolean compareKey(String keyToCompare) throws xBaseJException, IOException {
     NodeKey tempKey;
 
-    if (keyType == 'F')
+    if (keyType == 'F') {
       tempKey = new NodeKey(new NodeFloat(Double.valueOf(keyToCompare).doubleValue()));
-    else if (keyType == 'N') {
+    } else if (keyType == 'N') {
       Double d = new Double(keyToCompare);
       tempKey = new NodeKey(d);
-    } else tempKey = new NodeKey(keyToCompare);
+    } else {
+      tempKey = new NodeKey(keyToCompare);
+    }
 
-    return (activeKey.compareKey(tempKey) == 0);
+    return activeKey.compareKey(tempKey) == 0;
   }
 
   public abstract int add_entry(NodeKey key, int recno) throws xBaseJException, IOException;
@@ -116,8 +118,9 @@ public abstract class Index {
   public abstract int find_entry(NodeKey key, int recno) throws xBaseJException, IOException;
 
   public int find_entry(String key) throws xBaseJException, IOException {
-    if (keyType == 'F')
+    if (keyType == 'F') {
       return find_entry(new NodeKey(new NodeFloat(Double.valueOf(key).doubleValue())));
+    }
 
     if (keyType == 'N') { // 20091009_rth - begin
       double d = 0.0;
@@ -125,9 +128,11 @@ public abstract class Index {
 
       f = keyControl.elementAt(0);
 
-      if (f.getType() == 'D') // 20091030_jrm - begin
-      d = Util.doubleDate(key); // 20091030_jrm - end
-      else d = Double.valueOf(key).doubleValue();
+      if (f.getType() == 'D') {
+        d = Util.doubleDate(key); // 20091030_jrm - end
+      } else {
+        d = Double.valueOf(key).doubleValue();
+      }
 
       // 20091009_rth - end
       return find_entry(new NodeKey(new Double(d)));
@@ -138,10 +143,13 @@ public abstract class Index {
 
   public int find_entry(String key, int recno) throws xBaseJException, IOException {
 
-    if (keyType == 'F')
+    if (keyType == 'F') {
       record = find_entry(new NodeKey(new NodeFloat(Double.valueOf(key).doubleValue())), recno);
-    else if (keyType == 'N') record = find_entry(new NodeKey(new Double(key)), recno);
-    else record = find_entry(new NodeKey(key), recno);
+    } else if (keyType == 'N') {
+      record = find_entry(new NodeKey(new Double(key)), recno);
+    } else {
+      record = find_entry(new NodeKey(key), recno);
+    }
 
     return record;
   }
@@ -156,17 +164,25 @@ public abstract class Index {
 
   public void check_for_duplicates(int count) throws xBaseJException, IOException {
 
-    if (topNode == null) // no index records yet
-    return;
+    if (topNode == null) {
+      return;
+    }
 
-    if (unique_key == 0) return;
+    if (unique_key == 0) {
+      return;
+    }
 
     int ret = find_entry(build_key(), findFirstMatchingKey);
 
-    if (ret == keyNotFound) return;
+    if (ret == keyNotFound) {
+      return;
+    }
 
-    if (count == findFirstMatchingKey) // write request.
-    if (ret == count) return;
+    if (count == findFirstMatchingKey) {
+      if (ret == count) {
+        return;
+      }
+    }
 
     if (count > 0) { // update request sends a specific record number if it
       // matches it's okay.
@@ -175,7 +191,9 @@ public abstract class Index {
       }
     }
 
-    if (ret > 0) throw new xBaseJException("Duplicate key error");
+    if (ret > 0) {
+      throw new xBaseJException("Duplicate key error");
+    }
   }
 
   public String getName() {
@@ -200,20 +218,26 @@ public abstract class Index {
       case 'F':
         for (i = 0; i < keyControl.size(); i++) {
           f = keyControl.elementAt(i);
-          if (f.get() == null) ;
-          else if (f.get().length() == 0) ;
-          else if (f.getType() == 'D') doubleer += Util.doubleDate(f.get());
-          else doubleer += Double.valueOf(f.get()).doubleValue();
+          if (f.get() == null) {;
+          } else if (f.get().length() == 0) {;
+          } else if (f.getType() == 'D') {
+            doubleer += Util.doubleDate(f.get());
+          } else {
+            doubleer += Double.valueOf(f.get()).doubleValue();
+          }
         } /* endfor */
         dataptr = new NodeKey(new NodeFloat(doubleer));
         break;
       case 'N':
         for (i = 0; i < keyControl.size(); i++) {
           f = keyControl.elementAt(i);
-          if (f.get() == null) ;
-          else if (f.get().length() == 0) ;
-          else if (f.getType() == 'D') doubleer += Util.doubleDate(f.get());
-          else doubleer += Double.valueOf(f.get()).doubleValue();
+          if (f.get() == null) {;
+          } else if (f.get().length() == 0) {;
+          } else if (f.getType() == 'D') {
+            doubleer += Util.doubleDate(f.get());
+          } else {
+            doubleer += Double.valueOf(f.get()).doubleValue();
+          }
         } /* endfor */
         dataptr = new NodeKey(new Double(doubleer));
         break;
@@ -231,7 +255,7 @@ public abstract class Index {
   }
 
   public boolean is_unique_key() {
-    return (unique_key != 0);
+    return unique_key != 0;
   }
 
   public void set_active_key(NodeKey key) {
@@ -249,7 +273,9 @@ public abstract class Index {
     } catch (UnsupportedEncodingException UEE) {
       kd = definition.getBytes();
     }
-    for (int x = 0; x < kd.length; x++) key_definition[x] = kd[x];
+    for (int x = 0; x < kd.length; x++) {
+      key_definition[x] = kd[x];
+    }
   }
 
   public void update(int recno) throws xBaseJException, IOException {
@@ -260,14 +286,20 @@ public abstract class Index {
         del_entry(workNode);
         add_entry(recno);
       }
-    } else add_entry(recno);
+    } else {
+      add_entry(recno);
+    }
   }
 
   public void position_at_first() throws xBaseJException, IOException {
     String startKey;
-    if (keyType == 'N') startKey = new NodeKey(new Double(-1.78e308)).toString();
-    else if (keyType == 'F') startKey = new NodeKey(new NodeFloat(-1.78e308)).toString();
-    else startKey = new NodeKey(new String("\u0000")).toString();
+    if (keyType == 'N') {
+      startKey = new NodeKey(new Double(-1.78e308)).toString();
+    } else if (keyType == 'F') {
+      startKey = new NodeKey(new NodeFloat(-1.78e308)).toString();
+    } else {
+      startKey = new NodeKey(new String("\u0000")).toString();
+    }
 
     find_entry(startKey, -1);
     workNode.set_pos(-1);
@@ -275,9 +307,13 @@ public abstract class Index {
 
   public void position_at_last() throws xBaseJException, IOException {
     String startKey;
-    if (keyType == 'N') startKey = new NodeKey(new Double(1.78e308)).toString();
-    else if (keyType == 'F') startKey = new NodeKey(new NodeFloat(1.78e308)).toString();
-    else startKey = new NodeKey(new String("\uFFFF")).toString();
+    if (keyType == 'N') {
+      startKey = new NodeKey(new Double(1.78e308)).toString();
+    } else if (keyType == 'F') {
+      startKey = new NodeKey(new NodeFloat(1.78e308)).toString();
+    } else {
+      startKey = new NodeKey(new String("\uFFFF")).toString();
+    }
 
     find_entry(startKey, -1);
   }

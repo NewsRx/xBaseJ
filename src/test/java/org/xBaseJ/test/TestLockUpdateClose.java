@@ -69,7 +69,7 @@ public class TestLockUpdateClose extends TestCase {
       // update the first record
       writer.gotoRecord(1, true);
       str_field.put("updated");
-    } catch (OverlappingFileLockException oe) {;
+    } catch (OverlappingFileLockException oe) {
     } catch (Exception ex2) {
       ex2.printStackTrace();
       fail(ex2.getMessage());

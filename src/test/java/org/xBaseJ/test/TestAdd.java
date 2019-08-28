@@ -61,7 +61,7 @@ public class TestAdd extends TestCase {
       CharField c = new CharField("C3", 10);
       d1.addField(c);
       fail("shouldn't be able to add field again");
-    } catch (xBaseJException e) {;
+    } catch (xBaseJException e) {
     } catch (IOException ei) {
       fail(ei.getMessage());
     }

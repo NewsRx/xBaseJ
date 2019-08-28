@@ -154,11 +154,17 @@ public class XBASEXMLParser extends DefaultHandler {
 
       if (rawName.compareTo("dbf") == 0) {
         String dbfName;
-        if (outputDBFname == null) dbfName = attributes.getValue("name");
-        else dbfName = outputDBFname;
+        if (outputDBFname == null) {
+          dbfName = attributes.getValue("name");
+        } else {
+          dbfName = outputDBFname;
+        }
         String dbfEncoding = attributes.getValue("encoding");
-        if (dbfEncoding.length() == 0) dbf = new DBF(dbfName, true);
-        else dbf = new DBF(dbfName, true, dbfEncoding);
+        if (dbfEncoding.length() == 0) {
+          dbf = new DBF(dbfName, true);
+        } else {
+          dbf = new DBF(dbfName, true, dbfEncoding);
+        }
       } else if (rawName.compareTo("field") == 0) {
         fldName = attributes.getValue("name");
         int fl, dp;
@@ -200,7 +206,7 @@ public class XBASEXMLParser extends DefaultHandler {
         }
       } else if (rawName.compareTo("record") == 0) {
         recordProcessing = true;
-      } else
+      } else {
         System.err.println(
             "Logic error: Unknown element name \""
                 + rawName
@@ -208,6 +214,7 @@ public class XBASEXMLParser extends DefaultHandler {
                 + iElement
                 + " line: "
                 + iLine);
+      }
     } catch (xBaseJException xbe) {
       throw new SAXException("org.xBaseJ error: " + xbe.getMessage());
     } catch (IOException ioe) {
@@ -244,10 +251,12 @@ public class XBASEXMLParser extends DefaultHandler {
 
     try {
 
-      if (rawName.compareTo("dbf") == 0) {;
+      if (rawName.compareTo("dbf") == 0) {
       } else if (rawName.compareTo("field") == 0) {
-        if (recordProcessing == false) ;
-        else fld.put(data);
+        if (recordProcessing == false) {;
+        } else {
+          fld.put(data);
+        }
 
       } else if (rawName.compareTo("record") == 0) {
         dbf.write();
@@ -268,7 +277,11 @@ public class XBASEXMLParser extends DefaultHandler {
    */
   @Override
   public void ignorableWhitespace(char[] ch, int start, int length) {
-    for (int i = start; i < start + length; i++) if (ch[i] == '\n') iLine++;
+    for (int i = start; i < start + length; i++) {
+      if (ch[i] == '\n') {
+        iLine++;
+      }
+    }
   }
 
   /**

@@ -1,9 +1,9 @@
 package org.xBaseJ.cp;
 
 public interface CharsetMapper {
-  public char map(char c);
+  char map(char c);
 
-  public CharSequence map(CharSequence sequence);
+  CharSequence map(CharSequence sequence);
 
-  public String map(String string);
+  String map(String string);
 }

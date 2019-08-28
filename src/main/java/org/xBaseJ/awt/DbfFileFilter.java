@@ -44,7 +44,9 @@ public class DbfFileFilter extends FileFilter {
 
   @Override
   public boolean accept(File f) {
-    if (f.isDirectory()) return true;
+    if (f.isDirectory()) {
+      return true;
+    }
 
     String name = f.getName().toUpperCase();
 

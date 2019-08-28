@@ -89,8 +89,11 @@ public abstract class DBTFile extends Object {
         }
       }
     } /* endif */
-    if (readonly) file = new RandomAccessFile(tname, "r");
-    else file = new RandomAccessFile(tname, "rw");
+    if (readonly) {
+      file = new RandomAccessFile(tname, "r");
+    } else {
+      file = new RandomAccessFile(tname, "rw");
+    }
     setNextBlock();
   }
 
@@ -103,19 +106,27 @@ public abstract class DBTFile extends Object {
     String ext = Util.getxBaseJProperty("memoFileExtension");
     if (ext.length() > 0) {
       extension = ext;
-    } else if (type == DBFTypes.FOXPRO_WITH_MEMO) // foxpro
-    extension = "fpt";
+    } else if (type == DBFTypes.FOXPRO_WITH_MEMO) {
+      extension = "fpt";
+    }
 
     tname = new String(name.substring(0, name.length() - 3) + extension);
 
     thefile = new File(tname);
 
-    if (destroy == false)
-      if (thefile.exists()) throw new xBaseJException("Memeo Text File exists, can't destroy");
+    if (destroy == false) {
+      if (thefile.exists()) {
+        throw new xBaseJException("Memeo Text File exists, can't destroy");
+      }
+    }
 
-    if (destroy)
-      if (thefile.exists())
-        if (thefile.delete() == false) throw new xBaseJException("Can't delete old Memo Text file");
+    if (destroy) {
+      if (thefile.exists()) {
+        if (thefile.delete() == false) {
+          throw new xBaseJException("Can't delete old Memo Text file");
+        }
+      }
+    }
 
     FileOutputStream tFOS = new FileOutputStream(thefile);
     tFOS.close();

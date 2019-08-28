@@ -64,8 +64,8 @@ public class Util extends Object {
   private static String servletContextPath = null;
 
   private static boolean x86Architecture =
-      ((System.getProperty("os.arch").indexOf("86") == 0)
-          && (System.getProperty("os.arch").compareTo("vax") != 0));
+      System.getProperty("os.arch").indexOf("86") == 0
+          && System.getProperty("os.arch").compareTo("vax") != 0;
 
   static {
     try {
@@ -73,7 +73,7 @@ public class Util extends Object {
       String test = getxBaseJProperty("checkPropertyFileForChanges");
       if (!test.isEmpty()) {
         recheckProperties =
-            (test.compareToIgnoreCase("true") == 0 || test.compareToIgnoreCase("yes") == 0);
+            test.compareToIgnoreCase("true") == 0 || test.compareToIgnoreCase("yes") == 0;
       }
     } catch (Exception e) {
       logr.error(e.getMessage(), e);
@@ -96,8 +96,12 @@ public class Util extends Object {
       // in = ((byte) in & 0x7fffffffffffffff);
     }
     first = in >>> 56;
-    if (negative) first = (byte) in & 0x7f;
-    if (negative == true) first |= 0x80;
+    if (negative) {
+      first = (byte) in & 0x7f;
+    }
+    if (negative == true) {
+      first |= 0x80;
+    }
     isnt = first << 56;
     save = in - isnt;
     second = save >>> 48;
@@ -199,20 +203,24 @@ public class Util extends Object {
 
     int daydif = 2378497;
 
-    if ((year / 4) == 0) days[2] = 29;
+    if (year / 4 == 0) {
+      days[2] = 29;
+    }
 
     if (year > 1799) {
       daydif += day - 1;
-      for (i = 2; i <= month; i++) daydif += days[i - 1];
+      for (i = 2; i <= month; i++) {
+        daydif += days[i - 1];
+      }
       daydif += (year - 1800) * 365;
-      daydif += ((year - 1800) / 4);
-      daydif -= ((year - 1800) % 100); // leap years don't occur in 00
+      daydif += (year - 1800) / 4;
+      daydif -= (year - 1800) % 100; // leap years don't occur in 00
       // years
       if (year > 1999) { // except in 2000
         daydif++;
       }
     } else {
-      daydif -= (days[month] - day + 1);
+      daydif -= days[month] - day + 1;
       for (i = 11; i >= month; i--) {
         daydif -= days[i + 1];
       }
@@ -234,7 +242,7 @@ public class Util extends Object {
   public static String normalize(String inString) {
     int i;
     StringBuffer sb = new StringBuffer();
-    for (i = 0; i < inString.length(); i++)
+    for (i = 0; i < inString.length(); i++) {
       switch (inString.charAt(i)) {
         case '&':
           sb.append("&amp;");
@@ -258,6 +266,7 @@ public class Util extends Object {
             sb.append(inString.charAt(i));
           }
       }
+    }
 
     return new String(sb);
   }
@@ -354,8 +363,12 @@ public class Util extends Object {
     } catch (IOException e) {
       return true;
     }
-    if (prop.toLowerCase().compareTo("no") == 0) return false;
-    if (prop.toLowerCase().compareTo("false") == 0) return false;
+    if (prop.toLowerCase().compareTo("no") == 0) {
+      return false;
+    }
+    if (prop.toLowerCase().compareTo("false") == 0) {
+      return false;
+    }
     return true;
   }
 
@@ -378,9 +391,11 @@ public class Util extends Object {
     String xBaseJPropertiesFileName = "org.xBaseJ.properties";
 
     String _fileName = System.getProperty(xBaseJPropertiesFileName);
-    if (_fileName != null) xBaseJPropertiesFileName = _fileName;
+    if (_fileName != null) {
+      xBaseJPropertiesFileName = _fileName;
+    }
     File f3, f2, f1 = new File(xBaseJPropertiesFileName);
-    if (f1.exists())
+    if (f1.exists()) {
       try {
         propFile = f1;
         logr.debug("properties file loaded from " + f1.getAbsolutePath());
@@ -389,10 +404,10 @@ public class Util extends Object {
         fnfe.printStackTrace();
         return null;
       }
-    else {
+    } else {
       xBaseJPropertiesFileName = System.getProperty("user.home") + "/org.xBaseJ.properties";
       f2 = new File(xBaseJPropertiesFileName);
-      if (f2.exists())
+      if (f2.exists()) {
         try {
           propFile = f2;
           logr.debug("properties file loaded from " + f2.getAbsolutePath());
@@ -401,7 +416,7 @@ public class Util extends Object {
           fnfe.printStackTrace();
           return null;
         }
-      else {
+      } else {
         xBaseJPropertiesFileName = System.getProperty("java.home") + "/org.xBaseJ.properties";
         f3 = new File(xBaseJPropertiesFileName);
         if (f3.exists()) {
@@ -415,11 +430,11 @@ public class Util extends Object {
           }
         } else {
 
-          InputStream is = (new Util()).getClass().getResourceAsStream("/org.xBaseJ.properties");
+          InputStream is = new Util().getClass().getResourceAsStream("/org.xBaseJ.properties");
           if (is == null) {
-            if (servletContextPath == null) // try it again
-            is = ClassLoader.getSystemClassLoader().getResourceAsStream("org.xBaseJ.properties");
-            else { // context is not null
+            if (servletContextPath == null) {
+              is = ClassLoader.getSystemClassLoader().getResourceAsStream("org.xBaseJ.properties");
+            } else { // context is not null
               try {
                 is = new FileInputStream(servletContextPath + "/org.xBaseJ.properties");
                 logr.debug(
@@ -470,7 +485,9 @@ public class Util extends Object {
   public static void copyFile(String inputFile, String outputFile) throws IOException {
     FileInputStream fis = new FileInputStream(inputFile);
     FileOutputStream fos = new FileOutputStream(outputFile);
-    for (int b = fis.read(); b != -1; b = fis.read()) fos.write(b);
+    for (int b = fis.read(); b != -1; b = fis.read()) {
+      fos.write(b);
+    }
     fos.close();
     fis.close();
   }

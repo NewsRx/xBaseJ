@@ -33,7 +33,9 @@ public class Example2 {
           System.out.println(name.get() + " id " + classId.get());
           System.out.print("   Meets at: " + time.get() + " on ");
           for (int j = 0; j < 7; j++) {
-            if (daysMeet.get().charAt(j) == 'Y') System.out.print(dow[j] + " ");
+            if (daysMeet.get().charAt(j) == 'Y') {
+              System.out.print(dow[j] + " ");
+            }
           }
           System.out.println("");
           System.out.println("   Credits: " + credits.get());

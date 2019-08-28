@@ -149,17 +149,33 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
       } catch (IOException e) {
         otherValidCharacters = "";
       }
-      if (otherValidCharacters == null) otherValidCharacters = "";
+      if (otherValidCharacters == null) {
+        otherValidCharacters = "";
+      }
     }
-    if (iName == null) throw new xBaseJException("Missing field name");
-    if (iName.length() == 0) throw new xBaseJException("Missing field name");
-    if (iName.length() > 10) throw new xBaseJException("Invalid field name " + iName);
+    if (iName == null) {
+      throw new xBaseJException("Missing field name");
+    }
+    if (iName.length() == 0) {
+      throw new xBaseJException("Missing field name");
+    }
+    if (iName.length() > 10) {
+      throw new xBaseJException("Invalid field name " + iName);
+    }
 
     for (int i = 0; i < iName.length(); i++) {
-      if (Character.isLetter(iName.charAt(i))) continue;
-      if (Character.isDigit(iName.charAt(i))) continue;
-      if (iName.charAt(i) == '_') continue;
-      if (otherValidCharacters.indexOf(iName.charAt(i)) > -1) continue;
+      if (Character.isLetter(iName.charAt(i))) {
+        continue;
+      }
+      if (Character.isDigit(iName.charAt(i))) {
+        continue;
+      }
+      if (iName.charAt(i) == '_') {
+        continue;
+      }
+      if (otherValidCharacters.indexOf(iName.charAt(i)) > -1) {
+        continue;
+      }
 
       throw new xBaseJException("Invalid field name " + iName + ", character invalid at " + i);
     }
@@ -177,8 +193,11 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
   public Field() {
     int tlength;
 
-    if (Length == 0) tlength = 1;
-    else tlength = Length;
+    if (Length == 0) {
+      tlength = 1;
+    } else {
+      tlength = Length;
+    }
 
     buffer = new byte[tlength];
     buffer[0] = (byte) ' ';
@@ -228,11 +247,13 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
   /** @return String field contents after any type of read. */
   public String get() {
     int k;
-    for (k = 0; k < Length && buffer[k] != 0; k++) ;
-    if (k == 0) // no data
-    return "";
-    // if (k < Length) // found a trailing binary zero
-    // k--;
+    for (k = 0; k < Length && buffer[k] != 0; k++) {;
+    }
+    if (k == 0) {
+      return "";
+      // if (k < Length) // found a trailing binary zero
+      // k--;
+    }
 
     String s;
     try {
@@ -304,23 +325,31 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
       b = inValue.getBytes();
     }
 
-    if (b.length > Length)
+    if (b.length > Length) {
       throw new xBaseJException(
           "Field length overflow: Have "
               + b.length
               + " data bytes. Field is "
               + Length
               + " bytes.");
+    }
 
     i = Math.min(b.length, Length);
 
-    for (i = 0; i < b.length; i++) buffer[i] = b[i];
+    for (i = 0; i < b.length; i++) {
+      buffer[i] = b[i];
+    }
 
     byte fill;
-    if (Util.fieldFilledWithSpaces()) fill = (byte) ' ';
-    else fill = 0;
+    if (Util.fieldFilledWithSpaces()) {
+      fill = (byte) ' ';
+    } else {
+      fill = 0;
+    }
 
-    for (i = b.length; i < Length; i++) buffer[i] = fill;
+    for (i = b.length; i < Length; i++) {
+      buffer[i] = fill;
+    }
   }
 
   /**
@@ -335,23 +364,25 @@ public abstract class Field extends Object implements Cloneable, Externalizable 
       inValue = new byte[0];
     }
     int i;
-    if (inValue.length > Length) throw new xBaseJException("Field length too long");
+    if (inValue.length > Length) {
+      throw new xBaseJException("Field length too long");
+    }
 
-    for (i = 0; i < inValue.length; i++) buffer[i] = inValue[i];
+    for (i = 0; i < inValue.length; i++) {
+      buffer[i] = inValue[i];
+    }
 
-    for (; i < Length; i++)
-      if (Util.fieldFilledWithSpaces()) buffer[i] = ' ';
-      else buffer[i] = 0;
+    for (; i < Length; i++) {
+      if (Util.fieldFilledWithSpaces()) {
+        buffer[i] = ' ';
+      } else {
+        buffer[i] = 0;
+      }
+    }
   }
 
   @Override
   public String toString() {
-    return this.Name
-        + "; "
-        + this.getType()
-        + "; "
-        + this.getLength()
-        + "; "
-        + this.getDecimalPositionCount();
+    return Name + "; " + getType() + "; " + getLength() + "; " + getDecimalPositionCount();
   }
 }

@@ -104,8 +104,12 @@ public class FloatField extends NumField {
     int i;
 
     for (i = 0; i < inValue.length(); i++) {
-      if (inValue.charAt(i) == '-') signOn = true;
-      if (Character.isDigit(inValue.charAt(i)) || inValue.charAt(i) == decimalSeparator) break;
+      if (inValue.charAt(i) == '-') {
+        signOn = true;
+      }
+      if (Character.isDigit(inValue.charAt(i)) || inValue.charAt(i) == decimalSeparator) {
+        break;
+      }
     }
 
     if (i == inValue.length()) {
@@ -116,7 +120,9 @@ public class FloatField extends NumField {
     int start = i;
 
     for (; i < inValue.length(); i++) {
-      if (!Character.isDigit(inValue.charAt(i)) && inValue.charAt(i) != decimalSeparator) break;
+      if (!Character.isDigit(inValue.charAt(i)) && inValue.charAt(i) != decimalSeparator) {
+        break;
+      }
     }
 
     String workstring = inValue.substring(start, i);
@@ -145,24 +151,30 @@ public class FloatField extends NumField {
     String numstring = new String("0123456789");
 
     for (i = Length; i > 0; i--) {
-      if ((realdp == i) && (decPosition > 0)) {
+      if (realdp == i && decPosition > 0) {
         charray[i - 1] = '.';
         continue;
       }
 
       longleft = longv % 10;
       whatsleft = (int) longleft;
-      if (whatsleft < 0) whatsleft *= -1;
+      if (whatsleft < 0) {
+        whatsleft *= -1;
+      }
 
       charray[i - 1] = numstring.charAt(whatsleft);
       longv /= 10;
     }
 
-    if (signOn) charray[0] = '-';
+    if (signOn) {
+      charray[0] = '-';
+    }
     for (i = 0; i < charray.length - 1; i++) {
       // if (signOn && i == 0)
       // continue;
-      if (charray[i] != '0') break;
+      if (charray[i] != '0') {
+        break;
+      }
       charray[i] = ' ';
     }
     super.put(new String(charray).replace(decimalSeparator, '.'));
@@ -213,8 +225,12 @@ public class FloatField extends NumField {
     double d10 = Math.pow(10, Length - decPosition);
     d %= d10;
     d10 = Math.pow(.1, decPosition + 1);
-    if (d > 0) d += d10;
-    if (d < 0) d -= d10;
+    if (d > 0) {
+      d += d10;
+    }
+    if (d < 0) {
+      d -= d10;
+    }
     put(String.valueOf(d));
   }
 }

@@ -42,7 +42,9 @@ public class Clipper_Large_CharFieldTest {
       }
 
       StringBuffer sb = new StringBuffer();
-      for (int i = 0; i < 510; i++) sb.append('s');
+      for (int i = 0; i < 510; i++) {
+        sb.append('s');
+      }
       newone.getField("long").put(sb.toString());
       newone.write();
       newone.close();

@@ -74,7 +74,7 @@ public class CurrencyField extends Field {
 
   private final BigDecimal currencyFromByteArray(byte[] bytes) {
     long d =
-        (long) (bytes[7]) << 56
+        (long) bytes[7] << 56
             |
             /* long cast needed or shift done modulo 32 */
             (long) (bytes[6] & 0xff) << 48

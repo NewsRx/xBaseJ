@@ -104,12 +104,16 @@ public class DateField extends Field {
     }
 
     int i;
-    if (!Util.dontTrimFields()) inValue = inValue.trim();
+    if (!Util.dontTrimFields()) {
+      inValue = inValue.trim();
+    }
 
     boolean allspaces = true;
 
     for (i = 0; i < inValue.length(); i++) {
-      if (inValue.charAt(i) != ' ') allspaces = false;
+      if (inValue.charAt(i) != ' ') {
+        allspaces = false;
+      }
     }
 
     byte blankbyte = (byte) ' ';
@@ -120,7 +124,9 @@ public class DateField extends Field {
       return;
     }
 
-    if (inValue.length() != 8) throw new xBaseJException("Invalid length for date Field");
+    if (inValue.length() != 8) {
+      throw new xBaseJException("Invalid length for date Field");
+    }
 
     for (i = 0; i < 8; i++) {
       if (Character.isDigit(inValue.charAt(i)) == false) {
@@ -131,15 +137,21 @@ public class DateField extends Field {
 
     int yea = Integer.parseInt(inValue.substring(0, 4));
     int mo = Integer.parseInt(inValue.substring(4, 6));
-    if (mo < 1 || mo > 12)
+    if (mo < 1 || mo > 12) {
       throw new xBaseJException("Invalid format for date Field (month) " + inValue);
+    }
     int da = Integer.parseInt(inValue.substring(6, 8));
-    if (da < 1) throw new xBaseJException("Invalid format for date Field (day) " + inValue);
+    if (da < 1) {
+      throw new xBaseJException("Invalid format for date Field (day) " + inValue);
+    }
 
     int month[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (yea == 2000 || (((yea % 4) == 0) && ((yea % 100) != 0))) month[2]++;
-    if (da > month[mo])
+    if (yea == 2000 || yea % 4 == 0 && yea % 100 != 0) {
+      month[2]++;
+    }
+    if (da > month[mo]) {
       throw new xBaseJException("Invalid format for date Field, number of days > days in month");
+    }
 
     super.put(inValue);
   }
@@ -288,7 +300,9 @@ public class DateField extends Field {
         buffer[3] = byter[3];
         break;
       case Calendar.MONTH:
-        if (value < 1 || value > 12) throw new xBaseJException("Month value out of range");
+        if (value < 1 || value > 12) {
+          throw new xBaseJException("Month value out of range");
+        }
         numFormat.setMinimumIntegerDigits(2);
         numFormat.setMaximumIntegerDigits(2);
         setter = numFormat.format(value);
@@ -297,7 +311,9 @@ public class DateField extends Field {
         buffer[5] = byter[1];
         break;
       case Calendar.DAY_OF_MONTH:
-        if (value < 1 || value > 31) throw new xBaseJException("Day value out of range");
+        if (value < 1 || value > 31) {
+          throw new xBaseJException("Day value out of range");
+        }
         numFormat.setMinimumIntegerDigits(2);
         numFormat.setMaximumIntegerDigits(2);
         setter = numFormat.format(value);

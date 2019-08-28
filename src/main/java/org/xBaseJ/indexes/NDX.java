@@ -66,14 +66,19 @@ public class NDX extends Index {
       throw new xBaseJException("Unknown Index file");
     } // /* endif */
 
-    if (readonly == 'r') nfile = new RandomAccessFile(filename, "r");
-    else nfile = new RandomAccessFile(filename, "rw");
+    if (readonly == 'r') {
+      nfile = new RandomAccessFile(filename, "r");
+    } else {
+      nfile = new RandomAccessFile(filename, "rw");
+    }
     anchor_read();
 
     Index_record = top_Node;
     reading = Index_record;
     for (i = 0; i < 488; i++) {
-      if (key_definition[i] <= ' ') break;
+      if (key_definition[i] <= ' ') {
+        break;
+      }
     }
     try {
       stringKey = new String(key_definition, 0, i, DBF.encodedType);
@@ -112,7 +117,9 @@ public class NDX extends Index {
           // record */
         } // /* Index = 0 then it's a leaf pointer */
       } // /* reading > 0 */
-      if (topNode == null) topNode = (Node) lNode.clone();
+      if (topNode == null) {
+        topNode = (Node) lNode.clone();
+      }
     } // /* endwhile */
 
     if (topNode == null) {
@@ -143,11 +150,19 @@ public class NDX extends Index {
     dosname = name;
     database = indatabase;
 
-    if (destroy == false) if (file.exists()) throw new xBaseJException("NDX file already exists");
+    if (destroy == false) {
+      if (file.exists()) {
+        throw new xBaseJException("NDX file already exists");
+      }
+    }
 
-    if (destroy == true)
-      if (file.exists())
-        if (file.delete() == false) throw new xBaseJException("Can't delete old NDX file");
+    if (destroy == true) {
+      if (file.exists()) {
+        if (file.delete() == false) {
+          throw new xBaseJException("Can't delete old NDX file");
+        }
+      }
+    }
 
     key_length = 0;
     stringKey = new String(NDXString);
@@ -158,19 +173,29 @@ public class NDX extends Index {
       tempch1 = (String) strtok.nextElement();
       Field Field = database.getField(tempch1);
       type = Field.getType();
-      if (type == 'M') throw new xBaseJException("Can't make memo field part of a key");
-      if (type == 'L') throw new xBaseJException("Can't make logical ield part of a key");
-      if (type == 'F') throw new xBaseJException("Can't make float field part of a key");
+      if (type == 'M') {
+        throw new xBaseJException("Can't make memo field part of a key");
+      }
+      if (type == 'L') {
+        throw new xBaseJException("Can't make logical ield part of a key");
+      }
+      if (type == 'F') {
+        throw new xBaseJException("Can't make float field part of a key");
+      }
 
       // the else portion of this can only get called when we
       // have more than one field making up the key.
       // It is ugly, but that's the way it is.
       //
-      if (key_type == ' ') key_type = type;
-      else if (key_type == 'D' && type == 'N') key_type = 'N';
-      else if (key_type == 'N' && type == 'D')
+      if (key_type == ' ') {
+        key_type = type;
+      } else if (key_type == 'D' && type == 'N') {
+        key_type = 'N';
+      } else if (key_type == 'N' && type == 'D') {
         key_type = 'N'; // date key type really doesn't change
-      else if (key_type != type) key_type = 'C';
+      } else if (key_type != type) {
+        key_type = 'C';
+      }
 
       key_length += Field.getLength();
       keyControl.addElement(Field);
@@ -183,7 +208,7 @@ public class NDX extends Index {
       keyType = 'C';
     }
 
-    len = (((key_length - 1) / 4) + 1) * 4;
+    len = ((key_length - 1) / 4 + 1) * 4;
     if (len < 1) {
       throw new xBaseJException("key length too short");
     } /* endif */
@@ -200,8 +225,9 @@ public class NDX extends Index {
 
     anchor_write();
 
-    if (database.getRecordCount() > 0) bIndex();
-    else {
+    if (database.getRecordCount() > 0) {
+      bIndex();
+    } else {
       topNode = new Node(nfile, key_per_Node, key_length, keyType, next_available, false);
       workNode = topNode;
       topNode.set_pos(0);
@@ -249,10 +275,11 @@ public class NDX extends Index {
     } /* endif */
 
     leaf = aNode.get_lower_level();
-    if (leaf != 0) /*
-						 * leaf pointers usually have one more pointer than shown
-						 */ until = aNode.get_keys_in_this_Node() + 1;
-    else until = aNode.get_keys_in_this_Node();
+    if (leaf != 0) {
+      until = aNode.get_keys_in_this_Node() + 1;
+    } else {
+      until = aNode.get_keys_in_this_Node();
+    }
 
     for (aNode.set_pos(0); aNode.get_pos() < until; aNode.pos_up()) {
       leaf = aNode.get_lower_level();
@@ -260,7 +287,9 @@ public class NDX extends Index {
       if (aNode.get_pos() < aNode.get_keys_in_this_Node()) {
         /* leafs make us do this */
         stat = findKey.compareKey(aNode.get_key_value());
-        if (stat > 0) continue; // looping
+        if (stat > 0) {
+          continue; // looping
+        }
       }
 
       if (leaf > 0) {
@@ -269,41 +298,50 @@ public class NDX extends Index {
           Node_2 = new Node(nfile, key_per_Node, key_length, keyType, leaf, true);
           aNode.set_next(Node_2);
           Node_2.set_prev(aNode);
-        } else Node_2 = aNode.get_next();
+        } else {
+          Node_2 = aNode.get_next();
+        }
         Node_2.set_record_number(leaf);
         Node_2.read();
         Node_2.set_pos(0);
         workNode = Node_2;
         rec = find_entry(findKey, Node_2, findrec);
-        return (rec); /* if rec < 0 then didn't find the record yet */
+        return rec; /* if rec < 0 then didn't find the record yet */
       } /* if leaf > 0 */
 
       if (stat < 0) /* can't find the key but .. */ {
 
-        if (findrec > 0) return (keyNotFound); /*
-											 * when findrec -1 then looking for
-											 * specific key and record
-											 */
+        if (findrec > 0) {
+          return keyNotFound; /*
+                               * when findrec -1 then looking for
+                               * specific key and record
+                               */
+        }
 
-        if (findrec == findFirstMatchingKey) return (keyNotFound); /*
-											 * when findrec findAnyKey then for
-											 * the key
-											 */
+        if (findrec == findFirstMatchingKey) {
+          return keyNotFound; /*
+                               * when findrec findAnyKey then for
+                               * the key
+                               */
+        }
 
-        return (rec); /* looking for key greater than or equal to */
+        return rec; /* looking for key greater than or equal to */
       }
 
       foundExact = true;
       /* stat is zero - key matches the current key */
 
-      if ((findrec > 0) && (rec == findrec)) /*
-													 * found matching key and
-													 * matching record number
-													 */ return rec;
+      if (findrec > 0 && rec == findrec) {
+        return rec;
+      }
 
-      if (findrec == findFirstMatchingKey) return rec; /* found one key that matches */
+      if (findrec == findFirstMatchingKey) {
+        return rec; /* found one key that matches */
+      }
 
-      if (findrec == findAnyKey) return rec; /* found one key that matches */
+      if (findrec == findAnyKey) {
+        return rec; /* found one key that matches */
+      }
 
       /*
        * findrec not zero so we are looking for the key that is greater
@@ -313,7 +351,7 @@ public class NDX extends Index {
 
     } /* end for */
 
-    return (foundMatchingKeyButNotRecord);
+    return foundMatchingKeyButNotRecord;
     /* at end of current line but keep looking for recursion */
   }
 
@@ -329,10 +367,15 @@ public class NDX extends Index {
       next_available = 1;
       for (i = 1; i <= reccount; i++) {
         lastkey = build_key();
-        if (topTree == null) topTree = new BinaryTree(lastkey, i, topTree);
-        else new BinaryTree(lastkey, i, topTree);
+        if (topTree == null) {
+          topTree = new BinaryTree(lastkey, i, topTree);
+        } else {
+          new BinaryTree(lastkey, i, topTree);
+        }
 
-        if (i < reccount) database.read();
+        if (i < reccount) {
+          database.read();
+        }
       }
 
       topNode = null;
@@ -357,8 +400,11 @@ public class NDX extends Index {
     for (i = 1; i <= reccount; i++) {
       database.gotoRecord(i); // 20091010_rth
       lastkey = build_key();
-      if (topTree == null) topTree = new BinaryTree(lastkey, i, topTree);
-      else new BinaryTree(lastkey, i, topTree);
+      if (topTree == null) {
+        topTree = new BinaryTree(lastkey, i, topTree);
+      } else {
+        new BinaryTree(lastkey, i, topTree);
+      }
     }
 
     topNode = null;
@@ -367,7 +413,9 @@ public class NDX extends Index {
     nfile = new RandomAccessFile(file, "rw");
     anchor_write();
 
-    if (database.getRecordCount() > 0) reIndexWork(topTree.getLeast(), 0);
+    if (database.getRecordCount() > 0) {
+      reIndexWork(topTree.getLeast(), 0);
+    }
 
     anchor_write();
 
@@ -386,7 +434,7 @@ public class NDX extends Index {
     btLoop:
     while (true) {
       if (pos == key_per_Node || bt == null) {
-        if ((tree2 == null && pos == 1 && level > 0) || pos == 0) {
+        if (tree2 == null && pos == 1 && level > 0 || pos == 0) {
           top_Node--;
           next_available--;
           topNode = workNode; // just in case its not set
@@ -405,10 +453,15 @@ public class NDX extends Index {
           if (tree2 == null) {
             topNode = workNode;
             tree2 = new BinaryTree(lastKey, workNode.get_record_number(), tree2);
-          } else new BinaryTree(lastKey, workNode.get_record_number(), tree2);
+          } else {
+            new BinaryTree(lastKey, workNode.get_record_number(), tree2);
+          }
         }
-        if (level == 0) workNode.set_keys_in_this_Node(pos);
-        else workNode.set_keys_in_this_Node(pos - 1);
+        if (level == 0) {
+          workNode.set_keys_in_this_Node(pos);
+        } else {
+          workNode.set_keys_in_this_Node(pos - 1);
+        }
         {
           for (int i = pos; i < key_per_Node; i++) {
             workNode.set_pos(i);
@@ -429,13 +482,18 @@ public class NDX extends Index {
       pos++;
       lastKey = bt.getKey();
       workNode.set_key_value(lastKey);
-      if (level == 0) workNode.set_key_record_number(bt.getWhere());
-      else workNode.set_lower_level(bt.getWhere());
+      if (level == 0) {
+        workNode.set_key_record_number(bt.getWhere());
+      } else {
+        workNode.set_lower_level(bt.getWhere());
+      }
       workNode.pos_up();
       bt = bt.getNext();
     }
 
-    if (tree2 == null) return 0;
+    if (tree2 == null) {
+      return 0;
+    }
 
     return reIndexWork(tree2.getLeast(), ++level);
   }
@@ -520,7 +578,7 @@ public class NDX extends Index {
     }
 
     savepos = aNode.get_pos();
-    if (savepos < (aNode.get_keys_in_this_Node())) {
+    if (savepos < aNode.get_keys_in_this_Node()) {
       /* add to middle of list */
       /*
        * first move the record number of that trailing record indicator
@@ -571,7 +629,9 @@ public class NDX extends Index {
     aNode.set_keys_in_this_Node(aNode.get_keys_in_this_Node() + 1);
     aNode.write();
 
-    if (aNode.get_keys_in_this_Node() >= key_per_Node) splitNode(aNode, savepos);
+    if (aNode.get_keys_in_this_Node() >= key_per_Node) {
+      splitNode(aNode, savepos);
+    }
 
     return 0;
   }
@@ -609,8 +669,11 @@ public class NDX extends Index {
 
     if (savepos > i) {
       bNode.set_keys_in_this_Node(i);
-      if (aNode.get_next() != null) aNode.set_keys_in_this_Node(i - 1);
-      else aNode.set_keys_in_this_Node(i); /* for top level split */
+      if (aNode.get_next() != null) {
+        aNode.set_keys_in_this_Node(i - 1);
+      } else {
+        aNode.set_keys_in_this_Node(i); /* for top level split */
+      }
       left = aNode.get_record_number();
       aNode.write();
       right = next_available;
@@ -674,8 +737,11 @@ public class NDX extends Index {
       // Node
       next_available++;
       anchor_write();
-      if (aNode.get_next() != null) aNode.set_keys_in_this_Node(j - 1);
-      else aNode.set_keys_in_this_Node(j);
+      if (aNode.get_next() != null) {
+        aNode.set_keys_in_this_Node(j - 1);
+      } else {
+        aNode.set_keys_in_this_Node(j);
+      }
 
       aNode.set_pos(j - 1);
       aNode.write();
@@ -743,12 +809,15 @@ public class NDX extends Index {
     if (aNode.get_prev() != null) // should we fix parent?
     {
       if (aNode.get_keys_in_this_Node() == 0) {
-        if (aNode.get_lower_level() == 0) // record node so go fix its
+        if (aNode.get_lower_level() == 0) {
           // parent
           del_entry(aNode.get_prev());
-        else ; // pointer node so don't fix unless negative
+        } else {; // pointer node so don't fix unless negative
+        }
       } else {
-        if (aNode.get_keys_in_this_Node() == -1) del_entry(aNode.get_prev());
+        if (aNode.get_keys_in_this_Node() == -1) {
+          del_entry(aNode.get_prev());
+        }
       }
     }
 
@@ -765,16 +834,19 @@ public class NDX extends Index {
 
     int rec, until, leaf;
 
-    if (aNode == null) return -1;
+    if (aNode == null) {
+      return -1;
+    }
 
     aNode.pos_up();
 
     leaf = aNode.get_lower_level();
 
-    if (leaf > 0) /*
-						 * leaf pointers usually have one more pointer than shown
-						 */ until = aNode.get_keys_in_this_Node() + 1;
-    else until = aNode.get_keys_in_this_Node();
+    if (leaf > 0) {
+      until = aNode.get_keys_in_this_Node() + 1;
+    } else {
+      until = aNode.get_keys_in_this_Node();
+    }
 
     if (aNode.get_pos() >= until) {
       Node rNode;
@@ -792,8 +864,10 @@ public class NDX extends Index {
 
     leaf = aNode.get_lower_level();
     workNode = aNode;
-    if (leaf > 0) return (leaf);
-    return (aNode.get_key_record_number());
+    if (leaf > 0) {
+      return leaf;
+    }
+    return aNode.get_key_record_number();
   }
 
   @Override
@@ -804,18 +878,25 @@ public class NDX extends Index {
   private int get_prev_key(Node aNode) throws xBaseJException, IOException {
     int rec, until, leaf;
 
-    if (aNode == null) return -1;
+    if (aNode == null) {
+      return -1;
+    }
 
-    if (aNode.get_pos() < 0) return -1;
+    if (aNode.get_pos() < 0) {
+      return -1;
+    }
 
     leaf = aNode.get_lower_level();
 
-    if (leaf > 0) /*
-						 * leaf pointers usually have one more pointer than shown
-						 */ until = 1;
-    else until = 0;
+    if (leaf > 0) {
+      until = 1;
+    } else {
+      until = 0;
+    }
 
-    if (aNode.get_pos() > -1) aNode.pos_down();
+    if (aNode.get_pos() > -1) {
+      aNode.pos_down();
+    }
 
     if (aNode.get_pos() < 0) {
 
@@ -832,7 +913,7 @@ public class NDX extends Index {
     leaf = aNode.get_lower_level();
     workNode = aNode;
     if (leaf > 0) {
-      return (leaf);
+      return leaf;
     }
     return aNode.get_key_record_number();
   }
@@ -844,7 +925,7 @@ public class NDX extends Index {
     reserved_02 = nfile.readInt();
     key_length = nfile.readShort();
     key_per_Node = nfile.readShort();
-    keyType = (nfile.readShort() != 0) ? 'N' : 'C';
+    keyType = nfile.readShort() != 0 ? 'N' : 'C';
     key_entry_size = nfile.readShort();
     reserved_01 = nfile.readByte();
     reserved_03 = nfile.readByte();

@@ -306,8 +306,9 @@ public class DBF implements Closeable, HasSize {
    */
   public DBF(String DBFname, char readOnly, String inEncodeType)
       throws xBaseJException, IOException {
-    if (readOnly != DBF.READ_ONLY)
+    if (readOnly != DBF.READ_ONLY) {
       throw new xBaseJException("Unknown readOnly indicator <" + readOnly + ">");
+    }
     readonly = true;
     setEncodingType(inEncodeType);
     openDBF(DBFname);
@@ -339,8 +340,8 @@ public class DBF implements Closeable, HasSize {
   protected void openDBF(String DBFname) throws IOException, xBaseJException {
     int i;
     jNDX = null;
-    jNDXes = new Vector<Index>(1);
-    jNDXID = new Vector<String>(1);
+    jNDXes = new Vector<>(1);
+    jNDXID = new Vector<>(1);
 
     ffile = new File(DBFname);
     if (!ffile.exists() || !ffile.isFile()) {
@@ -363,11 +364,11 @@ public class DBF implements Closeable, HasSize {
 
     fldcount = 0;
 
-    if ((version != DBFTypes.DBASEIII)
-        && (version != DBFTypes.DBASEIII_WITH_MEMO)
-        && (version != DBFTypes.DBASEIV)
-        && (version != DBFTypes.DBASEIV_WITH_MEMO)
-        && (version != DBFTypes.FOXPRO_WITH_MEMO)) {
+    if (version != DBFTypes.DBASEIII
+        && version != DBFTypes.DBASEIII_WITH_MEMO
+        && version != DBFTypes.DBASEIV
+        && version != DBFTypes.DBASEIV_WITH_MEMO
+        && version != DBFTypes.FOXPRO_WITH_MEMO) {
       String mismatch = Util.getxBaseJProperty("ignoreVersionMismatch").toLowerCase();
       if (mismatch != null && (mismatch.compareTo("true") == 0 || mismatch.compareTo("yes") == 0)) {
         // System.err.println("Wrong Version " + version);
@@ -377,11 +378,15 @@ public class DBF implements Closeable, HasSize {
       }
     }
 
-    if (version == DBFTypes.FOXPRO_WITH_MEMO) dbtobj = new DBT_fpt(this, readonly);
-    else if (version == DBFTypes.DBASEIII_WITH_MEMO) dbtobj = new DBT_iii(this, readonly);
-    else if (version == DBFTypes.DBASEIV_WITH_MEMO) dbtobj = new DBT_iv(this, readonly);
+    if (version == DBFTypes.FOXPRO_WITH_MEMO) {
+      dbtobj = new DBT_fpt(this, readonly);
+    } else if (version == DBFTypes.DBASEIII_WITH_MEMO) {
+      dbtobj = new DBT_iii(this, readonly);
+    } else if (version == DBFTypes.DBASEIV_WITH_MEMO) {
+      dbtobj = new DBT_iv(this, readonly);
+    }
 
-    fld_root = new Vector<Field>();
+    fld_root = new Vector<>();
 
     for (Field field = read_Field_header(); field != null; field = read_Field_header()) {
       fldcount++;
@@ -440,14 +445,19 @@ public class DBF implements Closeable, HasSize {
 
     if (MDX_exist == 1) {
       try {
-        if (readonly) MDXfile = new MDXFile(dosname, this, 'r');
-        else MDXfile = new MDXFile(dosname, this, ' ');
-        for (i = 0; i < MDXfile.getAnchor().getIndexes(); i++) jNDXes.addElement(MDXfile.MDXes[i]);
+        if (readonly) {
+          MDXfile = new MDXFile(dosname, this, 'r');
+        } else {
+          MDXfile = new MDXFile(dosname, this, ' ');
+        }
+        for (i = 0; i < MDXfile.getAnchor().getIndexes(); i++) {
+          jNDXes.addElement(MDXfile.MDXes[i]);
+        }
       } catch (xBaseJException xbe) {
         String missing = Util.getxBaseJProperty("ignoreMissingMDX").toLowerCase();
-        if (missing != null && (missing.compareTo("true") == 0 || missing.compareTo("yes") == 0))
+        if (missing != null && (missing.compareTo("true") == 0 || missing.compareTo("yes") == 0)) {
           MDX_exist = 0;
-        else {
+        } else {
           System.err.println(xbe.getMessage());
           System.err.println("Processing continues without mdx file");
           MDX_exist = 0;
@@ -477,8 +487,8 @@ public class DBF implements Closeable, HasSize {
   protected void createDBF(String DBFname, DBFTypes format, boolean destroy)
       throws xBaseJException, IOException, SecurityException {
     jNDX = null;
-    jNDXes = new Vector<Index>(1);
-    jNDXID = new Vector<String>(1);
+    jNDXes = new Vector<>(1);
+    jNDXID = new Vector<>(1);
     ffile = new File(DBFname);
 
     if (format != DBFTypes.DBASEIII
@@ -494,10 +504,11 @@ public class DBF implements Closeable, HasSize {
     }
 
     if (destroy == true) {
-      if (ffile.exists())
+      if (ffile.exists()) {
         if (ffile.delete() == false) {
           throw new xBaseJException("Can't delete old DBF file");
         }
+      }
       ffile = new File(DBFname);
     }
 
@@ -512,15 +523,15 @@ public class DBF implements Closeable, HasSize {
 
     buffer = ByteBuffer.allocateDirect(lrecl + 1);
 
-    fld_root = new Vector<Field>(0);
+    fld_root = new Vector<>(0);
     if (format == DBFTypes.DBASEIV || format == DBFTypes.DBASEIV_WITH_MEMO) {
       MDX_exist = 1;
     }
 
     boolean memoExists =
-        (format == DBFTypes.DBASEIII_WITH_MEMO
+        format == DBFTypes.DBASEIII_WITH_MEMO
             || format == DBFTypes.DBASEIV_WITH_MEMO
-            || format == DBFTypes.FOXPRO_WITH_MEMO);
+            || format == DBFTypes.FOXPRO_WITH_MEMO;
 
     db_offset(format, memoExists);
     update_dbhead();
@@ -568,19 +579,22 @@ public class DBF implements Closeable, HasSize {
    * @throws IOException Java error caused by called methods
    */
   public void addField(Field aField[]) throws xBaseJException, IOException {
-    if (aField.length == 0) throw new xBaseJException("No Fields in array to add");
+    if (aField.length == 0) {
+      throw new xBaseJException("No Fields in array to add");
+    }
 
-    if ((version == DBFTypes.DBASEIII && MDX_exist == 0)
-        || (version == DBFTypes.DBASEIII_WITH_MEMO)) {
-      if ((fldcount + aField.length) > 128)
+    if (version == DBFTypes.DBASEIII && MDX_exist == 0 || version == DBFTypes.DBASEIII_WITH_MEMO) {
+      if (fldcount + aField.length > 128) {
         throw new xBaseJException(
             "Number of fields exceed limit of 128.  New Field count is "
                 + (fldcount + aField.length));
+      }
     } else {
-      if ((fldcount + aField.length) > 255)
+      if (fldcount + aField.length > 255) {
         throw new xBaseJException(
             "Number of fields exceed limit of 255.  New Field count is "
                 + (fldcount + aField.length));
+      }
     }
 
     int i, j;
@@ -589,9 +603,12 @@ public class DBF implements Closeable, HasSize {
     for (j = 0; j < aField.length; j++) {
       for (i = 1; i <= fldcount; i++) {
         tField = getField(i);
-        if (tField.isMemoField() || tField.isPictureField()) oldMemo = true;
-        if (aField[j].getName().equalsIgnoreCase(tField.getName()))
+        if (tField.isMemoField() || tField.isPictureField()) {
+          oldMemo = true;
+        }
+        if (aField[j].getName().equalsIgnoreCase(tField.getName())) {
           throw new xBaseJException("Field: " + aField[j].getName() + " already exists.");
+        }
       }
     }
 
@@ -601,27 +618,33 @@ public class DBF implements Closeable, HasSize {
     for (j = 1; j <= aField.length; j++) {
       newRecl += aField[j - 1].getLength();
 
-      if ((dbtobj == null)
-          && ((aField[j - 1] instanceof MemoField) || (aField[j - 1] instanceof PictureField)))
+      if (dbtobj == null
+          && (aField[j - 1] instanceof MemoField || aField[j - 1] instanceof PictureField)) {
         newMemo = true;
-      if (aField[j - 1] instanceof PictureField) version = DBFTypes.FOXPRO_WITH_MEMO;
-      else if ((aField[j - 1] instanceof MemoField) && (((MemoField) aField[j - 1]).isFoxPro()))
+      }
+      if (aField[j - 1] instanceof PictureField) {
         version = DBFTypes.FOXPRO_WITH_MEMO;
+      } else if (aField[j - 1] instanceof MemoField && ((MemoField) aField[j - 1]).isFoxPro()) {
+        version = DBFTypes.FOXPRO_WITH_MEMO;
+      }
     }
 
     String ignoreDBFLength = Util.getxBaseJProperty("ignoreDBFLengthCheck");
     if (ignoreDBFLength != null
         && (ignoreDBFLength.toLowerCase().compareTo("true") == 0
-            || ignoreDBFLength.toLowerCase().compareTo("yes") == 0)) ;
-    else if (newRecl > 4000)
+            || ignoreDBFLength.toLowerCase().compareTo("yes") == 0)) {;
+    } else if (newRecl > 4000) {
       throw new xBaseJException(
           "Record length of 4000 exceeded.  New calculated length is " + newRecl);
+    }
 
     boolean createTemp = false;
     DBF tempDBF = null;
     String newName = "";
     // buffer = ByteBuffer.allocateDirect(newRecl+1);
-    if (fldcount > 0) createTemp = true;
+    if (fldcount > 0) {
+      createTemp = true;
+    }
 
     if (createTemp) {
 
@@ -631,7 +654,9 @@ public class DBF implements Closeable, HasSize {
       f.delete();
 
       DBFTypes format = version;
-      if ((format == DBFTypes.DBASEIII) && (MDX_exist == 1)) format = DBFTypes.DBASEIV;
+      if (format == DBFTypes.DBASEIII && MDX_exist == 1) {
+        format = DBFTypes.DBASEIV;
+      }
 
       tempDBF = new DBF(newName, format, true);
       tempDBF.version = format;
@@ -642,26 +667,36 @@ public class DBF implements Closeable, HasSize {
     if (newMemo) {
       if (createTemp) {
         if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO)
-            && (MDX_exist == 0)) tempDBF.dbtobj = new DBT_iii(this, newName, true);
-        else if (version == DBFTypes.FOXPRO_WITH_MEMO)
+            && MDX_exist == 0) {
+          tempDBF.dbtobj = new DBT_iii(this, newName, true);
+        } else if (version == DBFTypes.FOXPRO_WITH_MEMO) {
           tempDBF.dbtobj = new DBT_fpt(this, newName, true);
-        else tempDBF.dbtobj = new DBT_iv(this, newName, true);
+        } else {
+          tempDBF.dbtobj = new DBT_iv(this, newName, true);
+        }
       } else {
         if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO)
-            && (MDX_exist == 0)) dbtobj = new DBT_iii(this, dosname, true);
-        else if (version == DBFTypes.FOXPRO_WITH_MEMO) dbtobj = new DBT_fpt(this, dosname, true);
-        else dbtobj = new DBT_iv(this, dosname, true);
+            && MDX_exist == 0) {
+          dbtobj = new DBT_iii(this, dosname, true);
+        } else if (version == DBFTypes.FOXPRO_WITH_MEMO) {
+          dbtobj = new DBT_fpt(this, dosname, true);
+        } else {
+          dbtobj = new DBT_iv(this, dosname, true);
+        }
       }
     } else if (createTemp && oldMemo) {
       if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO)
-          && (MDX_exist == 0)) tempDBF.dbtobj = new DBT_iii(this, newName, true);
-      else if (version == DBFTypes.FOXPRO_WITH_MEMO)
+          && MDX_exist == 0) {
+        tempDBF.dbtobj = new DBT_iii(this, newName, true);
+      } else if (version == DBFTypes.FOXPRO_WITH_MEMO) {
         tempDBF.dbtobj = new DBT_fpt(this, newName, true);
-      else tempDBF.dbtobj = new DBT_iv(this, newName, true);
+      } else {
+        tempDBF.dbtobj = new DBT_iv(this, newName, true);
+      }
     }
 
     if (createTemp) {
-      tempDBF.db_offset(version, newMemo || (dbtobj != null));
+      tempDBF.db_offset(version, newMemo || dbtobj != null);
       tempDBF.update_dbhead();
       tempDBF.offset = offset;
       tempDBF.lrecl = newRecl;
@@ -674,8 +709,12 @@ public class DBF implements Closeable, HasSize {
 
           throw new xBaseJException("Clone not supported logic error");
         }
-        if (tField.isMemoField()) ((MemoField) tField).setDBTObj(tempDBF.dbtobj);
-        if (tField.isPictureField()) ((PictureField) tField).setDBTObj(tempDBF.dbtobj);
+        if (tField.isMemoField()) {
+          ((MemoField) tField).setDBTObj(tempDBF.dbtobj);
+        }
+        if (tField.isPictureField()) {
+          ((PictureField) tField).setDBTObj(tempDBF.dbtobj);
+        }
         tField.setBuffer(tempDBF.buffer);
         tempDBF.fld_root.addElement(tField);
         tempDBF.write_Field_header(tField);
@@ -686,29 +725,35 @@ public class DBF implements Closeable, HasSize {
         tempDBF.fld_root.addElement(aField[i]);
         tempDBF.write_Field_header(aField[i]);
         tField = aField[i];
-        if (tField.isMemoField()) ((MemoField) tField).setDBTObj(tempDBF.dbtobj);
-        if (tField.isPictureField()) ((PictureField) tField).setDBTObj(tempDBF.dbtobj);
+        if (tField.isMemoField()) {
+          ((MemoField) tField).setDBTObj(tempDBF.dbtobj);
+        }
+        if (tField.isPictureField()) {
+          ((PictureField) tField).setDBTObj(tempDBF.dbtobj);
+        }
       }
 
       tempDBF.file.writeByte(13);
       tempDBF.file.writeByte(26);
       tempDBF.fldcount += aField.length;
-      tempDBF.offset += (aField.length * 32);
+      tempDBF.offset += aField.length * 32;
     } else {
       lrecl = newRecl;
       int savefldcnt = fldcount;
       fldcount += aField.length;
-      offset += (32 * aField.length);
+      offset += 32 * aField.length;
       if (newMemo) {
-        if (dbtobj instanceof DBT_iii) version = DBFTypes.DBASEIII_WITH_MEMO;
-        else if (dbtobj instanceof DBT_iv)
+        if (dbtobj instanceof DBT_iii) {
+          version = DBFTypes.DBASEIII_WITH_MEMO;
+        } else if (dbtobj instanceof DBT_iv) {
           // if it's not dbase 3 format make it at least dbaseIV
           // format.
           version = DBFTypes.DBASEIV_WITH_MEMO;
-        else if (dbtobj instanceof DBT_fpt)
+        } else if (dbtobj instanceof DBT_fpt) {
           // if it's not foxpro format make it at least dbaseIV
           // format.
           version = DBFTypes.FOXPRO_WITH_MEMO;
+        }
       }
       channel = file.getChannel();
       buffer = ByteBuffer.allocateDirect(lrecl + 1);
@@ -717,15 +762,21 @@ public class DBF implements Closeable, HasSize {
 
       for (i = 1; i <= savefldcnt; i++) {
         tField = getField(i);
-        if (tField.isMemoField()) ((MemoField) tField).setDBTObj(dbtobj);
-        if (tField.isPictureField()) ((PictureField) tField).setDBTObj(tempDBF.dbtobj);
+        if (tField.isMemoField()) {
+          ((MemoField) tField).setDBTObj(dbtobj);
+        }
+        if (tField.isPictureField()) {
+          ((PictureField) tField).setDBTObj(tempDBF.dbtobj);
+        }
         write_Field_header(tField);
       }
 
       for (i = 0; i < aField.length; i++) {
         aField[i].setBuffer(buffer);
         tField = aField[i];
-        if (tField.isMemoField()) ((MemoField) tField).setDBTObj(dbtobj);
+        if (tField.isMemoField()) {
+          ((MemoField) tField).setDBTObj(dbtobj);
+        }
         if (tField.isPictureField()) {
           ((PictureField) tField).setDBTObj(dbtobj);
         }
@@ -779,15 +830,24 @@ public class DBF implements Closeable, HasSize {
         }
         tempDBF2.dbtobj.rename(dosname);
         if ((version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO)
-            && (MDX_exist == 0)) {
-          if (dosname.endsWith("dbf")) dbtobj = new DBT_iii(this, readonly);
-          else dbtobj = new DBT_iii(this, dosname, true);
+            && MDX_exist == 0) {
+          if (dosname.endsWith("dbf")) {
+            dbtobj = new DBT_iii(this, readonly);
+          } else {
+            dbtobj = new DBT_iii(this, dosname, true);
+          }
         } else if (version == DBFTypes.FOXPRO_WITH_MEMO) {
-          if (dosname.endsWith("dbf")) dbtobj = new DBT_fpt(this, readonly);
-          else dbtobj = new DBT_fpt(this, dosname, true);
+          if (dosname.endsWith("dbf")) {
+            dbtobj = new DBT_fpt(this, readonly);
+          } else {
+            dbtobj = new DBT_fpt(this, dosname, true);
+          }
         } else {
-          if (dosname.endsWith("dbf")) dbtobj = new DBT_iv(this, readonly);
-          else dbtobj = new DBT_iv(this, dosname, true);
+          if (dosname.endsWith("dbf")) {
+            dbtobj = new DBT_iv(this, readonly);
+          } else {
+            dbtobj = new DBT_iv(this, dosname, true);
+          }
         }
       }
 
@@ -811,8 +871,12 @@ public class DBF implements Closeable, HasSize {
     for (i = 1; i <= fldcount; i++) {
       tField = getField(i);
       tField.setBuffer(buffer);
-      if (tField.isMemoField()) ((MemoField) tField).setDBTObj(dbtobj);
-      if (tField.isPictureField()) ((PictureField) tField).setDBTObj(dbtobj);
+      if (tField.isMemoField()) {
+        ((MemoField) tField).setDBTObj(dbtobj);
+      }
+      if (tField.isPictureField()) {
+        ((PictureField) tField).setDBTObj(dbtobj);
+      }
     }
   }
 
@@ -835,7 +899,9 @@ public class DBF implements Closeable, HasSize {
    * @param inLongWait long milliseconds
    */
   public void setFileLockWait(long inLongWait) {
-    if (inLongWait > -1) fileLockWait = inLongWait;
+    if (inLongWait > -1) {
+      fileLockWait = inLongWait;
+    }
   }
 
   /**
@@ -854,15 +920,17 @@ public class DBF implements Closeable, HasSize {
     for (long waitloop = fileLockWait; waitloop > 0; waitloop -= thisWait) {
       try {
         filelock = channel.tryLock(0, ffile.length(), false);
-      } catch (OverlappingFileLockException ofle) {;
+      } catch (OverlappingFileLockException ofle) {
       }
 
-      if (filelock != null) return;
+      if (filelock != null) {
+        return;
+      }
 
       synchronized (this) {
         try {
           wait(thisWait);
-        } catch (InterruptedException ie) {;
+        } catch (InterruptedException ie) {
         }
       } // sync
     }
@@ -896,17 +964,19 @@ public class DBF implements Closeable, HasSize {
   public void lockRecord(int recno) throws IOException, xBaseJException {
 
     unlockRecord();
-    long calcpos = (offset + (lrecl * (recno - 1)));
+    long calcpos = offset + lrecl * (recno - 1);
 
     long thisWait = fileLockWait / 5;
 
     for (long waitloop = fileLockWait; waitloop > 0; waitloop -= thisWait) {
       recordlock = channel.tryLock(calcpos, lrecl, false);
-      if (recordlock != null) return;
+      if (recordlock != null) {
+        return;
+      }
       synchronized (this) {
         try {
           wait(thisWait);
-        } catch (InterruptedException ie) {;
+        } catch (InterruptedException ie) {
         }
       } // synch
     }
@@ -921,7 +991,9 @@ public class DBF implements Closeable, HasSize {
    * @since 2.1
    */
   public void unlock() throws IOException {
-    if (filelock != null) filelock.release();
+    if (filelock != null) {
+      filelock.release();
+    }
 
     filelock = null;
   }
@@ -933,7 +1005,9 @@ public class DBF implements Closeable, HasSize {
    * @since 2.1
    */
   public void unlockRecord() throws IOException {
-    if (recordlock != null) recordlock.release();
+    if (recordlock != null) {
+      recordlock.release();
+    }
 
     recordlock = null;
   }
@@ -951,9 +1025,13 @@ public class DBF implements Closeable, HasSize {
     Field tField;
     for (i = 0; i < fldcount; i++) {
       tField = getField(i);
-      if (aField.getName().equalsIgnoreCase(tField.getName())) break;
+      if (aField.getName().equalsIgnoreCase(tField.getName())) {
+        break;
+      }
     }
-    if (i > fldcount) throw new xBaseJException("Field: " + aField.getName() + " does not exist.");
+    if (i > fldcount) {
+      throw new xBaseJException("Field: " + aField.getName() + " does not exist.");
+    }
   }
 
   /**
@@ -970,15 +1048,19 @@ public class DBF implements Closeable, HasSize {
     Field tField;
     for (i = 0; i < fldcount; i++) {
       tField = getField(i);
-      if (oldField.getName().equalsIgnoreCase(tField.getName())) break;
+      if (oldField.getName().equalsIgnoreCase(tField.getName())) {
+        break;
+      }
     }
-    if (i > fldcount)
+    if (i > fldcount) {
       throw new xBaseJException("Field: " + oldField.getName() + " does not exist.");
+    }
 
     for (j = 0; j < fldcount; j++) {
       tField = getField(j);
-      if (newField.getName().equalsIgnoreCase(tField.getName()) && (j != i))
+      if (newField.getName().equalsIgnoreCase(tField.getName()) && j != i) {
         throw new xBaseJException("Field: " + newField.getName() + " already exists.");
+      }
     }
   }
 
@@ -1016,8 +1098,12 @@ public class DBF implements Closeable, HasSize {
    * @throws xBaseJException index value incorrect
    */
   public Index getIndex(int indexPosition) throws xBaseJException {
-    if (indexPosition < 1) throw new xBaseJException("Index position too small");
-    if (indexPosition > jNDXes.size()) throw new xBaseJException("Index position too large");
+    if (indexPosition < 1) {
+      throw new xBaseJException("Index position too small");
+    }
+    if (indexPosition > jNDXes.size()) {
+      throw new xBaseJException("Index position too large");
+    }
     return jNDXes.elementAt(indexPosition - 1);
   }
 
@@ -1039,8 +1125,11 @@ public class DBF implements Closeable, HasSize {
         return jNDX;
       }
     }
-    if (readonly) jNDX = new NDX(filename, this, 'r');
-    else jNDX = new NDX(filename, this, ' ');
+    if (readonly) {
+      jNDX = new NDX(filename, this, 'r');
+    } else {
+      jNDX = new NDX(filename, this, ' ');
+    }
     jNDXes.addElement(jNDX);
     return jNDX;
   }
@@ -1107,7 +1196,9 @@ public class DBF implements Closeable, HasSize {
    * @throws xBaseJException no MDX file tagname not found
    */
   public Index useTag(String tagname) throws xBaseJException {
-    if (MDXfile == null) throw new xBaseJException("No MDX file associated with this database");
+    if (MDXfile == null) {
+      throw new xBaseJException("No MDX file associated with this database");
+    }
     jNDX = MDXfile.getMDX(tagname);
     return jNDX;
   }
@@ -1169,7 +1260,9 @@ public class DBF implements Closeable, HasSize {
    */
   public Index createTag(String tagname, String tagIndex, boolean unique)
       throws xBaseJException, IOException {
-    if (MDXfile == null) throw new xBaseJException("No MDX file associated with this database");
+    if (MDXfile == null) {
+      throw new xBaseJException("No MDX file associated with this database");
+    }
     jNDX = MDXfile.createTag(tagname, tagIndex, unique);
     jNDXes.addElement(jNDX);
     return jNDX;
@@ -1186,11 +1279,17 @@ public class DBF implements Closeable, HasSize {
    * @throws IOException Java error caused by called methods
    */
   public boolean find(String keyString, boolean lock) throws xBaseJException, IOException {
-    if (jNDX == null) throw new xBaseJException("Index not defined");
+    if (jNDX == null) {
+      throw new xBaseJException("Index not defined");
+    }
     int r = jNDX.find_entry(keyString);
-    if (r < 1) throw new xBaseJException("Record not found");
+    if (r < 1) {
+      throw new xBaseJException("Record not found");
+    }
 
-    if (lock) lockRecord(r);
+    if (lock) {
+      lockRecord(r);
+    }
 
     gotoRecord(r);
 
@@ -1223,12 +1322,18 @@ public class DBF implements Closeable, HasSize {
    */
   public boolean find(String keyString, int recno, boolean lock)
       throws xBaseJException, IOException {
-    if (jNDX == null) throw new xBaseJException("Index not defined");
+    if (jNDX == null) {
+      throw new xBaseJException("Index not defined");
+    }
 
     int r = jNDX.find_entry(keyString, recno);
-    if (r < 1) throw new xBaseJException("Record not found");
+    if (r < 1) {
+      throw new xBaseJException("Record not found");
+    }
 
-    if (lock) lockRecord();
+    if (lock) {
+      lockRecord();
+    }
 
     gotoRecord(r);
 
@@ -1260,12 +1365,18 @@ public class DBF implements Closeable, HasSize {
    * @throws IOException Java error caused by called methods
    */
   public boolean findExact(String keyString, boolean lock) throws xBaseJException, IOException {
-    if (jNDX == null) throw new xBaseJException("Index not defined");
+    if (jNDX == null) {
+      throw new xBaseJException("Index not defined");
+    }
     int r = jNDX.find_entry(keyString);
-    if (r < 1) return false;
+    if (r < 1) {
+      return false;
+    }
 
     if (jNDX.didFindFindExact()) {
-      if (lock) lockRecord();
+      if (lock) {
+        lockRecord();
+      }
       gotoRecord(r);
     }
 
@@ -1295,11 +1406,17 @@ public class DBF implements Closeable, HasSize {
    * @throws IOException Java error caused by called methods
    */
   public void findNext(boolean lock) throws xBaseJException, IOException {
-    if (jNDX == null) throw new xBaseJException("Index not defined");
+    if (jNDX == null) {
+      throw new xBaseJException("Index not defined");
+    }
     int r = jNDX.get_next_key();
-    if (r == -1) throw new xBaseJException("End Of File");
+    if (r == -1) {
+      throw new xBaseJException("End Of File");
+    }
 
-    if (lock) lockRecord();
+    if (lock) {
+      lockRecord();
+    }
     gotoRecord(r);
   }
 
@@ -1325,11 +1442,17 @@ public class DBF implements Closeable, HasSize {
    * @throws IOException Java error caused by called methods
    */
   public void findPrev(boolean lock) throws xBaseJException, IOException {
-    if (jNDX == null) throw new xBaseJException("Index not defined");
+    if (jNDX == null) {
+      throw new xBaseJException("Index not defined");
+    }
     int r = jNDX.get_prev_key();
-    if (r == -1) throw new xBaseJException("Top Of File");
+    if (r == -1) {
+      throw new xBaseJException("Top Of File");
+    }
 
-    if (lock) lockRecord();
+    if (lock) {
+      lockRecord();
+    }
 
     gotoRecord(r);
   }
@@ -1356,11 +1479,15 @@ public class DBF implements Closeable, HasSize {
    */
   public void read(boolean lock) throws xBaseJException, IOException {
 
-    if (current_record == count) throw new xBaseJException("End Of File");
+    if (current_record == count) {
+      throw new xBaseJException("End Of File");
+    }
 
     current_record++;
 
-    if (lock) lockRecord();
+    if (lock) {
+      lockRecord();
+    }
 
     gotoRecord(current_record);
   }
@@ -1386,10 +1513,14 @@ public class DBF implements Closeable, HasSize {
    */
   public void readPrev(boolean lock) throws xBaseJException, IOException {
 
-    if (current_record < 1) throw new xBaseJException("Top Of File");
+    if (current_record < 1) {
+      throw new xBaseJException("Top Of File");
+    }
 
     current_record--;
-    if (lock) lockRecord();
+    if (lock) {
+      lockRecord();
+    }
     gotoRecord(current_record);
   }
 
@@ -1418,12 +1549,14 @@ public class DBF implements Closeable, HasSize {
     /** goes to a specific record in the database */
     int i;
     Field tField;
-    if ((recno > count) || (recno < 1)) {
+    if (recno > count || recno < 1) {
       throw new xBaseJException("Invalid Record Number " + recno);
     }
     current_record = recno;
 
-    if (lock) lockRecord();
+    if (lock) {
+      lockRecord();
+    }
 
     seek(recno - 1);
 
@@ -1470,8 +1603,11 @@ public class DBF implements Closeable, HasSize {
    * @throws IOException Java error caused by called methods
    */
   public void startTop() throws xBaseJException, IOException {
-    if (jNDX == null) current_record = 0;
-    else jNDX.position_at_first();
+    if (jNDX == null) {
+      current_record = 0;
+    } else {
+      jNDX.position_at_first();
+    }
   }
 
   /**
@@ -1484,8 +1620,11 @@ public class DBF implements Closeable, HasSize {
    * @throws IOException Java error caused by called methods
    */
   public void startBottom() throws xBaseJException, IOException {
-    if (jNDX == null) current_record = count + 1;
-    else jNDX.position_at_last();
+    if (jNDX == null) {
+      current_record = count + 1;
+    } else {
+      jNDX.position_at_last();
+    }
   }
 
   /**
@@ -1508,7 +1647,9 @@ public class DBF implements Closeable, HasSize {
       NDXes = jNDXes.elementAt(i - 1);
       NDXes.check_for_duplicates(Index.findFirstMatchingKey);
     }
-    if (lock) lock();
+    if (lock) {
+      lock();
+    }
     read_dbhead();
 
     seek(count);
@@ -1533,27 +1674,30 @@ public class DBF implements Closeable, HasSize {
       buffer.position(0);
       channel.write(buffer);
       wb = ' ';
-      for (i = 0; i < lrecl; i++) file.writeByte(wb);
-      ;
+      for (i = 0; i < lrecl; i++) {
+        file.writeByte(wb);
+      }
     }
 
     for (i = 1; i <= jNDXes.size(); i++) {
       NDXes = jNDXes.elementAt(i - 1);
-      NDXes.add_entry((count + 1));
+      NDXes.add_entry(count + 1);
     }
 
     count++;
     update_dbhead();
     current_record = count;
 
-    if (lock) unlock();
+    if (lock) {
+      unlock();
+    }
 
     unlockRecord();
-    
-    modified=true;
+
+    modified = true;
   }
-  
-  protected boolean modified=false;
+
+  protected boolean modified = false;
 
   /**
    * used to write a new record in the database. when done the record pointer is at the end of the
@@ -1579,11 +1723,13 @@ public class DBF implements Closeable, HasSize {
     int i;
     Field tField;
 
-    if ((current_record < 1) || (current_record > count)) {
+    if (current_record < 1 || current_record > count) {
       throw new xBaseJException("Invalid current record pointer");
     }
 
-    if (lock) lock();
+    if (lock) {
+      lock();
+    }
 
     seek(current_record - 1);
 
@@ -1606,8 +1752,11 @@ public class DBF implements Closeable, HasSize {
 
     for (i = 0; i < fldcount; i++) {
       tField = fld_root.elementAt(i);
-      if (tField.isMemoField()) tField.update();
-      else tField.write();
+      if (tField.isMemoField()) {
+        tField.update();
+      } else {
+        tField.write();
+      }
     }
 
     buffer.position(0);
@@ -1618,10 +1767,12 @@ public class DBF implements Closeable, HasSize {
       NDXes.update(current_record);
     }
 
-    if (lock) unlock();
+    if (lock) {
+      unlock();
+    }
 
     unlockRecord();
-    modified=true;
+    modified = true;
   }
 
   /**
@@ -1636,7 +1787,7 @@ public class DBF implements Closeable, HasSize {
 
   protected void seek(long recno) throws IOException {
 
-    long calcpos = (offset + (lrecl * recno));
+    long calcpos = offset + lrecl * recno;
     file.seek(calcpos);
   }
 
@@ -1680,7 +1831,9 @@ public class DBF implements Closeable, HasSize {
   @Override
   public void close() throws IOException {
 
-    if (dbtobj != null) dbtobj.close();
+    if (dbtobj != null) {
+      dbtobj.close();
+    }
 
     Index NDXes;
     NDX n;
@@ -1695,14 +1848,16 @@ public class DBF implements Closeable, HasSize {
       }
     } // end test for null jNDXes 20091010_rth
 
-    if (MDXfile != null) MDXfile.close();
+    if (MDXfile != null) {
+      MDXfile.close();
+    }
 
     dbtobj = null;
     jNDXes = null;
     MDXfile = null;
     unlock();
     if (modified) {
-    	verifySizeIsCorrect();
+      verifySizeIsCorrect();
     }
     file.close();
   }
@@ -1715,7 +1870,7 @@ public class DBF implements Closeable, HasSize {
    *     number of fields
    */
   public Field getField(int i) throws ArrayIndexOutOfBoundsException, xBaseJException {
-    if ((i < 1) || (i > fldcount)) {
+    if (i < 1 || i > fldcount) {
       throw new xBaseJException("Invalid Field number");
     }
 
@@ -1749,7 +1904,7 @@ public class DBF implements Closeable, HasSize {
 
   /** returns true if record is marked for deletion */
   public boolean deleted() {
-    return (delete_ind == DELETED);
+    return delete_ind == DELETED;
   }
 
   protected void db_offset(DBFTypes format, boolean memoPresent) {
@@ -1800,18 +1955,23 @@ public class DBF implements Closeable, HasSize {
   }
 
   public void update_dbhead() throws IOException {
-    if (readonly) return;
+    if (readonly) {
+      return;
+    }
     short currentrecord = 0;
 
     file.seek(0);
 
     Calendar d = Calendar.getInstance();
 
-    if (d.get(Calendar.YEAR) < 2000) l_update[0] = (byte) (d.get(Calendar.YEAR) - 1900);
-    else l_update[0] = (byte) (d.get(Calendar.YEAR) - 2000);
+    if (d.get(Calendar.YEAR) < 2000) {
+      l_update[0] = (byte) (d.get(Calendar.YEAR) - 1900);
+    } else {
+      l_update[0] = (byte) (d.get(Calendar.YEAR) - 2000);
+    }
 
     l_update[1] = (byte) (d.get(Calendar.MONTH) + 1);
-    l_update[2] = (byte) (d.get(Calendar.DAY_OF_MONTH));
+    l_update[2] = (byte) d.get(Calendar.DAY_OF_MONTH);
 
     file.writeByte(version.getValue());
     file.write(l_update, 0, 3);
@@ -1827,18 +1987,18 @@ public class DBF implements Closeable, HasSize {
     file.write(language);
     file.write(reserve2, 0, 2);
   }
-  
+
   protected void verifySizeIsCorrect() throws IOException {
-	  /*
-	     * xBaseJ foxpro foxplus output is 1 byte longer than raw calculation? (and is rejected by Visual FoxPro!)
-	     */
-	  if (!file.getChannel().isOpen()) {
-		  return;
-	  }
-	    long fileSize = (offset + (lrecl * count)) + 1;
-	    if (file.getChannel().size() != fileSize) {
-	      file.setLength(fileSize);
-	    }
+    /*
+     * xBaseJ foxpro foxplus output is 1 byte longer than raw calculation? (and is rejected by Visual FoxPro!)
+     */
+    if (!file.getChannel().isOpen()) {
+      return;
+    }
+    long fileSize = offset + lrecl * count + 1;
+    if (file.getChannel().size() != fileSize) {
+      file.setLength(fileSize);
+    }
   }
 
   protected Field read_Field_header() throws IOException, xBaseJException {
@@ -1852,16 +2012,17 @@ public class DBF implements Closeable, HasSize {
     int iLength;
     int decpoint;
 
-    if (file.getFilePointer()+byter.length>file.length()) {
-    	return null;
+    if (file.getFilePointer() + byter.length > file.length()) {
+      return null;
     }
-    
+
     file.readFully(byter, 0, 11);
     if (byter[0] == 0x0d) {
       return null;
     }
 
-    for (i = 0; i < 12 && byter[i] != 0; i++) ;
+    for (i = 0; i < 12 && byter[i] != 0; i++) {;
+    }
     try {
       name = new String(byter, 0, i, DBF.encodedType);
     } catch (UnsupportedEncodingException UEE) {
@@ -1873,15 +2034,20 @@ public class DBF implements Closeable, HasSize {
     file.readFully(byter, 0, 4);
 
     length = file.readByte();
-    if (length > 0) iLength = length;
-    else iLength = 256 + length;
+    if (length > 0) {
+      iLength = length;
+    } else {
+      iLength = 256 + length;
+    }
     decpoint = file.readByte();
 
     file.readFully(byter, 0, 14);
 
     switch (type) {
       case CharField.type:
-        if (decpoint > 0) iLength += decpoint * 256;
+        if (decpoint > 0) {
+          iLength += decpoint * 256;
+        }
         tField = new CharField(name, iLength, buffer);
         break;
       case DateField.type:
@@ -1932,14 +2098,20 @@ public class DBF implements Closeable, HasSize {
     } catch (UnsupportedEncodingException UEE) {
       b = tField.getName().toUpperCase().getBytes();
     }
-    for (int x = 0; x < b.length; x++) byter[x] = b[x];
+    for (int x = 0; x < b.length; x++) {
+      byter[x] = b[x];
+    }
 
     file.write(byter, 0, nameLength);
 
-    for (i = 0; i < 14; i++) byter[i] = 0;
+    for (i = 0; i < 14; i++) {
+      byter[i] = 0;
+    }
 
     file.writeByte(0);
-    if (nameLength < 10) file.write(byter, 0, 10 - nameLength);
+    if (nameLength < 10) {
+      file.write(byter, 0, 10 - nameLength);
+    }
 
     file.writeByte(tField.getType());
 
@@ -1953,7 +2125,9 @@ public class DBF implements Closeable, HasSize {
       file.writeByte(tField.getDecimalPositionCount());
     }
 
-    if (version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO) byter[2] = 1;
+    if (version == DBFTypes.DBASEIII || version == DBFTypes.DBASEIII_WITH_MEMO) {
+      byter[2] = 1;
+    }
 
     file.write(byter, 0, 14);
   }
@@ -1980,7 +2154,9 @@ public class DBF implements Closeable, HasSize {
     }
 
     String parent = ffile.getParent();
-    if (parent == null) parent = ".";
+    if (parent == null) {
+      parent = ".";
+    }
 
     File f = File.createTempFile("tempxbase", "tmp");
     String tempname = f.getAbsolutePath();
@@ -2041,11 +2217,15 @@ public class DBF implements Closeable, HasSize {
 
     read_dbhead();
 
-    for (i = 1; i <= fldcount; i++) getField(i).setBuffer(buffer);
+    for (i = 1; i <= fldcount; i++) {
+      getField(i).setBuffer(buffer);
+    }
 
     Index NDXes;
 
-    if (MDXfile != null) MDXfile.reIndex();
+    if (MDXfile != null) {
+      MDXfile.reIndex();
+    }
 
     if (jNDXes.size() == 0) {
       current_record = 0;
@@ -2055,7 +2235,9 @@ public class DBF implements Closeable, HasSize {
         NDXes.reIndex();
       }
       NDXes = jNDXes.elementAt(0);
-      if (count > 0) startTop();
+      if (count > 0) {
+        startTop();
+      }
     }
   }
 
@@ -2096,7 +2278,9 @@ public class DBF implements Closeable, HasSize {
   public File getXML(String inFileName) throws IOException, xBaseJException {
 
     File file = new File(inFileName);
-    if (file.exists()) file.delete();
+    if (file.exists()) {
+      file.delete();
+    }
     FileOutputStream fos = new FileOutputStream(file);
     PrintWriter pw = new PrintWriter(fos, true);
     getXML(pw);
@@ -2121,17 +2305,21 @@ public class DBF implements Closeable, HasSize {
       fld = getField(i);
       pw.print("  <field name=\"" + fld.getName() + "\"");
       pw.print(" type=\"" + fld.getType() + "\"");
-      if ((fld.getType() == 'C') || (fld.getType() == 'N') || (fld.getType() == 'F'))
+      if (fld.getType() == 'C' || fld.getType() == 'N' || fld.getType() == 'F') {
         pw.print(" length=\"" + fld.getLength() + "\"");
-      if ((fld.getType() == 'N') || (fld.getType() == 'F'))
+      }
+      if (fld.getType() == 'N' || fld.getType() == 'F') {
         pw.print(" decimalPos=\"" + fld.getDecimalPositionCount() + "\"");
+      }
       pw.println("/>");
     }
     int j;
     for (j = 1; j <= getRecordCount(); j++) {
       gotoRecord(j);
       pw.print("  <record");
-      if (deleted()) pw.print(" deleted=\"Y\"");
+      if (deleted()) {
+        pw.print(" deleted=\"Y\"");
+      }
       pw.println(">");
       for (i = 1; i <= getFieldCount(); i++) {
         fld = getField(i);

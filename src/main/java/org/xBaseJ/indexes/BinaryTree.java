@@ -62,38 +62,54 @@ public class BinaryTree extends Object {
 
     if (top != null) {
       above = top.findPos(key);
-      if (above.getKey().compareKey(inkey) > 0) above.setLesser(this);
-      else above.setGreater(this);
+      if (above.getKey().compareKey(inkey) > 0) {
+        above.setLesser(this);
+      } else {
+        above.setGreater(this);
+      }
     }
   }
 
   private BinaryTree findPos(NodeKey inkey) {
 
-    if (key.compareKey(inkey) > 0)
-      if (lesser == null) return this;
-      else return (lesser.findPos(inkey));
-    else if (greater == null) return this;
-    return (greater.findPos(inkey));
+    if (key.compareKey(inkey) > 0) {
+      if (lesser == null) {
+        return this;
+      } else {
+        return lesser.findPos(inkey);
+      }
+    } else if (greater == null) {
+      return this;
+    }
+    return greater.findPos(inkey);
   }
 
   public BinaryTree getLeast() {
     if (lesser != null) {
-      return (lesser.getLeast());
+      return lesser.getLeast();
     }
     return this;
   }
 
   public BinaryTree getNext() {
-    if (greater == null)
-      if (above == null) return null;
-      else return above.goingUp(key);
+    if (greater == null) {
+      if (above == null) {
+        return null;
+      } else {
+        return above.goingUp(key);
+      }
+    }
     return greater.getLeast();
   }
 
   private BinaryTree goingUp(NodeKey inKey) {
-    if (key.compareKey(inKey) <= 0)
-      if (above == null) return null;
-      else return above.goingUp(key);
+    if (key.compareKey(inKey) <= 0) {
+      if (above == null) {
+        return null;
+      } else {
+        return above.goingUp(key);
+      }
+    }
     return this;
   }
 }

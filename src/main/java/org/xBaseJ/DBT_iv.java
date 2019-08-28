@@ -50,7 +50,9 @@ public class DBT_iv extends DBTFile {
     super(iDBF, name, destroy, DBFTypes.DBASEIV_WITH_MEMO);
     nextBlock = 1;
     file.writeInt(Util.x86(nextBlock));
-    for (int i = 0; i < 16; i++) file.writeByte(0);
+    for (int i = 0; i < 16; i++) {
+      file.writeByte(0);
+    }
     memoBlockSize = 512;
     file.writeInt(Util.x86(memoBlockSize));
   }
@@ -61,13 +63,21 @@ public class DBT_iv extends DBTFile {
   @Override
   public byte[] readBytes(byte[] input) throws IOException, xBaseJException {
     for (int i = 0; i < input.length; i++) {
-      if (input[i] == 0) input[i] = BYTESPACE;
+      if (input[i] == 0) {
+        input[i] = BYTESPACE;
+      }
     }
     String sPos = new String(input, 0, input.length).trim();
-    if (sPos.length() == 0) return null;
+    if (sPos.length() == 0) {
+      return null;
+    }
     long lPos = Long.parseLong(sPos.trim());
-    if (lPos == 0) return null;
-    if (lPos * memoBlockSize >= file.length()) return null;
+    if (lPos == 0) {
+      return null;
+    }
+    if (lPos * memoBlockSize >= file.length()) {
+      return null;
+    }
 
     file.seek(lPos * memoBlockSize);
 
@@ -77,7 +87,9 @@ public class DBT_iv extends DBTFile {
 
     int lastind = Util.x86(file.readInt());
 
-    if (lastind != LAST_IND) throw new xBaseJException("Unexpected encounter in read text file");
+    if (lastind != LAST_IND) {
+      throw new xBaseJException("Unexpected encounter in read text file");
+    }
 
     int size = Util.x86(file.readInt());
 
@@ -109,14 +121,17 @@ public class DBT_iv extends DBTFile {
       return breturn;
     }
 
-    if ((originalSize == 0) && (value.length() > 0)) madebigger = true;
-    else if (((value.length() / memoBlockSize) + 1) > ((originalSize / memoBlockSize) + 1))
+    if (originalSize == 0 && value.length() > 0) {
       madebigger = true;
-    else madebigger = false;
+    } else if (value.length() / memoBlockSize + 1 > originalSize / memoBlockSize + 1) {
+      madebigger = true;
+    } else {
+      madebigger = false;
+    }
 
     if (madebigger || write) {
       startPos = nextBlock;
-      nextBlock += ((value.length() + 2) / memoBlockSize) + 1;
+      nextBlock += (value.length() + 2) / memoBlockSize + 1;
       lastused = 0;
     } else {
       String sPos;
@@ -128,7 +143,7 @@ public class DBT_iv extends DBTFile {
     length = value.length();
 
     length += 8;
-    pos = (length / memoBlockSize) + 1;
+    pos = length / memoBlockSize + 1;
 
     last_stop = next_stop = 0;
     while (true) {
@@ -141,8 +156,9 @@ public class DBT_iv extends DBTFile {
         break;
       }
 
-      if (nextavail == LAST_IND)
+      if (nextavail == LAST_IND) {
         throw new xBaseJException("Error while writing to memo file, unexpected encounter");
+      }
 
       bytes_blocks_used = Util.x86(file.readInt());
 
@@ -168,7 +184,9 @@ public class DBT_iv extends DBTFile {
 
     file.write(buffer, 0, length);
 
-    if (eof || lastused == 0) nextavail += pos;
+    if (eof || lastused == 0) {
+      nextavail += pos;
+    }
 
     if (eof) {
       long longnextavail = nextavail;
@@ -197,11 +215,15 @@ public class DBT_iv extends DBTFile {
 
     byte ten[] = new byte[10];
 
-    for (pos = 0; pos < (10 - returnString.length()); pos++) ten[pos] = BYTEZERO;
+    for (pos = 0; pos < 10 - returnString.length(); pos++) {
+      ten[pos] = BYTEZERO;
+    }
 
     byte b[];
     b = returnString.getBytes();
-    for (int x = 0; x < b.length; x++, pos++) ten[pos] = b[x];
+    for (int x = 0; x < b.length; x++, pos++) {
+      ten[pos] = b[x];
+    }
 
     return ten;
   }
@@ -210,11 +232,15 @@ public class DBT_iv extends DBTFile {
   public byte[] readBytesByInt(byte[] input) throws IOException, xBaseJException {
 
     long lPos =
-        (java.nio.ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN).getInt()
-            & 0x00000000ffffffffL);
+        java.nio.ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN).getInt()
+            & 0x00000000ffffffffL;
 
-    if (lPos == 0) return null;
-    if (lPos * memoBlockSize >= file.length()) return null;
+    if (lPos == 0) {
+      return null;
+    }
+    if (lPos * memoBlockSize >= file.length()) {
+      return null;
+    }
 
     file.seek(lPos * memoBlockSize);
 
@@ -224,7 +250,9 @@ public class DBT_iv extends DBTFile {
 
     int lastind = Util.x86(file.readInt());
 
-    if (lastind != LAST_IND) throw new xBaseJException("Unexpected encounter in read text file");
+    if (lastind != LAST_IND) {
+      throw new xBaseJException("Unexpected encounter in read text file");
+    }
 
     int size = Util.x86(file.readInt());
 

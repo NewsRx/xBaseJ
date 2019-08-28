@@ -93,7 +93,9 @@ public class PictureField extends Field {
     dbtobj = null;
     originalSize = 0;
     buffer = new byte[10];
-    for (int i = 0; i < 10; i++) buffer[i] = DBTFile.BYTEZERO;
+    for (int i = 0; i < 10; i++) {
+      buffer[i] = DBTFile.BYTEZERO;
+    }
     value = new String("");
   }
 
@@ -106,7 +108,9 @@ public class PictureField extends Field {
   /** return the contents of the picture Field, variant of the field.get method */
   @Override
   public String get() {
-    if (byteValue == null) return "";
+    if (byteValue == null) {
+      return "";
+    }
     try {
       return new String(byteValue, DBF.encodedType);
     } catch (UnsupportedEncodingException UEE) {
@@ -128,8 +132,11 @@ public class PictureField extends Field {
   public void read() throws IOException, xBaseJException {
     super.read();
     byteValue = dbtobj.readBytes(super.buffer);
-    if (byteValue == null) originalSize = 0;
-    else originalSize = value.length();
+    if (byteValue == null) {
+      originalSize = 0;
+    } else {
+      originalSize = value.length();
+    }
   }
 
   /**

@@ -56,7 +56,7 @@ public class TagDescriptor {
 
   public TagDescriptor(RandomAccessFile ifile, short ipos) throws IOException {
     nfile = ifile;
-    pos = (BLOCKLENGTH) + (ipos * descriptorLength);
+    pos = BLOCKLENGTH + ipos * descriptorLength;
     read();
     try {
       name = new String(tagname, DBF.encodedType).trim();
@@ -68,7 +68,7 @@ public class TagDescriptor {
   public TagDescriptor(MDXFile ifile, short ipos, String iName) throws IOException {
 
     nfile = ifile.getRAFile();
-    pos = (BLOCKLENGTH) + (ipos * descriptorLength);
+    pos = BLOCKLENGTH + ipos * descriptorLength;
     name = iName;
     byte tname[];
     try {
@@ -76,11 +76,15 @@ public class TagDescriptor {
     } catch (UnsupportedEncodingException UEE) {
       tname = iName.getBytes();
     }
-    for (int x = 0; x < tname.length; x++) tagname[x] = tname[x];
+    for (int x = 0; x < tname.length; x++) {
+      tagname[x] = tname[x];
+    }
 
     indheaderpage = ifile.getAnchor().get_nextavailable();
     keytype = (byte) ' ';
-    if (ipos > 1) backwardtag = (byte) (ipos - 1);
+    if (ipos > 1) {
+      backwardtag = (byte) (ipos - 1);
+    }
 
     Fieldflag = 16;
 
@@ -97,7 +101,7 @@ public class TagDescriptor {
   }
 
   public void resetPos(short ipos) {
-    pos = (BLOCKLENGTH) + (ipos * descriptorLength);
+    pos = BLOCKLENGTH + ipos * descriptorLength;
   }
 
   void read() throws IOException {

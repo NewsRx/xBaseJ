@@ -36,9 +36,13 @@ public class NodeKey {
 
   public NodeKey(Object keyIn) {
 
-    if (keyIn instanceof String) type = 'C';
-    else if (keyIn instanceof Double) type = 'N';
-    else if (keyIn instanceof NodeFloat) type = 'F';
+    if (keyIn instanceof String) {
+      type = 'C';
+    } else if (keyIn instanceof Double) {
+      type = 'N';
+    } else if (keyIn instanceof NodeFloat) {
+      type = 'F';
+    }
 
     key = keyIn;
   }
@@ -50,8 +54,11 @@ public class NodeKey {
   public String rebuildString(String inString) {
     char a[] = new char[inString.length()];
     for (int i = 0; i < inString.length(); i++) {
-      if (inString.charAt(i) == '_') a[i] = 31;
-      else a[i] = inString.charAt(i);
+      if (inString.charAt(i) == '_') {
+        a[i] = 31;
+      } else {
+        a[i] = inString.charAt(i);
+      }
     }
 
     return new String(a);
@@ -60,8 +67,9 @@ public class NodeKey {
   public int compareKey(NodeKey keyCompareTo) // throws new xBaseJException
       {
     int ret = 0;
-    if (type != keyCompareTo.getType())
+    if (type != keyCompareTo.getType()) {
       return -1; // throw new xBaseJException("Node key types do not
+    }
     // match");
     if (type == 'C') {
       String s = (String) key;
@@ -78,14 +86,22 @@ public class NodeKey {
     Double d = (Double) key;
 
     double d2 = d.doubleValue() - keyCompareTo.toDouble();
-    if (d2 < 0.0) return -1;
-    if (d2 > 0.0) return 1;
+    if (d2 < 0.0) {
+      return -1;
+    }
+    if (d2 > 0.0) {
+      return 1;
+    }
     return ret;
   }
 
   public int length() {
-    if (type == 'C') return ((String) key).length();
-    if (type == 'F') return 12;
+    if (type == 'C') {
+      return ((String) key).length();
+    }
+    if (type == 'F') {
+      return 12;
+    }
     return 8;
   }
 

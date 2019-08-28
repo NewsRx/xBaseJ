@@ -121,13 +121,19 @@ public class DbfShow extends Frame
       String DBFname = fd.getFile();
       String dirname = fd.getDirectory();
 
-      if (DBFname == null) System.exit(0);
-      if (DBFname.length() < 1) System.exit(0);
+      if (DBFname == null) {
+        System.exit(0);
+      }
+      if (DBFname.length() < 1) {
+        System.exit(0);
+      }
       dbname = new String(dirname + DBFname);
-    } else dbname = new String(fname);
+    } else {
+      dbname = new String(fname);
+    }
 
     MenuBar mb = new MenuBar();
-    this.setMenuBar(mb);
+    setMenuBar(mb);
     Menu file = new Menu("File");
     opener = new MenuItem("Open..");
     file.add(opener);
@@ -198,7 +204,7 @@ public class DbfShow extends Frame
     viewPane.setLayout(gb);
 
     int i, j;
-    fldObjects = new Vector<Component>(db.getFieldCount());
+    fldObjects = new Vector<>(db.getFieldCount());
     for (i = 1; i <= db.getFieldCount(); i++) {
       j = i - 1;
       f = db.getField(i);
@@ -218,9 +224,13 @@ public class DbfShow extends Frame
         addComponent(
             viewPane, l, 0, j, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST);
         int ln = f.getLength();
-        if (ln > 100) ln = 100;
+        if (ln > 100) {
+          ln = 100;
+        }
         t = new TextField(db.getField(i).getName(), ln);
-        if (width < ln * 10) width = ln * 10;
+        if (width < ln * 10) {
+          width = ln * 10;
+        }
         addComponent(
             viewPane, t, 1, j, ln, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST);
         fldObjects.addElement(t);
@@ -312,8 +322,11 @@ public class DbfShow extends Frame
       setFields();
       db.update();
       boolean b = delCB.getState();
-      if (db.deleted() && !b) db.undelete();
-      else if (!db.deleted() && b) db.delete();
+      if (db.deleted() && !b) {
+        db.undelete();
+      } else if (!db.deleted() && b) {
+        db.delete();
+      }
     } // try
     catch (Exception e1) {
       System.out.println(e1);
@@ -323,8 +336,12 @@ public class DbfShow extends Frame
 
   public void goTo(int where) {
     try {
-      if (where < 1) return;
-      if (where > db.getRecordCount()) return;
+      if (where < 1) {
+        return;
+      }
+      if (where > db.getRecordCount()) {
+        return;
+      }
       db.gotoRecord(where);
       crl.setText("Record " + db.getCurrentRecordNumber());
       delCB.setState(db.deleted());
@@ -377,8 +394,9 @@ public class DbfShow extends Frame
     for (i = 1; i <= db.getFieldCount(); i++) {
       try {
         f = db.getField(i);
-        if (f.isMemoField()) f.put("");
-        else if (f.getType() == 'L') {
+        if (f.isMemoField()) {
+          f.put("");
+        } else if (f.getType() == 'L') {
           c = (Checkbox) fldObjects.elementAt(i - 1);
           c.setState(false);
         } else {
@@ -446,12 +464,16 @@ public class DbfShow extends Frame
       return;
     }
     if (event.getSource() == Next || event.getSource() == nextRecord) {
-      if (db.getCurrentRecordNumber() < db.getRecordCount()) goTo(db.getCurrentRecordNumber() + 1);
+      if (db.getCurrentRecordNumber() < db.getRecordCount()) {
+        goTo(db.getCurrentRecordNumber() + 1);
+      }
       return;
     }
 
     if (event.getSource() == Prev || event.getSource() == prevRecord) {
-      if (db.getCurrentRecordNumber() > 1) goTo(db.getCurrentRecordNumber() - 1);
+      if (db.getCurrentRecordNumber() > 1) {
+        goTo(db.getCurrentRecordNumber() - 1);
+      }
       return;
     }
 
@@ -475,8 +497,12 @@ public class DbfShow extends Frame
       fd.setVisible(true);
       String DBFname = fd.getFile();
       String dirname = fd.getDirectory();
-      if (DBFname == null) return;
-      if (DBFname.length() < 1) return;
+      if (DBFname == null) {
+        return;
+      }
+      if (DBFname.length() < 1) {
+        return;
+      }
       String dbname = new String(dirname + DBFname);
       try {
         setupDBFields(dbname);
@@ -503,7 +529,9 @@ public class DbfShow extends Frame
         updateRecord.setEnabled(false);
         nextRecord.setEnabled(false);
         SBrecpos.setValues(0, 1, 0, 0);
-      } else goTo(1);
+      } else {
+        goTo(1);
+      }
       packer.setEnabled(true);
       return;
     }
@@ -535,8 +563,11 @@ public class DbfShow extends Frame
 
   public static void main(String[] args) throws Exception {
 
-    if (args.length == 0) new DbfShow("dbfShow", null);
-    else new DbfShow("dbfShow", args[0]);
+    if (args.length == 0) {
+      new DbfShow("dbfShow", null);
+    } else {
+      new DbfShow("dbfShow", args[0]);
+    }
   }
 
   public static void addComponent(
@@ -591,7 +622,7 @@ class memoDialog extends Dialog implements ActionListener, WindowListener {
     p.add(Cancel);
     Cancel.addActionListener(this);
     this.add("West", p);
-    this.pack();
+    pack();
   }
 
   @Override

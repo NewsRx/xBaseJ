@@ -60,10 +60,15 @@ public class MDXFile {
 
       file = new File(name);
 
-      if (!file.exists()) throw new xBaseJException("Missing mdx file:" + name);
+      if (!file.exists()) {
+        throw new xBaseJException("Missing mdx file:" + name);
+      }
 
-      if (readonly == 'r') raFile = new RandomAccessFile(file, "r");
-      else raFile = new RandomAccessFile(file, "rw");
+      if (readonly == 'r') {
+        raFile = new RandomAccessFile(file, "r");
+      } else {
+        raFile = new RandomAccessFile(file, "rw");
+      }
 
       anchor = new MDXAnchor(raFile);
       anchor.read();
@@ -111,7 +116,9 @@ public class MDXFile {
 
       byte wb[] = new byte[32];
 
-      for (i = 0; i < 32; i++) wb[i] = 0;
+      for (i = 0; i < 32; i++) {
+        wb[i] = 0;
+      }
       raFile.seek(512);
       raFile.write(wb);
 
@@ -134,7 +141,9 @@ public class MDXFile {
   public MDX getMDX(String Name) throws xBaseJException {
     int i;
     for (i = 0; i < anchor.getIndexes(); i++) {
-      if (tags[i].name.equalsIgnoreCase(Name)) return MDXes[i];
+      if (tags[i].name.equalsIgnoreCase(Name)) {
+        return MDXes[i];
+      }
     }
 
     throw new xBaseJException("Unknown tag named " + Name);
@@ -147,7 +156,9 @@ public class MDXFile {
   TagDescriptor getTagDescriptor(String Name) throws xBaseJException {
     int i;
     for (i = 0; i < anchor.getIndexes(); i++) {
-      if (tags[i].name.equalsIgnoreCase(Name)) return tags[i];
+      if (tags[i].name.equalsIgnoreCase(Name)) {
+        return tags[i];
+      }
     }
 
     throw new xBaseJException("Unknown tag named " + Name);
@@ -157,14 +168,17 @@ public class MDXFile {
       throws IOException, xBaseJException {
 
     Name = Name.toUpperCase();
-    if (anchor.getIndexes() >= maxTags)
+    if (anchor.getIndexes() >= maxTags) {
       throw new xBaseJException("Can't create another tag. Maximum of " + maxTags + " reached");
+    }
 
     try {
       getTagDescriptor(Name);
       throw new xBaseJException("Tag name already in use");
     } catch (xBaseJException e) {
-      if (!e.getMessage().startsWith("Unknown tag named")) throw e;
+      if (!e.getMessage().startsWith("Unknown tag named")) {
+        throw e;
+      }
     }
 
     short i = (short) (anchor.getIndexes() + 1);
@@ -174,7 +188,9 @@ public class MDXFile {
     anchor.write();
     MDXes[i - 1] = newMDX;
 
-    if (i > 1) tags[i - 2].updateForwardTag(i);
+    if (i > 1) {
+      tags[i - 2].updateForwardTag(i);
+    }
 
     return newMDX;
   }
@@ -195,7 +211,9 @@ public class MDXFile {
   void write_create_header() throws IOException {
     byte wb[] = new byte[32];
 
-    for (int i = 0; i < 32; i++) wb[i] = 0;
+    for (int i = 0; i < 32; i++) {
+      wb[i] = 0;
+    }
 
     raFile.seek(512);
 
@@ -217,7 +235,9 @@ public class MDXFile {
       MDXes[i].tagHead.reset(raFile);
       MDXes[i].tagHead.setPos((short) anchor.get_nextavailable());
       MDXes[i].tagHead.write();
-      if (i > 1) tags[i - 2].updateForwardTag(i);
+      if (i > 1) {
+        tags[i - 2].updateForwardTag(i);
+      }
       anchor.update_nextavailable();
     }
     anchor.setIndexes(oldIndexCount);

@@ -253,7 +253,9 @@ public class DbfViewer extends JFrame
       jfc.addChoosableFileFilter(new DbfFileFilter());
       jfc.showOpenDialog(this);
       File fil = jfc.getSelectedFile();
-      if (fil == null) return;
+      if (fil == null) {
+        return;
+      }
 
       this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
@@ -290,7 +292,9 @@ public class DbfViewer extends JFrame
     if (ae.getSource() == menuSave) {
       this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
       TableCellEditor editor = table.getCellEditor();
-      if (editor != null) editor.stopCellEditing();
+      if (editor != null) {
+        editor.stopCellEditing();
+      }
       tableModel.save();
       this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
       fileChanged = false;
@@ -314,7 +318,7 @@ public class DbfViewer extends JFrame
         horizontalView.setText("Vertical");
       }
       splitPane.resetToPreferredSizes();
-      this.pack();
+      pack();
     }
 
     if (ae.getSource() == startFind) {
@@ -335,7 +339,9 @@ public class DbfViewer extends JFrame
       for (; row < tableModel.getRowCount(); row++) {
         for (int col = 0; col < tableModel.getColumnCount() - 1; col++) {
 
-          if (searchFields[col] == false) continue;
+          if (searchFields[col] == false) {
+            continue;
+          }
 
           colText = (String) tableModel.getValueAt(row, col);
           if (colText.toUpperCase().indexOf(searchText.toUpperCase()) > -1) {
@@ -347,7 +353,9 @@ public class DbfViewer extends JFrame
           }
         }
       }
-      if (editingRow != row) Toolkit.getDefaultToolkit().beep();
+      if (editingRow != row) {
+        Toolkit.getDefaultToolkit().beep();
+      }
     }
 
     if (ae.getSource() == findPrev) {
@@ -359,7 +367,9 @@ public class DbfViewer extends JFrame
       outRow:
       for (; row > -1; row--) {
         for (int col = 0; col < tableModel.getColumnCount() - 1; col++) {
-          if (searchFields[col] == false) continue;
+          if (searchFields[col] == false) {
+            continue;
+          }
 
           colText = (String) tableModel.getValueAt(row, col);
           if (colText.toUpperCase().indexOf(searchText.toUpperCase()) > -1) {
@@ -371,14 +381,18 @@ public class DbfViewer extends JFrame
           }
         }
       }
-      if (editingRow != row) Toolkit.getDefaultToolkit().beep();
+      if (editingRow != row) {
+        Toolkit.getDefaultToolkit().beep();
+      }
     }
 
     this.repaint();
   }
 
   private boolean fileChangedTestDontContinue() {
-    if (fileChanged == false) return false;
+    if (fileChanged == false) {
+      return false;
+    }
 
     int dialogButton = JOptionPane.OK_CANCEL_OPTION;
 
@@ -490,7 +504,7 @@ public class DbfViewer extends JFrame
       totalNumPages++;
     }
 
-    totalNumPages *= (subTableSplitSize - 1);
+    totalNumPages *= subTableSplitSize - 1;
     pageinfoCalculated = true;
   }
 
@@ -534,11 +548,15 @@ public class DbfViewer extends JFrame
     String colText;
 
     int row = table.getEditingRow();
-    if (row < 0) row = 1;
+    if (row < 0) {
+      row = 1;
+    }
 
     for (; row < tableModel.getRowCount(); row++) {
       for (int col = 0; col < tableModel.getColumnCount() - 1; col++) {
-        if (searchFields[col] == false) continue;
+        if (searchFields[col] == false) {
+          continue;
+        }
 
         colText = (String) tableModel.getValueAt(row, col);
         if (colText.toUpperCase().indexOf(searchText.toUpperCase()) > -1) {
@@ -559,8 +577,11 @@ public class DbfViewer extends JFrame
 
     DbfViewer frame;
 
-    if (args.length == 0) frame = new DbfViewer(null);
-    else frame = new DbfViewer(args[0]);
+    if (args.length == 0) {
+      frame = new DbfViewer(null);
+    } else {
+      frame = new DbfViewer(args[0]);
+    }
 
     frame.setSize(888, 1111);
     frame.setVisible(true);
@@ -594,8 +615,8 @@ public class DbfViewer extends JFrame
   @Override
   public void valueChanged(ListSelectionEvent e) {
     ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-    if (lsm.isSelectionEmpty()) ;
-    else {
+    if (lsm.isSelectionEmpty()) {;
+    } else {
       dbfrp.goTo(lsm.getMinSelectionIndex() + 1);
       editingRow = lsm.getMinSelectionIndex();
     }
@@ -618,7 +639,9 @@ public class DbfViewer extends JFrame
     Document doc = de.getDocument();
     int col = Integer.parseInt((String) doc.getProperty("name"));
     int len = doc.getLength();
-    if (editingRow == -1) editingRow = 0;
+    if (editingRow == -1) {
+      editingRow = 0;
+    }
     try {
       String text = doc.getText(0, len);
       tableModel.setValueAt(text, editingRow, col);
@@ -666,15 +689,19 @@ class dbfTableModel extends AbstractTableModel {
         currentDBF.gotoRecord(r + 1);
         for (int k = 0; k < columnCount - 1; k++) {
           inString = "Field " + k;
-          if (fld[r][k] instanceof String) currentDBF.getField(k + 1).put((String) fld[r][k]);
-          else if (fld[r][k] instanceof Boolean) {
+          if (fld[r][k] instanceof String) {
+            currentDBF.getField(k + 1).put((String) fld[r][k]);
+          } else if (fld[r][k] instanceof Boolean) {
             Boolean bf = (Boolean) fld[r][k];
             currentDBF.getField(k + 1).put(bf.booleanValue() ? "T" : "F");
           }
         }
         Boolean b = deleted[r];
-        if (b.booleanValue()) currentDBF.delete();
-        else currentDBF.undelete();
+        if (b.booleanValue()) {
+          currentDBF.delete();
+        } else {
+          currentDBF.undelete();
+        }
         currentDBF.update();
       } // for each record
 
@@ -704,8 +731,11 @@ class dbfTableModel extends AbstractTableModel {
 
     try {
 
-      if (currentDBF.getField(c + 1).getType() == 'L') fld[r][c] = in;
-      else fld[r][c] = in;
+      if (currentDBF.getField(c + 1).getType() == 'L') {
+        fld[r][c] = in;
+      } else {
+        fld[r][c] = in;
+      }
     }
 
     /*
@@ -778,9 +808,11 @@ class dbfTableModel extends AbstractTableModel {
       for (r = 0; r < rowCount; r++) {
         currentDBF.gotoRecord(r + 1);
         for (k = 0; k < columnCount - 1; k++) {
-          if (currentDBF.getField(k + 1).getType() == 'L')
+          if (currentDBF.getField(k + 1).getType() == 'L') {
             fld[r][k] = Boolean.valueOf(currentDBF.getField(k + 1).get().compareTo("T") == 0);
-          else fld[r][k] = currentDBF.getField(k + 1).get();
+          } else {
+            fld[r][k] = currentDBF.getField(k + 1).get();
+          }
         }
         deleted[r] = Boolean.valueOf(currentDBF.deleted());
       }
@@ -844,7 +876,7 @@ class dbfViewerRecordPanel extends JPanel implements ActionListener {
 
     int i;
     if (tableModel.getColumnCount() > 0) {
-      fldObjects = new Vector<Component>(tableModel.getColumnCount() - 1);
+      fldObjects = new Vector<>(tableModel.getColumnCount() - 1);
       Field f;
       for (i = 0; i < tableModel.getColumnCount() - 1; i++) {
 
@@ -865,14 +897,18 @@ class dbfViewerRecordPanel extends JPanel implements ActionListener {
           l = new JLabel(f.getName(), Label.RIGHT);
           addComponent(this, l, 0, i, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST);
           int ln = f.getLength();
-          if (ln > 100) ln = 100;
+          if (ln > 100) {
+            ln = 100;
+          }
           t = new JTextField(f.getName(), ln);
           t.setName(f.getName());
           t.setActionCommand("T" + i);
           t.getDocument().addDocumentListener(parent);
           t.getDocument().putProperty("name", "" + i);
           t.setEditable(true);
-          if (width < ln * 10) width = ln * 10;
+          if (width < ln * 10) {
+            width = ln * 10;
+          }
           addComponent(
               this, t, 1, i, ln, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.EAST);
           fldObjects.addElement(t);
@@ -898,7 +934,7 @@ class dbfViewerRecordPanel extends JPanel implements ActionListener {
     switch (e.getActionCommand().charAt(0)) {
       case 'M':
         parent.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
         new dbfTableRecordMemoDialog(parent, this, tableModel, parent.editingRow, col)
             .setVisible(true);
         break;
@@ -919,8 +955,12 @@ class dbfViewerRecordPanel extends JPanel implements ActionListener {
   public void goTo(int where) {
     parent.editingRow = where - 1;
     try {
-      if (where < 1) return;
-      if (where > tableModel.getRowCount()) return;
+      if (where < 1) {
+        return;
+      }
+      if (where > tableModel.getRowCount()) {
+        return;
+      }
 
       Field f;
 
@@ -1011,17 +1051,17 @@ class dbfTableRecordMemoDialog extends JDialog implements ActionListener, Window
     JScrollPane jsp = new JScrollPane(text);
     jsp.setPreferredSize(new Dimension(230, 160));
     jsp.setBorder(BorderFactory.createEtchedBorder());
-    this.getContentPane().add("Center", jsp);
+    getContentPane().add("Center", jsp);
 
     JPanel p = new JPanel();
     p.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
     p.add(Okay);
     Okay.addActionListener(this);
-    this.getContentPane().add("East", p);
+    getContentPane().add("East", p);
     p.add(Cancel);
     Cancel.addActionListener(this);
-    this.getContentPane().add("West", p);
-    this.pack();
+    getContentPane().add("West", p);
+    pack();
 
     class KeyDispatcher implements KeyEventDispatcher {
 
@@ -1110,11 +1150,13 @@ class dbfViewerSearchDialog extends JDialog implements ActionListener, WindowLis
     jcb = new JCheckBox[inModel.getColumnCount() - 1];
     for (int i = 0; i < inModel.getColumnCount() - 1; i++) {
       jcb[i] = new JCheckBox(inModel.getColumnName(i));
-      if (i < inFields.length) jcb[i].setSelected(inFields[i]);
+      if (i < inFields.length) {
+        jcb[i].setSelected(inFields[i]);
+      }
       p.add(jcb[i]);
     }
 
-    this.getContentPane().add("Center", p);
+    getContentPane().add("Center", p);
 
     JPanel p2 = new JPanel();
     p2.setLayout(new GridLayout(1, 0));
@@ -1124,8 +1166,8 @@ class dbfViewerSearchDialog extends JDialog implements ActionListener, WindowLis
     p2.add(Cancel);
     Cancel.addActionListener(this);
 
-    this.getContentPane().add("South", p2);
-    this.pack();
+    getContentPane().add("South", p2);
+    pack();
   }
 
   @Override
@@ -1148,7 +1190,9 @@ class dbfViewerSearchDialog extends JDialog implements ActionListener, WindowLis
       }
       int i;
       for (i = 0; i < model.getColumnCount() - 1; i++) {
-        if (jcb[i].isSelected()) break;
+        if (jcb[i].isSelected()) {
+          break;
+        }
       }
 
       if (i == model.getColumnCount() - 1) {

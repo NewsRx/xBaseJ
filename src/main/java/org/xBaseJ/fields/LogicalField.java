@@ -118,7 +118,9 @@ public class LogicalField extends Field {
       inValue = mapper.map(inValue);
     }
     String value = inValue.trim();
-    if (Util.dontTrimFields() == false) value = inValue;
+    if (Util.dontTrimFields() == false) {
+      value = inValue;
+    }
 
     if (value.length() == 0) {
       put(false);
@@ -136,6 +138,7 @@ public class LogicalField extends Field {
    *
    * @throws xBaseJException most likely a format exception
    */
+  @Override
   public void put(char inValue) throws xBaseJException {
     switch (inValue) {
       case 'Y':
@@ -172,8 +175,11 @@ public class LogicalField extends Field {
 
   /** allows input true or false */
   public void put(boolean inValue) {
-    if (inValue) buffer[0] = BYTETRUE;
-    else buffer[0] = BYTEFALSE;
+    if (inValue) {
+      buffer[0] = BYTETRUE;
+    } else {
+      buffer[0] = BYTEFALSE;
+    }
   }
   /**
    * allows input true or false
@@ -195,6 +201,6 @@ public class LogicalField extends Field {
 
   /** returns true or false */
   public boolean getBoolean() {
-    return ((buffer[0] == BYTETRUE));
+    return buffer[0] == BYTETRUE;
   }
 }

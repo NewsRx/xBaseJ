@@ -75,7 +75,9 @@ public class MDXAnchor {
     } catch (UnsupportedEncodingException UEE) {
       dname = Name.substring(0, Math.min(16, Name.length())).getBytes();
     }
-    for (int x = 0; x < dname.length; x++) DBFname[x] = dname[x];
+    for (int x = 0; x < dname.length; x++) {
+      DBFname[x] = dname[x];
+    }
     production = 1;
     nextAvailable = 4;
     blocksize = 2;
@@ -139,7 +141,7 @@ public class MDXAnchor {
     Calendar d = Calendar.getInstance();
     lastreIndex[0] = (byte) (d.get(Calendar.YEAR) - 1900);
     lastreIndex[1] = (byte) (d.get(Calendar.MONTH) + 1);
-    lastreIndex[2] = (byte) (d.get(Calendar.DAY_OF_MONTH));
+    lastreIndex[2] = (byte) d.get(Calendar.DAY_OF_MONTH);
 
     nfile.write(lastreIndex);
     nfile.write(DBFname);

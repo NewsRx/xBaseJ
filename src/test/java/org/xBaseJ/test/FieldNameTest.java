@@ -49,7 +49,7 @@ public class FieldNameTest extends TestCase {
     try {
       new CharField("a$", 3);
       fail("invalid name not caught");
-    } catch (xBaseJException e) {;
+    } catch (xBaseJException e) {
 
     } catch (IOException e) {
 

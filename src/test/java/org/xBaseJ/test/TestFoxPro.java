@@ -63,9 +63,13 @@ public class TestFoxPro extends TestCase {
       fp.addField(new MemoField("memo"));
       fp.close();
       File f = new File("testfiles/foxprotest.dbf");
-      if (f.exists() == false) fail("can't find foxpro dbf file");
+      if (f.exists() == false) {
+        fail("can't find foxpro dbf file");
+      }
       f = new File("testfiles/foxprotest.fpt");
-      if (f.exists() == false) fail("can't find foxpro fpt file");
+      if (f.exists() == false) {
+        fail("can't find foxpro fpt file");
+      }
 
     } catch (Exception e) {
       e.printStackTrace();

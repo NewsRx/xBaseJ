@@ -46,7 +46,9 @@ public class NodeFloat {
 
     value = new byte[10];
     int i;
-    for (i = 0; i < 10; i++) value[i] = invalue[i + 2];
+    for (i = 0; i < 10; i++) {
+      value[i] = invalue[i + 2];
+    }
 
     if (sign == 0x10) {
       saveValue = 0.0;
@@ -55,7 +57,9 @@ public class NodeFloat {
 
     boolean neg = false;
 
-    if ((sign == neg1) || (sign == neg2)) neg = true;
+    if (sign == neg1 || sign == neg2) {
+      neg = true;
+    }
 
     byte b;
     char c1;
@@ -64,7 +68,9 @@ public class NodeFloat {
     int i2;
     int j;
     for (j = 11; j > 0; j--) {
-      if (invalue[j] != 0) break;
+      if (invalue[j] != 0) {
+        break;
+      }
     }
     if (j == 1) {
       saveValue = 0.0;
@@ -74,13 +80,17 @@ public class NodeFloat {
     j++;
     for (i = 2; i < j; i++) {
       b = invalue[i];
-      negC = (b < 0);
+      negC = b < 0;
       i2 = b & 0x70;
       i2 >>= 4;
-      if (negC) i2 += 8;
+      if (negC) {
+        i2 += 8;
+      }
       c1 = Integer.toString(i2).charAt(0);
       sb.append(c1);
-      if (i == 2) sb.append('.');
+      if (i == 2) {
+        sb.append('.');
+      }
       i2 = b & 0x0f;
       c1 = Integer.toString(i2).charAt(0);
       sb.append(c1);
@@ -102,7 +112,9 @@ public class NodeFloat {
 
     int i;
 
-    for (i = 0; i < 10; i++) value[i] = 0;
+    for (i = 0; i < 10; i++) {
+      value[i] = 0;
+    }
 
     if (invalue == 0.0) {
       sign = 0x10;
@@ -112,8 +124,10 @@ public class NodeFloat {
     int bLine[] = {0, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90};
     int start = 0;
 
-    boolean neg = (invalue < 0.0);
-    if (neg) invalue *= -1.0;
+    boolean neg = invalue < 0.0;
+    if (neg) {
+      invalue *= -1.0;
+    }
 
     Double d = new Double(invalue);
     String s = d.toString();
@@ -124,23 +138,32 @@ public class NodeFloat {
     int decpos = s.indexOf('.');
     String s2;
     int t;
-    if (epos > 0) s2 = s.substring(decpos + 1, epos - 1);
-    else s2 = s.substring(decpos + 1);
+    if (epos > 0) {
+      s2 = s.substring(decpos + 1, epos - 1);
+    } else {
+      s2 = s.substring(decpos + 1);
+    }
 
     t = Integer.parseInt(s2);
 
-    boolean decfound = (t > 0);
+    boolean decfound = t > 0;
 
-    if (neg)
-      if (decfound) sign = (byte) 0xd1;
-      else sign = (byte) 0xa9;
-    else if (decfound) sign = (byte) 0x51;
-    else sign = (byte) 0x29;
+    if (neg) {
+      if (decfound) {
+        sign = (byte) 0xd1;
+      } else {
+        sign = (byte) 0xa9;
+      }
+    } else if (decfound) {
+      sign = (byte) 0x51;
+    } else {
+      sign = (byte) 0x29;
+    }
 
     if (epos > 0) {
       size += Integer.parseInt(s.substring(epos));
       s = s2;
-    } else if ((decpos == 1) && (s.charAt(0) == '0')) {
+    } else if (decpos == 1 && s.charAt(0) == '0') {
       s = s2;
       size--;
       i = 2;
@@ -167,7 +190,7 @@ public class NodeFloat {
       // first nibble
       c = s.charAt(i);
 
-      if (c != '.')
+      if (c != '.') {
         if (top) {
           v = Character.getNumericValue(c);
           value[j] = (byte) bLine[v];
@@ -179,6 +202,7 @@ public class NodeFloat {
           top = true;
           j++;
         }
+      }
     }
     return;
   } // end of constructor
@@ -186,34 +210,52 @@ public class NodeFloat {
   public int compareTo(NodeFloat nf2) {
 
     if (sign == 0x10) {
-      if (nf2.sign == 0x10) return 0;
+      if (nf2.sign == 0x10) {
+        return 0;
+      }
       return nf2.sign < 0 ? -1 : 1; // nf2 is bigger if its > than 0;
     }
 
-    if (nf2.sign == 0x10) return sign < 0 ? 1 : -1; // nf2 is bigger if its > than 0;
+    if (nf2.sign == 0x10) {
+      return sign < 0 ? 1 : -1; // nf2 is bigger if its > than 0;
+    }
 
-    if (sign < 0) if (nf2.sign > 0) return -1;
+    if (sign < 0) {
+      if (nf2.sign > 0) {
+        return -1;
+      }
+    }
 
-    if (sign > 0) if (nf2.sign < 0) return 1;
+    if (sign > 0) {
+      if (nf2.sign < 0) {
+        return 1;
+      }
+    }
 
     // assume both the same sign
 
-    if (size < nf2.size) return -1;
-    if (size > nf2.size) return 1;
+    if (size < nf2.size) {
+      return -1;
+    }
+    if (size > nf2.size) {
+      return 1;
+    }
 
     for (int i = 0; i < 10; i++) {
-      if (value[i] == nf2.value[i]) // they're equal go get next
-      continue;
+      if (value[i] == nf2.value[i]) {
+        continue;
+      }
 
       if (value[i] < 0) // reverse all logic for bytes whose first nibble
       // is 8 or 9
       {
-        if ((nf2.value[i] < 0) && (nf2.value[i] < value[i])) // though
+        if (nf2.value[i] < 0 && nf2.value[i] < value[i]) {
           // it's
           // smaller
           // it's
           // bigger
           return -1;
+        }
         return 1;
       }
       if (nf2.value[i] < 0) // reverse all logic for bytes whose first
@@ -222,8 +264,12 @@ public class NodeFloat {
         return -1; // if nf2 is negative, we know this.value is not neg
         // so nf2 must be bigger.
       }
-      if (value[i] < nf2.value[i]) return -1;
-      if (value[i] > nf2.value[i]) return 1;
+      if (value[i] < nf2.value[i]) {
+        return -1;
+      }
+      if (value[i] > nf2.value[i]) {
+        return 1;
+      }
     }
     return 0;
   }
@@ -241,7 +287,9 @@ public class NodeFloat {
     byte ret[] = new byte[12];
     ret[0] = size;
     ret[1] = sign;
-    for (int i = 0; i < 10; i++) ret[i + 2] = value[i];
+    for (int i = 0; i < 10; i++) {
+      ret[i + 2] = value[i];
+    }
     return ret;
   }
 } // end of class

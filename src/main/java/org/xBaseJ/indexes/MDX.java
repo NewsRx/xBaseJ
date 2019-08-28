@@ -61,8 +61,12 @@ public class MDX extends Index {
     nfile = ifile.raFile;
     keyType = (char) tagHead.keyType;
 
-    if ((keyType == 'N') && (key_length == 12)) keyType = 'F'; // now flip to xbasej definition of.
-    if (keyType == 'D') keyType = 'N';
+    if (keyType == 'N' && key_length == 12) {
+      keyType = 'F'; // now flip to xbasej definition of.
+    }
+    if (keyType == 'D') {
+      keyType = 'N';
+    }
 
     Index_record = tagHead.top_Node;
 
@@ -100,7 +104,9 @@ public class MDX extends Index {
           // record */
         } // /* Index = 0 then it's a leaf pointer */
       } // /* reading > 0 */
-      if (topNode == null) topNode = (MNode) lNode.clone();
+      if (topNode == null) {
+        topNode = (MNode) lNode.clone();
+      }
     } // /* endwhile */
 
     try {
@@ -129,20 +135,24 @@ public class MDX extends Index {
 
     unique_key = (byte) (unique ? 64 : 0);
 
-    if ((i < 1) || (i > 10))
+    if (i < 1 || i > 10) {
       throw new xBaseJException("Invalid tag name " + iname + " name length incorrect");
+    }
 
-    if (!Character.isLetter(iname.charAt(0)))
+    if (!Character.isLetter(iname.charAt(0))) {
       throw new xBaseJException("Invalid tag name " + iname + " first character not alphabetic");
+    }
 
     iname = iname.toUpperCase();
 
     for (j = 1; j < i; j++) {
       if (Character.isLetter(iname.charAt(j))
-          || (Character.isDigit(iname.charAt(j)) || (iname.charAt(j) == '_'))) ;
-      else
+          || Character.isDigit(iname.charAt(j))
+          || iname.charAt(j) == '_') {;
+      } else {
         throw new xBaseJException(
             "Invalid tag name " + iname + " invalid character at position " + (j + 1));
+      }
     }
 
     StringTokenizer strtok = new StringTokenizer(NDXString, "+");
@@ -158,9 +168,15 @@ public class MDX extends Index {
       fname = (String) strtok.nextElement();
       ffld = iDBF.getField(fname);
       type = ffld.getType();
-      if (type == 'M') throw new xBaseJException("Can't make memo field part of a key");
-      if (type == 'L') throw new xBaseJException("Can't make logical field part of a key");
-      if (type == 'F') throw new xBaseJException("Can't make float field part of a key");
+      if (type == 'M') {
+        throw new xBaseJException("Can't make memo field part of a key");
+      }
+      if (type == 'L') {
+        throw new xBaseJException("Can't make logical field part of a key");
+      }
+      if (type == 'F') {
+        throw new xBaseJException("Can't make float field part of a key");
+      }
       if (keyType == ' ') {
         keyType = type;
       } else {
@@ -172,20 +188,32 @@ public class MDX extends Index {
       keyControl.addElement(ffld);
     } while (strtok.hasMoreElements()); /* endwhile */
 
-    if (keyType == 'D') keylen = 8;
-    if (keyType == 'N') keylen = 12;
+    if (keyType == 'D') {
+      keylen = 8;
+    }
+    if (keyType == 'N') {
+      keylen = 12;
+    }
 
-    int len = (((keylen - 1) / 4) + 1) * 4;
-    if (len < 1) throw new xBaseJException("Key length too short");
+    int len = ((keylen - 1) / 4 + 1) * 4;
+    if (len < 1) {
+      throw new xBaseJException("Key length too short");
+    }
 
-    if (len > 100) throw new xBaseJException("Key length too long");
+    if (len > 100) {
+      throw new xBaseJException("Key length too long");
+    }
 
     tagDesc = inTagDesc;
     tagDesc.setKeyType(keyType);
     tagHead = new TagHeader(mfile, (short) tagDesc.indheaderpage, (short) len, keyType, unique);
 
-    if (keyType == 'N') keyType = 'F'; // now flip to xbase definition of.
-    if (keyType == 'D') keyType = 'N';
+    if (keyType == 'N') {
+      keyType = 'F'; // now flip to xbase definition of.
+    }
+    if (keyType == 'D') {
+      keyType = 'N';
+    }
 
     key_length = tagHead.key_length;
     key_per_Node = tagHead.key_per_Node;
@@ -196,10 +224,13 @@ public class MDX extends Index {
     } catch (UnsupportedEncodingException UEE) {
       kd = NDXString.toUpperCase().substring(0, NDXString.length()).getBytes();
     }
-    for (int x = 0; x < kd.length; x++) tagHead.key_definition[x] = kd[x];
+    for (int x = 0; x < kd.length; x++) {
+      tagHead.key_definition[x] = kd[x];
+    }
 
-    if (database.getRecordCount() > 0) reIndex();
-    else {
+    if (database.getRecordCount() > 0) {
+      reIndex();
+    } else {
       tagDesc.write();
       tagHead.write();
     }
@@ -217,15 +248,22 @@ public class MDX extends Index {
 
       for (i = 1; i <= reccount; i++) {
         lastkey = build_key();
-        if (topTree == null) topTree = new BinaryTree(lastkey, i, topTree);
-        else new BinaryTree(lastkey, i, topTree);
+        if (topTree == null) {
+          topTree = new BinaryTree(lastkey, i, topTree);
+        } else {
+          new BinaryTree(lastkey, i, topTree);
+        }
 
-        if (i < reccount) database.read();
+        if (i < reccount) {
+          database.read();
+        }
       }
     }
 
     topNode = null;
-    if (database.getRecordCount() > 0) reIndexWork(topTree.getLeast(), 0, topTree);
+    if (database.getRecordCount() > 0) {
+      reIndexWork(topTree.getLeast(), 0, topTree);
+    }
     tagHead.top_Node = top_Node;
     tagHead.write();
     tagDesc.write();
@@ -238,7 +276,9 @@ public class MDX extends Index {
     int prev_page = 0;
     BinaryTree tree2 = null;
     int pos = 0;
-    if (level > 0) prev_page = top_Node;
+    if (level > 0) {
+      prev_page = top_Node;
+    }
     top_Node = (short) mfile.anchor.get_nextavailable();
     workNode = new MNode(mfile, key_per_Node, key_length, keyType, top_Node, level > 0);
     workNode.set_prev_page(prev_page);
@@ -250,7 +290,7 @@ public class MDX extends Index {
     btLoop:
     while (true) {
       if (pos == key_per_Node || bt == null) {
-        if ((tree2 == null && level > 0 && pos == 1) || pos == 0) {
+        if (tree2 == null && level > 0 && pos == 1 || pos == 0) {
           top_Node--;
           mfile.anchor.reset_nextavailable();
           topNode = workNode; // just in case its not set
@@ -265,10 +305,15 @@ public class MDX extends Index {
           if (tree2 == null) {
             topNode = workNode;
             tree2 = new BinaryTree(lastKey, workNode.get_record_number(), tree2);
-          } else new BinaryTree(lastKey, workNode.get_record_number(), tree2);
+          } else {
+            new BinaryTree(lastKey, workNode.get_record_number(), tree2);
+          }
         }
-        if (level == 0) workNode.set_keys_in_this_Node(pos);
-        else workNode.set_keys_in_this_Node(pos - 1);
+        if (level == 0) {
+          workNode.set_keys_in_this_Node(pos);
+        } else {
+          workNode.set_keys_in_this_Node(pos - 1);
+        }
         {
           for (int i = pos; i < key_per_Node; i++) {
             workNode.set_pos(i);
@@ -290,13 +335,18 @@ public class MDX extends Index {
       pos++;
       lastKey = bt.getKey();
       workNode.set_key_value(lastKey);
-      if (level == 0) workNode.set_key_record_number(bt.getWhere());
-      else workNode.set_lower_level(bt.getWhere());
+      if (level == 0) {
+        workNode.set_key_record_number(bt.getWhere());
+      } else {
+        workNode.set_lower_level(bt.getWhere());
+      }
       workNode.pos_up();
       bt = bt.getNext();
     }
 
-    if (tree2 == null) return 0;
+    if (tree2 == null) {
+      return 0;
+    }
 
     topTree = null;
     System.gc();
@@ -333,18 +383,21 @@ public class MDX extends Index {
     } /* endif */
 
     leaf = aNode.get_lower_level();
-    if (leaf != 0) /*
-						 * leaf pointers usually have one more pointer than shown
-						 */ until = aNode.get_keys_in_this_Node() + 1;
-    else until = aNode.get_keys_in_this_Node();
+    if (leaf != 0) {
+      until = aNode.get_keys_in_this_Node() + 1;
+    } else {
+      until = aNode.get_keys_in_this_Node();
+    }
 
     for (aNode.set_pos(0); aNode.get_pos() < until; aNode.pos_up()) {
       leaf = aNode.get_lower_level();
       rec = aNode.get_key_record_number();
-      if (aNode.get_pos() < (aNode.get_keys_in_this_Node())) {
+      if (aNode.get_pos() < aNode.get_keys_in_this_Node()) {
         /* leafs make us do this */
         stat = findKey.compareKey(aNode.get_key_value());
-        if (stat > 0) continue;
+        if (stat > 0) {
+          continue;
+        }
       }
       if (leaf > 0) {
         /* still dealing with Nodes */
@@ -352,42 +405,51 @@ public class MDX extends Index {
           Node_2 = new MNode(mfile, key_per_Node, key_length, keyType, leaf, true);
           aNode.set_next(Node_2);
           Node_2.set_prev(aNode);
-        } else Node_2 = (MNode) aNode.get_next();
+        } else {
+          Node_2 = (MNode) aNode.get_next();
+        }
         Node_2.set_record_number(leaf);
         Node_2.read();
         Node_2.set_pos(0);
         workNode = Node_2;
         rec = find_entry(findKey, Node_2, findrec);
-        return (rec); /* if rec < 0 then didn't find the record yet */
+        return rec; /* if rec < 0 then didn't find the record yet */
       } /* leaf > 0 */
 
       if (stat < 0) /* can't find the key but .. */ {
 
-        if (findrec > 0) return (keyNotFound); /*
-											 * when findrec -1 then looking for
-											 * specific key and record
-											 */
+        if (findrec > 0) {
+          return keyNotFound; /*
+                               * when findrec -1 then looking for
+                               * specific key and record
+                               */
+        }
 
-        if (findrec == findFirstMatchingKey) return (keyNotFound); /*
-											 * when findrec findAnyKey then for
-											 * the key
-											 */
+        if (findrec == findFirstMatchingKey) {
+          return keyNotFound; /*
+                               * when findrec findAnyKey then for
+                               * the key
+                               */
+        }
 
-        return (rec); /* looking for key greater than or equal to */
+        return rec; /* looking for key greater than or equal to */
       }
 
       /* stat is zero - key matches the current key */
 
       foundExact = true;
 
-      if ((findrec > 0) && (rec == findrec)) /*
-													 * found matching key and
-													 * matching record number
-													 */ return rec;
+      if (findrec > 0 && rec == findrec) {
+        return rec;
+      }
 
-      if (findrec == findFirstMatchingKey) return rec; /* found one key that matches */
+      if (findrec == findFirstMatchingKey) {
+        return rec; /* found one key that matches */
+      }
 
-      if (findrec == findAnyKey) return rec; /* found one key that matches */
+      if (findrec == findAnyKey) {
+        return rec; /* found one key that matches */
+      }
 
       /*
        * findrec not zero so we are looking for the key that is greater
@@ -397,10 +459,10 @@ public class MDX extends Index {
 
     } /* end for */
 
-    return (foundMatchingKeyButNotRecord); /*
-                                            * at end of current line but
-                                            * keep looking for recursion
-                                            */
+    return foundMatchingKeyButNotRecord; /*
+                                          * at end of current line but
+                                          * keep looking for recursion
+                                          */
   }
 
   @Override
@@ -412,15 +474,17 @@ public class MDX extends Index {
 
     int rec, until, leaf;
 
-    if (aNode == null) return -1;
+    if (aNode == null) {
+      return -1;
+    }
 
     leaf = aNode.get_lower_level();
 
-    if (aNode.branch) /*
-							 * leaf pointers usually have one more pointer than
-							 * shown
-							 */ until = aNode.get_keys_in_this_Node() + 1;
-    else until = aNode.get_keys_in_this_Node();
+    if (aNode.branch) {
+      until = aNode.get_keys_in_this_Node() + 1;
+    } else {
+      until = aNode.get_keys_in_this_Node();
+    }
 
     aNode.pos_up();
 
@@ -440,8 +504,10 @@ public class MDX extends Index {
 
     leaf = aNode.get_lower_level();
     workNode = aNode;
-    if (leaf > 0) return (leaf);
-    return (aNode.get_key_record_number());
+    if (leaf > 0) {
+      return leaf;
+    }
+    return aNode.get_key_record_number();
   }
 
   @Override
@@ -452,14 +518,20 @@ public class MDX extends Index {
   private int get_prev_key(MNode aNode) throws xBaseJException, IOException {
     int rec, until, leaf;
 
-    if (aNode == null) return -1;
+    if (aNode == null) {
+      return -1;
+    }
 
-    if (aNode.get_pos() < 0) return -1;
+    if (aNode.get_pos() < 0) {
+      return -1;
+    }
 
     leaf = aNode.get_lower_level();
     until = 0;
 
-    if (aNode.get_pos() > -1) aNode.pos_down();
+    if (aNode.get_pos() > -1) {
+      aNode.pos_down();
+    }
 
     if (aNode.get_pos() < 0) {
       rec = get_prev_key((MNode) aNode.get_prev());
@@ -476,7 +548,7 @@ public class MDX extends Index {
     leaf = aNode.get_lower_level();
     workNode = aNode;
     if (leaf > 0) {
-      return (leaf);
+      return leaf;
     }
     return aNode.get_key_record_number();
   }
@@ -506,10 +578,11 @@ public class MDX extends Index {
        * yet so we must be adding the
        * first record
        */
-      if (topNode == null)
+      if (topNode == null) {
         topNode =
             new MNode(
                 mfile, key_per_Node, key_length, keyType, mfile.anchor.get_nextavailable(), false);
+      }
       workNode = topNode;
       topNode.set_next(null);
       topNode.set_prev(null);
@@ -566,7 +639,7 @@ public class MDX extends Index {
     }
 
     savepos = aNode.get_pos();
-    if (savepos < (aNode.get_keys_in_this_Node())) {
+    if (savepos < aNode.get_keys_in_this_Node()) {
       int ptr, recn, i;
       NodeKey buf;
       i = aNode.get_keys_in_this_Node();
@@ -611,7 +684,9 @@ public class MDX extends Index {
     aNode.set_keys_in_this_Node(aNode.get_keys_in_this_Node() + 1);
     aNode.write();
 
-    if (aNode.get_keys_in_this_Node() > key_per_Node) splitNode(aNode, savepos);
+    if (aNode.get_keys_in_this_Node() > key_per_Node) {
+      splitNode(aNode, savepos);
+    }
 
     return 0;
   }
@@ -649,8 +724,11 @@ public class MDX extends Index {
 
     if (savepos > i) {
       bNode.set_keys_in_this_Node(i);
-      if (aNode.get_next() != null) aNode.set_keys_in_this_Node(i - 1);
-      else aNode.set_keys_in_this_Node(i); /* for top level split */
+      if (aNode.get_next() != null) {
+        aNode.set_keys_in_this_Node(i - 1);
+      } else {
+        aNode.set_keys_in_this_Node(i); /* for top level split */
+      }
       left = aNode.get_record_number();
       aNode.write();
       right = mfile.anchor.get_nextavailable();
@@ -715,8 +793,11 @@ public class MDX extends Index {
       // renumber
       // Node
       mfile.anchor.update_nextavailable();
-      if (aNode.get_next() != null) aNode.set_keys_in_this_Node(j - 1);
-      else aNode.set_keys_in_this_Node(j);
+      if (aNode.get_next() != null) {
+        aNode.set_keys_in_this_Node(j - 1);
+      } else {
+        aNode.set_keys_in_this_Node(j);
+      }
 
       aNode.set_pos(j - 1);
       aNode.write();
@@ -776,12 +857,15 @@ public class MDX extends Index {
     if (aNode.get_prev() != null) // should we fix parent?
     {
       if (aNode.get_keys_in_this_Node() == 0) {
-        if (aNode.get_lower_level() == 0) // record node so go fix its
+        if (aNode.get_lower_level() == 0) {
           // parent
           del_entry(aNode.get_prev());
-        else ; // pointer node so don't fix unless negative
+        } else {; // pointer node so don't fix unless negative
+        }
       } else {
-        if (aNode.get_keys_in_this_Node() == -1) del_entry(aNode.get_prev());
+        if (aNode.get_keys_in_this_Node() == -1) {
+          del_entry(aNode.get_prev());
+        }
       }
     }
 

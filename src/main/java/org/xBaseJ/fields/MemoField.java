@@ -104,7 +104,9 @@ public class MemoField extends Field {
     dbtobj = null;
     originalSize = 0;
     buffer = new byte[10];
-    for (int i = 0; i < 10; i++) buffer[i] = DBTFile.BYTEZERO;
+    for (int i = 0; i < 10; i++) {
+      buffer[i] = DBTFile.BYTEZERO;
+    }
     value = new String("");
   }
 
@@ -125,7 +127,9 @@ public class MemoField extends Field {
     dbtobj = null;
     originalSize = 0;
     buffer = new byte[10];
-    for (int i = 0; i < 10; i++) buffer[i] = DBTFile.BYTEZERO;
+    for (int i = 0; i < 10; i++) {
+      buffer[i] = DBTFile.BYTEZERO;
+    }
     value = new String("");
   }
 
@@ -139,15 +143,20 @@ public class MemoField extends Field {
   @Override
   public String get() {
     String s = "";
-    if (byteValue == null) return "";
+    if (byteValue == null) {
+      return "";
+    }
     try {
       s = new String(byteValue, DBF.encodedType);
     } catch (UnsupportedEncodingException UEE) {
       s = new String(byteValue);
     }
     int k;
-    if (byteValue.length < 2) return s;
-    for (k = byteValue.length; k > -1 && byteValue[k - 1] == 0; k--) ;
+    if (byteValue.length < 2) {
+      return s;
+    }
+    for (k = byteValue.length; k > -1 && byteValue[k - 1] == 0; k--) {;
+    }
     return s.substring(0, k);
   }
 

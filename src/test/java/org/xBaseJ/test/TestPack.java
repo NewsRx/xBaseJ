@@ -1,4 +1,5 @@
 package org.xBaseJ.test;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
@@ -122,7 +123,9 @@ public class TestPack extends TestCase {
 
       aDB.write();
 
-      if (update == false) aDB.delete();
+      if (update == false) {
+        aDB.delete();
+      }
 
       classId.put("JAVA501");
       className.put("JAVA And Abstract Algebra");
@@ -164,9 +167,13 @@ public class TestPack extends TestCase {
       for (int i = 1; i < 4; i++) {
         dbf.gotoRecord(i);
         String bean = dbf.getField(1).get();
-        if (i == 1) assertEquals("JAVA10100", bean);
-        else if (i == 2) assertEquals("JAVA10200", bean);
-        else assertEquals("JAVA501", bean);
+        if (i == 1) {
+          assertEquals("JAVA10100", bean);
+        } else if (i == 2) {
+          assertEquals("JAVA10200", bean);
+        } else {
+          assertEquals("JAVA501", bean);
+        }
       }
 
       dbf.close();
@@ -192,9 +199,13 @@ public class TestPack extends TestCase {
       for (int i = 1; i < 4; i++) {
         dbf.gotoRecord(i);
         String bean = dbf.getField(1).get();
-        if (i == 1) assertEquals("JAVA10100", bean);
-        else if (i == 2) assertEquals("JAVA10200", bean);
-        else assertEquals("JAVA501", bean);
+        if (i == 1) {
+          assertEquals("JAVA10100", bean);
+        } else if (i == 2) {
+          assertEquals("JAVA10200", bean);
+        } else {
+          assertEquals("JAVA501", bean);
+        }
       }
 
       dbf.close();

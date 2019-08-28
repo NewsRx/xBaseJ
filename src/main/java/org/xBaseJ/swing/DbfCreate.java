@@ -242,8 +242,8 @@ public class DbfCreate extends JFrame
                 "File " + fil.getName() + " already exists.  Do you want to replace it?",
                 "File Already Exists",
                 JOptionPane.YES_NO_OPTION);
-        if (resp == JOptionPane.YES_OPTION) ;
-        else {
+        if (resp == JOptionPane.YES_OPTION) {;
+        } else {
           repaint();
           return;
         }
@@ -253,11 +253,18 @@ public class DbfCreate extends JFrame
       fname = fil.getAbsolutePath();
       this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
       TableCellEditor editor = table.getCellEditor();
-      if (editor != null) editor.stopCellEditing();
+      if (editor != null) {
+        editor.stopCellEditing();
+      }
       DBFTypes type;
-      if (typeIII.getState()) type = DBFTypes.DBASEIII;
-      if (typeFP.getState()) type = DBFTypes.FOXPRO_WITH_MEMO;
-      else type = DBFTypes.DBASEIV;
+      if (typeIII.getState()) {
+        type = DBFTypes.DBASEIII;
+      }
+      if (typeFP.getState()) {
+        type = DBFTypes.FOXPRO_WITH_MEMO;
+      } else {
+        type = DBFTypes.DBASEIV;
+      }
       try {
         tableModel.create(fil, type);
       } catch (xBaseJException xex) {
@@ -312,25 +319,35 @@ public class DbfCreate extends JFrame
 
     if (ae.getSource() == menuInsertBefore) {
 
-      if (tableModel.getRowCount() < 1) tableModel.insert(0);
-      else if (table.getSelectedRow() < 0) tableModel.insert(tableModel.getRowCount());
-      else tableModel.insert(table.getSelectedRow());
+      if (tableModel.getRowCount() < 1) {
+        tableModel.insert(0);
+      } else if (table.getSelectedRow() < 0) {
+        tableModel.insert(tableModel.getRowCount());
+      } else {
+        tableModel.insert(table.getSelectedRow());
+      }
 
       table.repaint();
     }
 
     if (ae.getSource() == menuInsertAfter) {
 
-      if (tableModel.getRowCount() < 1) tableModel.insert(0);
-      else if (table.getSelectedRow() < 0) tableModel.insert(tableModel.getRowCount() - 1);
-      else tableModel.insert(table.getSelectedRow() + 1);
+      if (tableModel.getRowCount() < 1) {
+        tableModel.insert(0);
+      } else if (table.getSelectedRow() < 0) {
+        tableModel.insert(tableModel.getRowCount() - 1);
+      } else {
+        tableModel.insert(table.getSelectedRow() + 1);
+      }
 
       table.repaint();
     }
 
     if (ae.getSource() == menuDelete) {
-      if (table.getSelectedRow() < 0) ;
-      else tableModel.delete(table.getSelectedRow());
+      if (table.getSelectedRow() < 0) {;
+      } else {
+        tableModel.delete(table.getSelectedRow());
+      }
       table.repaint();
     }
 
@@ -413,12 +430,12 @@ class dbfCreateModel extends AbstractTableModel {
   Vector<String> indexName;
 
   public dbfCreateModel(DBF dbf) throws xBaseJException {
-    name = new Vector<String>();
-    type = new Vector<String>();
-    length = new Vector<String>();
-    decPos = new Vector<String>();
-    indexInd = new Vector<Boolean>();
-    indexName = new Vector<String>();
+    name = new Vector<>();
+    type = new Vector<>();
+    length = new Vector<>();
+    decPos = new Vector<>();
+    indexInd = new Vector<>();
+    indexName = new Vector<>();
     Field f;
     for (int i = 1; i <= dbf.getFieldCount(); i++) {
       f = dbf.getField(i);
@@ -461,12 +478,12 @@ class dbfCreateModel extends AbstractTableModel {
 
   public dbfCreateModel() {
     rowCount = 1;
-    name = new Vector<String>();
-    type = new Vector<String>();
-    length = new Vector<String>();
-    decPos = new Vector<String>();
-    indexInd = new Vector<Boolean>();
-    indexName = new Vector<String>();
+    name = new Vector<>();
+    type = new Vector<>();
+    length = new Vector<>();
+    decPos = new Vector<>();
+    indexInd = new Vector<>();
+    indexName = new Vector<>();
 
     name.addElement("");
     type.addElement("Char");
@@ -561,10 +578,12 @@ class dbfCreateModel extends AbstractTableModel {
       case 1:
         type.setElementAt((String) in, r);
         String s = (String) in;
-        if ((s.compareTo("Logical") == 0)
-            || (s.compareTo("Memo") == 0)
-            || (s.compareTo("Picture") == 0)
-            || (s.compareTo("Currency") == 0)) setValueAt(Boolean.valueOf(false), r, 4);
+        if (s.compareTo("Logical") == 0
+            || s.compareTo("Memo") == 0
+            || s.compareTo("Picture") == 0
+            || s.compareTo("Currency") == 0) {
+          setValueAt(Boolean.valueOf(false), r, 4);
+        }
         break;
       case 2:
         length.setElementAt((String) in, r);
@@ -628,21 +647,43 @@ class dbfCreateModel extends AbstractTableModel {
       case 1:
         return true;
       case 2:
-        if (s.compareTo("Date") == 0) return false;
-        if (s.compareTo("Memo") == 0) return false;
-        if (s.compareTo("Logical") == 0) return false;
-        if (s.compareTo("Picture") == 0) return false;
-        if (s.compareTo("Currency") == 0) return false;
+        if (s.compareTo("Date") == 0) {
+          return false;
+        }
+        if (s.compareTo("Memo") == 0) {
+          return false;
+        }
+        if (s.compareTo("Logical") == 0) {
+          return false;
+        }
+        if (s.compareTo("Picture") == 0) {
+          return false;
+        }
+        if (s.compareTo("Currency") == 0) {
+          return false;
+        }
         return true;
       case 3:
-        if (s.compareTo("Num") == 0) return true;
-        if (s.compareTo("Float") == 0) return true;
+        if (s.compareTo("Num") == 0) {
+          return true;
+        }
+        if (s.compareTo("Float") == 0) {
+          return true;
+        }
         return false;
       case 4:
-        if (s.compareTo("Memo") == 0) return false;
-        if (s.compareTo("Logical") == 0) return false;
-        if (s.compareTo("Picture") == 0) return false;
-        if (s.compareTo("Currency") == 0) return false;
+        if (s.compareTo("Memo") == 0) {
+          return false;
+        }
+        if (s.compareTo("Logical") == 0) {
+          return false;
+        }
+        if (s.compareTo("Picture") == 0) {
+          return false;
+        }
+        if (s.compareTo("Currency") == 0) {
+          return false;
+        }
         return true;
       case 5:
         return isCellEditable(r, 4);

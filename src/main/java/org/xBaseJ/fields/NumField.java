@@ -110,23 +110,33 @@ public class NumField extends Field {
     char c;
     String value = super.get();
 
-    if (value.trim().length() == 0) return "";
+    if (value.trim().length() == 0) {
+      return "";
+    }
 
     for (i = 0; i < value.length(); i++) {
       c = value.charAt(i);
-      if (c != ' ') return value;
+      if (c != ' ') {
+        return value;
+      }
     }
 
     StringBuffer format = new StringBuffer();
 
     int decoffset = Length - decPosition - 1;
-    for (i = 0; i < (decoffset - 1); i++) format.append(' ');
+    for (i = 0; i < decoffset - 1; i++) {
+      format.append(' ');
+    }
 
-    if (decoffset > 0) format.append('0');
+    if (decoffset > 0) {
+      format.append('0');
+    }
 
     if (decPosition > 0) {
       format.append(decimalSeparator);
-      for (i = 0; i < decPosition; i++) format.append('0');
+      for (i = 0; i < decPosition; i++) {
+        format.append('0');
+      }
     }
 
     return format.toString();
@@ -162,20 +172,33 @@ public class NumField extends Field {
 
     int worklen;
 
-    if (Length > inValue.length()) worklen = Length;
-    else worklen = inValue.length();
+    if (Length > inValue.length()) {
+      worklen = Length;
+    } else {
+      worklen = inValue.length();
+    }
 
     char charArray[] = new char[Length];
 
     int i1, i2, i3, i4;
 
-    for (i1 = 0; i1 < Length; i1++) charArray[i1] = ' ';
+    for (i1 = 0; i1 < Length; i1++) {
+      charArray[i1] = ' ';
+    }
 
     for (i1 = 0; i1 < inValue.length(); i1++) {
-      if (inValue.charAt(i1) == '-') break;
-      if (inValue.charAt(i1) == decimalSeparator) break;
-      if (inValue.charAt(i1) < '0') continue;
-      if (inValue.charAt(i1) > '9') continue;
+      if (inValue.charAt(i1) == '-') {
+        break;
+      }
+      if (inValue.charAt(i1) == decimalSeparator) {
+        break;
+      }
+      if (inValue.charAt(i1) < '0') {
+        continue;
+      }
+      if (inValue.charAt(i1) > '9') {
+        continue;
+      }
       break;
     }
 
@@ -195,22 +218,38 @@ public class NumField extends Field {
     // it
 
     for (i2 = 0; i2 < breaklen; i2++) {
-      if (i1 >= inValue.length()) break;
-      if (inValue.charAt(i1) < '0') break;
-      if (inValue.charAt(i1) > '9') break;
+      if (i1 >= inValue.length()) {
+        break;
+      }
+      if (inValue.charAt(i1) < '0') {
+        break;
+      }
+      if (inValue.charAt(i1) > '9') {
+        break;
+      }
       intForm[i2] = inValue.charAt(i1);
       i1++;
     }
 
-    if ((i1 < inValue.length()) && (inValue.charAt(i1) == decimalSeparator)) i1++;
+    if (i1 < inValue.length() && inValue.charAt(i1) == decimalSeparator) {
+      i1++;
+    }
 
     char decForm[] = new char[worklen];
-    for (i3 = 0; i3 < breaklen; i3++) decForm[i3] = '0';
+    for (i3 = 0; i3 < breaklen; i3++) {
+      decForm[i3] = '0';
+    }
 
     for (i3 = 0; i3 < breaklen; i3++) {
-      if (i1 >= inValue.length()) break;
-      if (inValue.charAt(i1) < '0') break;
-      if (inValue.charAt(i1) > '9') break;
+      if (i1 >= inValue.length()) {
+        break;
+      }
+      if (inValue.charAt(i1) < '0') {
+        break;
+      }
+      if (inValue.charAt(i1) > '9') {
+        break;
+      }
       decForm[i3] = inValue.charAt(i1);
       i1++;
     }
@@ -224,13 +263,18 @@ public class NumField extends Field {
 
     for (i4 = startpos; i4 > -1; i4--) {
       i2--;
-      if (i2 < 0) break;
+      if (i2 < 0) {
+        break;
+      }
       charArray[i4] = intForm[i2];
     }
 
     if (neg) {
-      if (i4 < 0) charArray[0] = '-';
-      else charArray[i4] = '-';
+      if (i4 < 0) {
+        charArray[0] = '-';
+      } else {
+        charArray[i4] = '-';
+      }
     }
 
     if (decPosition > 0) {
@@ -342,13 +386,17 @@ public class NumField extends Field {
   public void put(double inValue) throws xBaseJException {
     StringBuffer sb = new StringBuffer(getLength() + 1);
     sb.append("#");
-    for (int i = 0; i < getLength(); i++) sb.append("#");
+    for (int i = 0; i < getLength(); i++) {
+      sb.append("#");
+    }
 
     if (decPosition > 0) {
       int pos = getLength() - getDecimalPositionCount();
       sb.setCharAt(pos, decimalSeparator);
 
-      for (pos++; pos < getLength() + 1; pos++) sb.setCharAt(pos, '0');
+      for (pos++; pos < getLength() + 1; pos++) {
+        sb.setCharAt(pos, '0');
+      }
     }
 
     DecimalFormat df = new DecimalFormat(sb.toString());

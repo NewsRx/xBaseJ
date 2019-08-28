@@ -52,8 +52,11 @@ public class MNode extends Node {
     nfile.seek(longrecn * 512);
     keys_in_this_Node = Util.x86(nfile.readInt());
     prev_page = Util.x86(nfile.readInt());
-    if (prev_page == 0) branch = false;
-    else branch = true;
+    if (prev_page == 0) {
+      branch = false;
+    } else {
+      branch = true;
+    }
 
     byte b[] = new byte[12];
     for (i = 0; i < keys_in_a_Node; i++) {
@@ -61,13 +64,17 @@ public class MNode extends Node {
 
       if (keyType == 'F') {
         nfile.read(b);
-        if (i < keys_in_this_Node) key_expression[i] = new NodeKey(new NodeFloat(b));
-        else key_expression[i] = new NodeKey(new NodeFloat(0.0));
+        if (i < keys_in_this_Node) {
+          key_expression[i] = new NodeKey(new NodeFloat(b));
+        } else {
+          key_expression[i] = new NodeKey(new NodeFloat(0.0));
+        }
       } else if (keyType == 'N') {
         key_expression[i] = new NodeKey(new Double(Double.longBitsToDouble(nfile.readLong())));
       } else {
         nfile.readFully(key_buffer, 0, key_expression_size);
-        for (k = 0; k < key_expression_size && key_buffer[k] != 0; k++) ;
+        for (k = 0; k < key_expression_size && key_buffer[k] != 0; k++) {;
+        }
         try {
           key_expression[i] = new NodeKey(new String(key_buffer, 0, k, DBF.encodedType));
         } catch (UnsupportedEncodingException UEE) {
@@ -76,14 +83,21 @@ public class MNode extends Node {
       }
 
       j = key_expression_size % 4;
-      if (j > 0) j = 4 - j;
-      for (k = 0; k < j; k++) nfile.readByte();
+      if (j > 0) {
+        j = 4 - j;
+      }
+      for (k = 0; k < j; k++) {
+        nfile.readByte();
+      }
     } // for i
 
     key_record_number[i] = Util.x86(nfile.readInt());
 
-    if (key_record_number[keys_in_this_Node] > 0) branch = true;
-    else branch = false;
+    if (key_record_number[keys_in_this_Node] > 0) {
+      branch = true;
+    } else {
+      branch = false;
+    }
   }
 
   @Override
@@ -98,11 +112,14 @@ public class MNode extends Node {
     nfile.writeInt(Util.x86(prev_page));
     ll -= 4; // sizeof(int)
     for (i = 0; i < keys_in_a_Node && key_expression[i] != null; i++) {
-      if (key_expression[i] == null)
+      if (key_expression[i] == null) {
         throw new xBaseJException("Missing Node Key expression at " + i);
-      if ((branch && (i <= keys_in_this_Node)) || (!branch && (i < keys_in_this_Node)))
+      }
+      if (branch && i <= keys_in_this_Node || !branch && i < keys_in_this_Node) {
         nfile.writeInt(Util.x86(key_record_number[i]));
-      else nfile.writeInt(0);
+      } else {
+        nfile.writeInt(0);
+      }
       ll -= 4;
       j = 0;
       ll -= key_expression_size;
@@ -119,19 +136,30 @@ public class MNode extends Node {
         } catch (UnsupportedEncodingException UEE) {
           bytebuffer = key_expression[i].toString().getBytes();
         }
-        for (x = 0; x < bytebuffer.length; x++) key_buffer[x] = bytebuffer[x];
-        for (; x < key_expression_size; x++) key_buffer[x] = 0;
+        for (x = 0; x < bytebuffer.length; x++) {
+          key_buffer[x] = bytebuffer[x];
+        }
+        for (; x < key_expression_size; x++) {
+          key_buffer[x] = 0;
+        }
         nfile.write(key_buffer, 0, key_expression_size);
         j = key_expression_size % 4;
-        if (j > 0) j = 4 - j;
+        if (j > 0) {
+          j = 4 - j;
+        }
       }
       key_buffer[0] = 0;
-      for (k = 0; k < j; k++) nfile.write(key_buffer[0]);
+      for (k = 0; k < j; k++) {
+        nfile.write(key_buffer[0]);
+      }
       ll -= j; // sizeof(ints) and full key length to its 4 byte alignment
     } // for i
 
-    if (branch) nfile.writeInt(Util.x86(key_record_number[i]));
-    else nfile.writeInt(0);
+    if (branch) {
+      nfile.writeInt(Util.x86(key_record_number[i]));
+    } else {
+      nfile.writeInt(0);
+    }
     ll -= 4; // sizeof(int)
     // a Node is 512 bytes long;
     if (ll > 0) {
@@ -149,8 +177,11 @@ public class MNode extends Node {
 
   @Override
   public int get_lower_level() {
-    if (branch) return key_record_number[pos];
-    else return 0;
+    if (branch) {
+      return key_record_number[pos];
+    } else {
+      return 0;
+    }
   }
 
   public int get_prev_page() {

@@ -95,7 +95,7 @@ public class ManualTests {
       for (int ir = 1; ir <= dbf.getFieldCount(); ir++) {
         Field field = dbf.getField(ir);
         System.out.println(
-            "-Field: " + field.Name + "<" + (field.getType()) + ">" + " [" + field.Length + "]");
+            "-Field: " + field.Name + "<" + field.getType() + ">" + " [" + field.Length + "]");
         if (f1 == null && field.getType() == CharField.type) {
           f1 = (CharField) field;
         }

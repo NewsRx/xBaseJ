@@ -104,7 +104,9 @@ public class Node extends Object implements Cloneable {
   }
 
   public void set_record_number(int r) throws xBaseJException {
-    if (r == 0) throw new xBaseJException("Invalid record number in set");
+    if (r == 0) {
+      throw new xBaseJException("Invalid record number in set");
+    }
     record_number = r;
   }
 
@@ -172,7 +174,8 @@ public class Node extends Object implements Cloneable {
         key_expression[i] = new NodeKey(new Double(Double.longBitsToDouble(nfile.readLong())));
       } else {
         nfile.readFully(key_buffer, 0, key_expression_size);
-        for (k = 0; k < key_expression_size && key_buffer[k] != 0; k++) ;
+        for (k = 0; k < key_expression_size && key_buffer[k] != 0; k++) {;
+        }
         try {
           key_expression[i] = new NodeKey(new String(key_buffer, 0, k, DBF.encodedType));
         } catch (UnsupportedEncodingException UEE) {
@@ -180,12 +183,19 @@ public class Node extends Object implements Cloneable {
         }
       }
       j = key_expression_size % 4;
-      if (j > 0) j = 4 - j;
-      for (k = 0; k < j; k++) nfile.readByte();
+      if (j > 0) {
+        j = 4 - j;
+      }
+      for (k = 0; k < j; k++) {
+        nfile.readByte();
+      }
     } // for i
 
-    if (lower_level[0] > 0) branch = true;
-    else branch = false;
+    if (lower_level[0] > 0) {
+      branch = true;
+    } else {
+      branch = false;
+    }
 
     lower_level[i] = Util.x86(nfile.readInt());
   }
@@ -193,7 +203,9 @@ public class Node extends Object implements Cloneable {
   public void write() throws IOException, xBaseJException {
 
     int i, j, k, ll = 512;
-    if (record_number == 0) throw new xBaseJException("Invalid record number in write");
+    if (record_number == 0) {
+      throw new xBaseJException("Invalid record number in write");
+    }
 
     long longrecn = record_number;
 
@@ -202,10 +214,12 @@ public class Node extends Object implements Cloneable {
     nfile.writeInt(Util.x86(keys_in_this_Node));
     ll -= 4; // sizeof(int)
     for (i = 0; i < keys_in_this_Node && i < keys_in_a_Node && key_expression[i] != null; i++) {
-      if (key_expression[i] == null)
+      if (key_expression[i] == null) {
         throw new xBaseJException("Missing node key expression at " + i);
-      if ((lower_level[0] == 0) && (key_record_number[i] == 0))
+      }
+      if (lower_level[0] == 0 && key_record_number[i] == 0) {
         throw new xBaseJException("Logic mismatch, both pointers are zero");
+      }
       nfile.writeInt(Util.x86(lower_level[i]));
       ll -= 4;
       nfile.writeInt(Util.x86(key_record_number[i]));
@@ -222,22 +236,29 @@ public class Node extends Object implements Cloneable {
         } catch (UnsupportedEncodingException UEE) {
           bytebuffer = key_expression[i].toString().getBytes();
         }
-        for (x = 0; x < bytebuffer.length; x++) key_buffer[x] = bytebuffer[x];
-        for (; x < key_expression_size; x++) key_buffer[x] = 0;
+        for (x = 0; x < bytebuffer.length; x++) {
+          key_buffer[x] = bytebuffer[x];
+        }
+        for (; x < key_expression_size; x++) {
+          key_buffer[x] = 0;
+        }
         nfile.write(key_buffer, 0, key_expression_size);
       }
       ll -= key_expression_size; // sizeof(2 ints) and full key length to
       // its 4 byte alignment
       j = key_expression_size % 4;
-      if (j > 0) j = 4 - j; // 4 byte alignment
+      if (j > 0) {
+        j = 4 - j; // 4 byte alignment
+      }
       key_buffer[0] = 0;
       for (k = 0; k < j; k++) {
         nfile.write(key_buffer[0]);
         ll--;
       }
     } // for i
-    if ((branch == true) && (lower_level[i] == 0))
+    if (branch == true && lower_level[i] == 0) {
       throw new xBaseJException("Logic mismatch, lower level pointer is zero");
+    }
     nfile.writeInt(Util.x86(lower_level[i]));
     ll -= 4; // sizeof(int)
     if (ll > 0) {

@@ -97,7 +97,7 @@ public class TagHeader {
     keyType = (byte) type;
     key_entry_size = (short) (len + 4);
     key_length = len;
-    key_per_Node = (short) (mfile.anchor.get_blockbytes() - (16));
+    key_per_Node = (short) (mfile.anchor.get_blockbytes() - 16);
     key_per_Node /= key_entry_size;
 
     unknown[1] = 0x10000;
