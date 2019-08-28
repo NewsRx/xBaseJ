@@ -5,9 +5,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+
 import org.junit.Test;
-import org.xBaseJ.fields.LogicalField;
 import org.xBaseJ.xBaseJException;
+import org.xBaseJ.fields.LogicalField;
 
 public class TestLogical {
 

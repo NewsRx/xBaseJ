@@ -30,11 +30,13 @@ package org.xBaseJ.test;
  *     Boston, MA 02111-1307 USA
  */
 import java.io.File;
-import junit.framework.TestCase;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.DBFTypes;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.MemoField;
+
+import junit.framework.TestCase;
 
 public class TestFoxPro extends TestCase {
 

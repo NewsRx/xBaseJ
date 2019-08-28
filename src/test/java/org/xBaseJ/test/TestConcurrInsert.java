@@ -1,4 +1,9 @@
 package org.xBaseJ.test;
+import org.xBaseJ.DBF;
+import org.xBaseJ.fields.CharField;
+import org.xBaseJ.fields.Field;
+import org.xBaseJ.fields.NumField;
+
 /**
  * xBaseJ - Java access to dBase files
  *
@@ -32,10 +37,6 @@ package org.xBaseJ.test;
  *     System.out.println statement in thread
  */
 import junit.framework.TestCase;
-import org.xBaseJ.DBF;
-import org.xBaseJ.fields.CharField;
-import org.xBaseJ.fields.Field;
-import org.xBaseJ.fields.NumField;
 
 public class TestConcurrInsert extends TestCase {
 

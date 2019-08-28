@@ -33,6 +33,7 @@ package org.xBaseJ.fields;
  */
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
 import org.xBaseJ.Util;
 import org.xBaseJ.xBaseJException;
 

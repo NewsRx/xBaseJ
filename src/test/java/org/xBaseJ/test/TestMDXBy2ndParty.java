@@ -1,4 +1,7 @@
 package org.xBaseJ.test;
+import org.xBaseJ.DBF;
+import org.xBaseJ.xBaseJException;
+
 /**
  * xBaseJ - Java access to dBase files
  *
@@ -30,8 +33,6 @@ package org.xBaseJ.test;
  *     Boston, MA 02111-1307 USA
  */
 import junit.framework.TestCase;
-import org.xBaseJ.DBF;
-import org.xBaseJ.xBaseJException;
 
 public class TestMDXBy2ndParty extends TestCase {
 

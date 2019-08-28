@@ -1,4 +1,8 @@
 package org.xBaseJ.test;
+import org.xBaseJ.DBF;
+import org.xBaseJ.fields.CharField;
+import org.xBaseJ.fields.Field;
+
 /**
  * xBaseJ - Java access to dBase files
  *
@@ -30,9 +34,6 @@ package org.xBaseJ.test;
  *     Boston, MA 02111-1307 USA
  */
 import junit.framework.TestCase;
-import org.xBaseJ.DBF;
-import org.xBaseJ.fields.CharField;
-import org.xBaseJ.fields.Field;
 
 /**
  * @author Joe McVerry - American Coders, Ltd.

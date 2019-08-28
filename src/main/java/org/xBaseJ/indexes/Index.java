@@ -42,10 +42,11 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Vector;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.Util;
-import org.xBaseJ.fields.Field;
 import org.xBaseJ.xBaseJException;
+import org.xBaseJ.fields.Field;
 
 public abstract class Index {
   public int top_Node;

@@ -40,6 +40,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
@@ -55,8 +56,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.DBFTypes;
+import org.xBaseJ.xBaseJException;
 import org.xBaseJ.awt.DbfFileFilter;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.CurrencyField;
@@ -67,7 +70,6 @@ import org.xBaseJ.fields.LogicalField;
 import org.xBaseJ.fields.MemoField;
 import org.xBaseJ.fields.NumField;
 import org.xBaseJ.fields.PictureField;
-import org.xBaseJ.xBaseJException;
 
 public class DbfCreate extends JFrame
     implements ActionListener, WindowListener, ListSelectionListener {

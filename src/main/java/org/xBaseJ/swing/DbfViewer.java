@@ -59,6 +59,7 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.Vector;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -87,6 +88,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.Document;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.awt.DbfFileFilter;
 import org.xBaseJ.fields.Field;

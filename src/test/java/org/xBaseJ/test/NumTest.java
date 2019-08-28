@@ -1,4 +1,7 @@
 package org.xBaseJ.test;
+import org.xBaseJ.fields.FloatField;
+import org.xBaseJ.fields.NumField;
+
 /**
  * xBaseJ - Java access to dBase files
  *
@@ -30,8 +33,6 @@ package org.xBaseJ.test;
  *     Boston, MA 02111-1307 USA
  */
 import junit.framework.TestCase;
-import org.xBaseJ.fields.FloatField;
-import org.xBaseJ.fields.NumField;
 
 public class NumTest extends TestCase {
 

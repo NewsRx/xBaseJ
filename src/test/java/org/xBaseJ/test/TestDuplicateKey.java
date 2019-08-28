@@ -12,10 +12,12 @@ package org.xBaseJ.test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
-import junit.framework.TestCase;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
+
+import junit.framework.TestCase;
 
 /** @author joe */
 public class TestDuplicateKey extends TestCase {

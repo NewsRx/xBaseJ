@@ -40,10 +40,11 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.util.StringTokenizer;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.Util;
-import org.xBaseJ.fields.Field;
 import org.xBaseJ.xBaseJException;
+import org.xBaseJ.fields.Field;
 
 public class NDX extends Index {
 

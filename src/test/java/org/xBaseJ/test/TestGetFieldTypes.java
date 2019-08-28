@@ -1,6 +1,5 @@
 package org.xBaseJ.test;
 
-import junit.framework.TestCase;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.CurrencyField;
 import org.xBaseJ.fields.DateField;
@@ -9,6 +8,8 @@ import org.xBaseJ.fields.LogicalField;
 import org.xBaseJ.fields.MemoField;
 import org.xBaseJ.fields.NumField;
 import org.xBaseJ.fields.PictureField;
+
+import junit.framework.TestCase;
 
 public class TestGetFieldTypes extends TestCase {
 

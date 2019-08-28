@@ -33,6 +33,7 @@ package org.xBaseJ.fields;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormatSymbols;
+
 import org.xBaseJ.xBaseJException;
 
 public class FloatField extends NumField {

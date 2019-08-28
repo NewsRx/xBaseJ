@@ -30,10 +30,12 @@ package org.xBaseJ.test;
  *     Boston, MA 02111-1307 USA
  */
 import java.io.IOException;
-import junit.framework.TestCase;
+
 import org.xBaseJ.DBF;
-import org.xBaseJ.fields.CharField;
 import org.xBaseJ.xBaseJException;
+import org.xBaseJ.fields.CharField;
+
+import junit.framework.TestCase;
 
 public class TestAdd extends TestCase {
 

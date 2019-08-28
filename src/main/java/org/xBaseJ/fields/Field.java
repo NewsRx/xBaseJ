@@ -37,10 +37,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.Util;
-import org.xBaseJ.cp.CharsetMapper;
 import org.xBaseJ.xBaseJException;
+import org.xBaseJ.cp.CharsetMapper;
 
 public abstract class Field extends Object implements Cloneable, Externalizable {
 

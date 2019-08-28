@@ -32,6 +32,7 @@ package org.xBaseJ.fields;
  */
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
 import org.xBaseJ.xBaseJException;
 
 public class CharField extends Field {

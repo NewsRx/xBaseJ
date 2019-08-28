@@ -1,9 +1,10 @@
 /** */
 package org.xBaseJ.test;
 
-import junit.framework.TestCase;
 import org.xBaseJ.DBF;
 import org.xBaseJ.fields.NumField;
+
+import junit.framework.TestCase;
 
 /** @author joseph mcverry */
 public class TestIndexAfterAdding extends TestCase {

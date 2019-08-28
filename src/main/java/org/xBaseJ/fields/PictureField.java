@@ -33,6 +33,7 @@ package org.xBaseJ.fields;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.DBTFile;
 import org.xBaseJ.DBT_fpt;

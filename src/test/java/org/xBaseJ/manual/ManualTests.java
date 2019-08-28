@@ -5,12 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
 import org.xBaseJ.DBF;
 import org.xBaseJ.Util;
+import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.Field;
 import org.xBaseJ.fields.MemoField;
-import org.xBaseJ.xBaseJException;
 
 public class ManualTests {
 

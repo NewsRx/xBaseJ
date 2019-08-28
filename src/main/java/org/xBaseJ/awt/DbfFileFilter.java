@@ -30,6 +30,7 @@ package org.xBaseJ.awt;
  *     Boston, MA 02111-1307 USA
  */
 import java.io.File;
+
 import javax.swing.filechooser.FileFilter;
 
 public class DbfFileFilter extends FileFilter {

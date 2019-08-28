@@ -62,10 +62,11 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Vector;
+
 import org.xBaseJ.DBF;
+import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.Field;
 import org.xBaseJ.fields.LogicalField;
-import org.xBaseJ.xBaseJException;
 
 public class DbfShow extends Frame
     implements ActionListener, WindowListener, AdjustmentListener, ItemListener {

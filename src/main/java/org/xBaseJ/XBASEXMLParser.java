@@ -33,8 +33,10 @@ package org.xBaseJ;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.IOException;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.CurrencyField;
 import org.xBaseJ.fields.DateField;

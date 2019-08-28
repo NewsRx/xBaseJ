@@ -30,11 +30,13 @@ package org.xBaseJ.test;
  *     Boston, MA 02111-1307 USA
  */
 import java.io.IOException;
-import junit.framework.TestCase;
+
 import org.xBaseJ.Util;
+import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.CharField;
 import org.xBaseJ.fields.DateField;
-import org.xBaseJ.xBaseJException;
+
+import junit.framework.TestCase;
 
 public class TestNoBlanks extends TestCase {
 

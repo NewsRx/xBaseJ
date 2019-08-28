@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+
 import org.xBaseJ.xBaseJException;
 
 public class NumField extends Field {
