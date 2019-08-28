@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.xBaseJ.DBF;
+import org.xBaseJ.DBFTypes;
 import org.xBaseJ.Util;
 import org.xBaseJ.xBaseJException;
 import org.xBaseJ.fields.CharField;
@@ -22,19 +23,39 @@ public class ManualTests {
     extracted(testFolderSource, "banned-content-db3.DBF", testFolderDest, "banned-content-db3.dbf");
     extracted(
         testFolderSource, "test-data-with-memo.dbf", testFolderDest, "test-data-with-memo.dbf");
-    //		dumpWithMemoField(10);
+    createDbfsToLoadIntoFoxpro();
   }
 
-  //	private static void dumpWithMemoField(int i) {
-  //		try (DBF dbf = new DBF(Paths.get(testFolderDest, testFileDest).toFile().getAbsolutePath())) {
-  //			System.out.println("Record count: "+dbf.getRecordCount());
-  //			for (int ir = 1; ir<=dbf.getFieldCount(); ir++) {
-  //				Field field = dbf.getField(ir);
-  //				System.out.println("-Field: "+field.Name+"<"+((int)field.getType())+">"+"
-  // ["+field.Length+"]");
-  //			}
-  //		}
-  //	}
+  private static void createDbfsToLoadIntoFoxpro()
+      throws SecurityException, xBaseJException, IOException {
+    try (DBF dbf =
+        new DBF("temp/test-in-foxpro-dbaseiii-with-memo.dbf", DBFTypes.DBASEIII_WITH_MEMO, true)) {
+      CharField charField = new CharField("charfield", 254);
+      MemoField memoField = new MemoField("memofield");
+      dbf.addField(new Field[] {charField, memoField});
+      charField.put("charfield value");
+      memoField.put("memofield value");
+      dbf.write();
+    }
+    try (DBF dbf =
+        new DBF("temp/test-in-foxpro-dbaseiv-with-memo.dbf", DBFTypes.DBASEIV_WITH_MEMO, true)) {
+      CharField charField = new CharField("charfield", 254);
+      MemoField memoField = new MemoField("memofield");
+      dbf.addField(new Field[] {charField, memoField});
+      charField.put("charfield value");
+      memoField.put("memofield value");
+      dbf.write();
+    }
+    try (DBF dbf =
+        new DBF("temp/test-in-foxpro-foxpro2-with-memo.dbf", DBFTypes.FOXPRO_WITH_MEMO, true)) {
+      CharField charField = new CharField("charfield", 254);
+      MemoField memoField = new MemoField("memofield");
+      dbf.addField(new Field[] {charField, memoField});
+      charField.put("charfield value");
+      memoField.put("memofield value");
+      dbf.write();
+    }
+  }
 
   private static void extracted(
       String testFolderSource, String testFileSource, String testFolderDest, String testFileDest)
