@@ -34,7 +34,7 @@ jcenter()
 maven { url "https://jitpack.io" }
 }
 dependencies {
-compile ('com.github.NewsRxTech:xBaseJ:20171206') {
+compile ('com.github.NewsRxTech:xBaseJ:20190827.02') {
 		exclude group: 'org.eclipse.swt'
 	}
 }
