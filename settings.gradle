@@ -2,8 +2,8 @@ rootProject.name = 'xBaseJ'
 
 String[] p = []
 /*
- * Dynamically locate loosely coupled project dependencies.
- */
+* Dynamically locate loosely coupled project dependencies.
+*/
 p.each { s->
 	include (":"+s);
 	boolean found=false;
@@ -27,4 +27,3 @@ p.each { s->
 	}
 	project(":"+s).projectDir=f
 }
-

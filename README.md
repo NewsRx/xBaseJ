@@ -18,15 +18,12 @@ Example Gradle config:
 
 ```Java
 repositories {
-  jcenter()
-  maven { url "https://jitpack.io" }
+jcenter()
+maven { url "https://jitpack.io" }
 }
 dependencies {
-  compile ('com.github.NewsRxTech:xBaseJ:20171206') {
+compile ('com.github.NewsRxTech:xBaseJ:20171206') {
 		exclude group: 'org.eclipse.swt'
 	}
 }
 ```
-
-
-

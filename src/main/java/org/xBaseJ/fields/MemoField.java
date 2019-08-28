@@ -2,258 +2,226 @@ package org.xBaseJ.fields;
 
 /**
  * xBaseJ - Java access to dBase files
- *<p>Copyright 1997-2014 - American Coders, LTD  - Raleigh NC USA
- *<p>All rights reserved
- *<p>Currently supports only dBase III format DBF, DBT and NDX files
- *<p>                        dBase IV format DBF, DBT, MDX and NDX files
- *<p>American Coders, Ltd
- *<br>P. O. Box 97462
- *<br>Raleigh, NC  27615  USA
- *<br>1-919-846-2014
- *<br>http://www.americancoders.com
- @author Joe McVerry, American Coders Ltd.
- @author Michael Joyner https://github.com/michael-newsrx
-@author Tyryshkin Alexander https://github.com/TYSDEV
-@Version 20170109
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * <p>Copyright 1997-2014 - American Coders, LTD - Raleigh NC USA
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
+ * <p>All rights reserved
  *
- * You should have received a copy of the GNU Library Lesser General Public
- * License along with this library; if not, write to the Free
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * <p>Currently supports only dBase III format DBF, DBT and NDX files
  *
- *  20110119  Joe McVerry (jrm)   Added static field type and CurrencyField class. 
-*/
-
+ * <p>dBase IV format DBF, DBT, MDX and NDX files
+ *
+ * <p>American Coders, Ltd <br>
+ * P. O. Box 97462 <br>
+ * Raleigh, NC 27615 USA <br>
+ * 1-919-846-2014 <br>
+ * http://www.americancoders.com
+ *
+ * @author Joe McVerry, American Coders Ltd.
+ * @author Michael Joyner https://github.com/michael-newsrx
+ * @author Tyryshkin Alexander https://github.com/TYSDEV @Version 20170109
+ *     <p>This library is free software; you can redistribute it and/or modify it under the terms of
+ *     the GNU Library Lesser General Public License as published by the Free Software Foundation;
+ *     either version 2 of the License, or (at your option) any later version.
+ *     <p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ *     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+ *     the GNU Library General Public License for more details.
+ *     <p>You should have received a copy of the GNU Library Lesser General Public License along
+ *     with this library; if not, write to the Free Foundation, Inc., 59 Temple Place, Suite 330,
+ *     Boston, MA 02111-1307 USA
+ *     <p>20110119 Joe McVerry (jrm) Added static field type and CurrencyField class.
+ */
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-
 import org.xBaseJ.DBF;
 import org.xBaseJ.DBTFile;
 import org.xBaseJ.xBaseJException;
 
 public class MemoField extends Field {
 
-	/**
-	 * 20110614 jrm - update read method
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	boolean foxPro = false;
-	public static final char type = 'M';
+  /** 20110614 jrm - update read method */
+  private static final long serialVersionUID = 1L;
 
-	public MemoField() {
-		super();
-	}
+  boolean foxPro = false;
+  public static final char type = 'M';
 
-	public MemoField(boolean inFoxPro) {
-		super();
-		foxPro = inFoxPro;
-	}
+  public MemoField() {
+    super();
+  }
 
-	private DBTFile dbtobj;
-	private int originalSize;
-	private String value;
-	private byte[] byteValue;
+  public MemoField(boolean inFoxPro) {
+    super();
+    foxPro = inFoxPro;
+  }
 
-	public boolean isFoxPro() {
-		return foxPro;
-	}
+  private DBTFile dbtobj;
+  private int originalSize;
+  private String value;
+  private byte[] byteValue;
 
-	public void setDBTObj(DBTFile indbtobj) {
-		dbtobj = indbtobj;
+  public boolean isFoxPro() {
+    return foxPro;
+  }
 
-	}
+  public void setDBTObj(DBTFile indbtobj) {
+    dbtobj = indbtobj;
+  }
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		try {
-			MemoField tField = new MemoField(Name, getLength(), null, null);
-			return tField;
-		} catch (xBaseJException e) {
-			return null;
-		} catch (IOException e) {
-			return null;
-		}
-	}
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    try {
+      MemoField tField = new MemoField(Name, getLength(), null, null);
+      return tField;
+    } catch (xBaseJException e) {
+      return null;
+    } catch (IOException e) {
+      return null;
+    }
+  }
 
-	public MemoField(String Name, int iLength, ByteBuffer inBuffer, DBTFile indbtobj) throws xBaseJException, IOException {
-		super();
-		super.setField(Name, iLength, inBuffer);
-		dbtobj = indbtobj;
-		value = new String("");
-	}
+  public MemoField(String Name, int iLength, ByteBuffer inBuffer, DBTFile indbtobj)
+      throws xBaseJException, IOException {
+    super();
+    super.setField(Name, iLength, inBuffer);
+    dbtobj = indbtobj;
+    value = new String("");
+  }
 
-	/**
-	 * public method for creating a memo field object. It is not associated with
-	 * a database but can be when used with some DBF methods.
-	 * 
-	 * @param iName
-	 *            the name of the field
-	 * @throws xBaseJException
-	 *             exception caused in calling methods
-	 * @throws IOException
-	 *             can not occur but defined for calling methods
-	 * @see Field
-	 * 
-	 */
+  /**
+   * public method for creating a memo field object. It is not associated with a database but can be
+   * when used with some DBF methods.
+   *
+   * @param iName the name of the field
+   * @throws xBaseJException exception caused in calling methods
+   * @throws IOException can not occur but defined for calling methods
+   * @see Field
+   */
+  public MemoField(String iName) throws xBaseJException, IOException {
+    super();
+    super.setField(iName, 10, null);
+    dbtobj = null;
+    originalSize = 0;
+    buffer = new byte[10];
+    for (int i = 0; i < 10; i++) buffer[i] = DBTFile.BYTEZERO;
+    value = new String("");
+  }
 
-	public MemoField(String iName) throws xBaseJException, IOException {
-		super();
-		super.setField(iName, 10, null);
-		dbtobj = null;
-		originalSize = 0;
-		buffer = new byte[10];
-		for (int i = 0; i < 10; i++)
-			buffer[i] = DBTFile.BYTEZERO;
-		value = new String("");
-	}
+  /**
+   * public method for creating a FoxPro memo field object. It is not associated with a database but
+   * can be when used with some DBF methods.
+   *
+   * @param iName the name of the field
+   * @param inFoxPro - boolean
+   * @exception xBaseJException exception caused in calling methods
+   * @exception IOException can not occur but defined for calling methods
+   * @see Field
+   */
+  public MemoField(String iName, boolean inFoxPro) throws xBaseJException, IOException {
+    super();
+    super.setField(iName, 10, null);
+    foxPro = inFoxPro;
+    dbtobj = null;
+    originalSize = 0;
+    buffer = new byte[10];
+    for (int i = 0; i < 10; i++) buffer[i] = DBTFile.BYTEZERO;
+    value = new String("");
+  }
 
-	/**
-	 * public method for creating a FoxPro memo field object. It is not
-	 * associated with a database but can be when used with some DBF methods.
-	 * 
-	 * @param iName
-	 *            the name of the field
-	 * @param inFoxPro
-	 *            - boolean
-	 * @exception xBaseJException
-	 *                exception caused in calling methods
-	 * @exception IOException
-	 *                can not occur but defined for calling methods
-	 * @see Field
-	 * 
-	 */
+  /** return the character 'M' indicating a memo field */
+  @Override
+  public char getType() {
+    return type;
+  }
 
-	public MemoField(String iName, boolean inFoxPro) throws xBaseJException, IOException {
-		super();
-		super.setField(iName, 10, null);
-		foxPro = inFoxPro;
-		dbtobj = null;
-		originalSize = 0;
-		buffer = new byte[10];
-		for (int i = 0; i < 10; i++)
-			buffer[i] = DBTFile.BYTEZERO;
-		value = new String("");
-	}
+  /** return the contents of the memo Field, variant of the field.get method */
+  @Override
+  public String get() {
+    String s = "";
+    if (byteValue == null) return "";
+    try {
+      s = new String(byteValue, DBF.encodedType);
+    } catch (UnsupportedEncodingException UEE) {
+      s = new String(byteValue);
+    }
+    int k;
+    if (byteValue.length < 2) return s;
+    for (k = byteValue.length; k > -1 && byteValue[k - 1] == 0; k--) ;
+    return s.substring(0, k);
+  }
 
-	/**
-	 * return the character 'M' indicating a memo field
-	 */
-	@Override
-	public char getType() {
-		return type;
-	}
+  /**
+   * return the contents of the memo Field via its original byte array
+   *
+   * @deprecated Do NOT use this function! These bytes do NOT reflect the actual memo field's value!
+   * @return byte[] - if not set a null is returned.
+   */
+  @Deprecated
+  @Override
+  public byte[] getBytes() {
+    return byteValue;
+  }
 
-	/**
-	 * return the contents of the memo Field, variant of the field.get method
-	 */
-	@Override
-	public String get() {
-		String s = "";
-		if (byteValue == null)
-			return "";
-		try {
-			s = new String(byteValue, DBF.encodedType);
-		} catch (UnsupportedEncodingException UEE) {
-			s = new String(byteValue);
-		}
-		int k;
-		if (byteValue.length < 2)
-			return s;
-		for (k = byteValue.length; k > -1 && byteValue[k - 1] == 0; k--)
-			;
-		return s.substring(0, k);
-	}
+  @Override
+  public void read() throws IOException, xBaseJException {
+    super.read();
 
-	/**
-	 * return the contents of the memo Field via its original byte array
-	 * 
-	 * @deprecated Do NOT use this function! These bytes do NOT reflect the
-	 *             actual memo field's value!
-	 * 
-	 * @return byte[] - if not set a null is returned.
-	 */
-	@Deprecated
-	@Override
-	public byte[] getBytes() {
-		return byteValue;
-	}
+    if (Length == 4) {
+      byteValue = dbtobj.readBytesByInt(super.buffer);
+    } else {
+      byteValue = dbtobj.readBytes(super.buffer);
+    }
+    value = "";
+    originalSize = 0;
 
-	@Override
-	public void read() throws IOException, xBaseJException {
-		super.read();
+    if (byteValue != null) {
+      value = new String(byteValue);
+      originalSize = value.length();
+    }
+  }
 
-		if (Length==4) {
-			byteValue = dbtobj.readBytesByInt(super.buffer);
-		} else {
-			byteValue = dbtobj.readBytes(super.buffer);
-		}
-		value = "";
-		originalSize = 0;
+  /**
+   * sets the contents of the memo Field, variant of the field.put method data not written into DBF
+   * until an update or write is issued.
+   *
+   * @param inValue value to set Field to.
+   */
+  @Override
+  public void put(String inValue) {
+    if (inValue == null) {
+      inValue = "";
+    }
+    if (mapper != null) {
+      inValue = mapper.map(inValue);
+    }
 
-		if (byteValue != null) {
-			value = new String(byteValue);
-			originalSize = value.length();
-		}
-	}
+    value = new String(inValue);
+    byteValue = value.getBytes();
+  }
 
-	/**
-	 * sets the contents of the memo Field, variant of the field.put method data
-	 * not written into DBF until an update or write is issued.
-	 * 
-	 * @param inValue
-	 *            value to set Field to.
-	 */
-	@Override
-	public void put(String inValue) {
-		if (inValue==null) {
-			inValue="";
-		}
-		if (mapper!=null) {
-			inValue = mapper.map(inValue);
-		}
-		
-		value = new String(inValue);
-		byteValue = value.getBytes();
-	}
+  /**
+   * sets the contents of the memo Field, variant of the field.put method data not written into DBF
+   * until an update or write is issued.
+   *
+   * @param inBytes byte array value to set Field to.
+   * @deprecated Do NOT use this function! These bytes do NOT reflect the actual memo field's value!
+   *     ONLY {@link #put(String)} works correctly!
+   */
+  @Deprecated
+  @Override
+  public void put(byte inBytes[]) throws xBaseJException {
+    byteValue = inBytes == null ? new byte[0] : inBytes;
+  }
 
-	/**
-	 * sets the contents of the memo Field, variant of the field.put method data
-	 * not written into DBF until an update or write is issued.
-	 * 
-	 * @param inBytes
-	 *            byte array value to set Field to.
-	 * 
-	 * @deprecated Do NOT use this function! These bytes do NOT reflect the
-	 *             actual memo field's value! ONLY {@link #put(String)} works
-	 *             correctly!
-	 */
-	@Deprecated
-	@Override
-	public void put(byte inBytes[]) throws xBaseJException {
-		byteValue = inBytes==null?new byte[0]:inBytes;
-	}
+  @Override
+  public void write() throws IOException, xBaseJException {
+    super.buffer = dbtobj.write(value, originalSize, true, super.buffer);
+    super.write();
+  }
 
-	@Override
-	public void write() throws IOException, xBaseJException {
-		super.buffer = dbtobj.write(value, originalSize, true, super.buffer);
-		super.write();
-	}
-
-	@Override
-	public void update() throws IOException, xBaseJException {
-		super.buffer = dbtobj.write(value, originalSize, false, super.buffer);
-		super.write();
-	}
-
+  @Override
+  public void update() throws IOException, xBaseJException {
+    super.buffer = dbtobj.write(value, originalSize, false, super.buffer);
+    super.write();
+  }
 }

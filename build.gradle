@@ -1,3 +1,7 @@
+plugins {
+id "com.diffplug.gradle.spotless" version "3.24.2"
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse-wtp'
@@ -10,61 +14,57 @@ compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
 install {
-    repositories.mavenInstaller {
-        pom.artifactId = 'xBaseJ'
-    }
+	repositories.mavenInstaller {
+		pom.artifactId = 'xBaseJ'
+	}
 }
 
-def RTJAR = '/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar';
-if (new File(RTJAR).exists()) {
-	compileJava.options.bootClasspath=RTJAR
-}
+compileJava.dependsOn 'spotlessApply'
 
 tasks.eclipseWtp.dependsOn(cleanEclipseWtp)
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+	classifier = 'sources'
+	from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
 	javadoc.failOnError=false
-    classifier = 'javadoc'
-    from javadoc.destinationDir
+	classifier = 'javadoc'
+	from javadoc.destinationDir
 }
 
 artifacts {
-    archives sourcesJar
-    archives javadocJar
+	archives sourcesJar
+	archives javadocJar
 }
 
 configurations.all {
-    resolutionStrategy.cacheChangingModulesFor 30, 'seconds'
+	resolutionStrategy.cacheChangingModulesFor 30, 'seconds'
 }
 
-
 repositories {
-    jcenter()
-    maven { url 'https://jitpack.io' }
+	jcenter()
+	maven { url 'https://jitpack.io' }
 }
 
 configurations {
-  provided
+provided
 }
 
 dependencies {
 	compile 'commons-logging:commons-logging:1.1.1'
 	testCompile 'junit:junit:4.12'
 }
- 
+
 sourceSets {
-  main {
-    compileClasspath += configurations.provided
-  }
-  test {
-    compileClasspath += configurations.provided
-    runtimeClasspath += configurations.provided
-  }
+main {
+	compileClasspath += configurations.provided
+}
+test {
+	compileClasspath += configurations.provided
+	runtimeClasspath += configurations.provided
+}
 }
 
 task "create-dirs" {
@@ -75,12 +75,12 @@ task "create-dirs" {
 
 eclipseJdt {
 	doLast{
-    File f = file('.settings/org.eclipse.core.resources.prefs')
-    f.write('eclipse.preferences.version=1\n')
-    f.append('encoding/<project>=utf-8')
-    f = file('.settings/org.eclipse.core.runtime.prefs')
-    f.write('eclipse.preferences.version=1\n')
-    f.append('line.separator=\\n\n')
+	File f = file('.settings/org.eclipse.core.resources.prefs')
+	f.write('eclipse.preferences.version=1\n')
+	f.append('encoding/<project>=utf-8')
+	f = file('.settings/org.eclipse.core.runtime.prefs')
+	f.write('eclipse.preferences.version=1\n')
+	f.append('line.separator=\\n\n')
 }}
 
 project.afterEvaluate {
@@ -107,7 +107,7 @@ eclipse {
 	project {
 		name = 'xBaseJ'
 		natures 'org.eclipse.buildship.core.gradleprojectnature'
-		referencedProjects 
+		referencedProjects
 	}
 
 	classpath {
@@ -131,25 +131,43 @@ eclipse {
 }
 
 configurations.all {
-        resolutionStrategy {
-            force 'xml-apis:xml-apis:1.4.01'
-        }
-    }
-    
-    test {
-  // enable TestNG support (default is JUnit)
-  //useTestNG()
-  maxHeapSize = "6144m"
-  systemProperty 'debug', 'true'
-  testLogging.showStandardStreams = true
-  
-  // listen to events in the test execution lifecycle
-  beforeTest { descriptor ->
-     logger.lifecycle("Running test: " + descriptor)
-  }
+		resolutionStrategy {
+			force 'xml-apis:xml-apis:1.4.01'
+		}
+	}
 
-  // listen to standard out and standard error of the test JVM(s)
-  onOutput { descriptor, event ->
-     logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
-  }
+	test {
+// enable TestNG support (default is JUnit)
+//useTestNG()
+maxHeapSize = "6144m"
+systemProperty 'debug', 'true'
+testLogging.showStandardStreams = true
+
+// listen to events in the test execution lifecycle
+beforeTest { descriptor ->
+	logger.lifecycle("Running test: " + descriptor)
+}
+
+// listen to standard out and standard error of the test JVM(s)
+onOutput { descriptor, event ->
+	logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+}
+}
+
+spotless {
+format 'misc', {
+	target '**/*.gradle', '**/*.md', '**/.gitignore'
+
+	trimTrailingWhitespace()
+	indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+	endWithNewline()
+}
+java {
+	googleJavaFormat()
+	custom 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }
+}
+sql {
+	dbeaver()
+}
+freshmark {}
 }
