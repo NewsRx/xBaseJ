@@ -143,6 +143,9 @@ public class DBF implements Closeable, HasSize {
     if (readonly) {
       throw new IOException("READ ONLY");
     }
+    if (language == codepage.getCode_page_identifier()) {
+      return;
+    }
     language = codepage.getCode_page_identifier();
     setEncodingType(codepage.getJava_code_page());
     update_dbhead();
@@ -520,8 +523,8 @@ public class DBF implements Closeable, HasSize {
 
     db_offset(format, memoExists);
     update_dbhead();
-    file.writeByte(13);
-    file.writeByte(26);
+    file.writeByte(0x0d); // FIELD TERMINATOR
+    // file.writeByte(26); // ???
 
     if (MDX_exist == 1) {
       MDXfile = new MDXFile(DBFname, this, destroy);
@@ -1694,24 +1697,6 @@ public class DBF implements Closeable, HasSize {
     jNDXes = null;
     MDXfile = null;
     unlock();
-
-    /**
-     * reset file length if length doesn't match calculated length, this is required for the DBF to
-     * be readable by Visual FoxPro 9.x
-     */
-    if (!readonly) {
-      /*
-       * foxpro foxplus output is 1 byte longer than raw calculation?
-       */
-      long fileSize = (offset + (lrecl * count)) + 1;
-      if (file.getChannel().size() != fileSize) {
-        file.setLength(fileSize);
-      }
-    }
-    /** Only update "header" if not marked as "readonly". */
-    if (!readonly) {
-      update_dbhead();
-    }
     file.close();
   }
 
@@ -1834,6 +1819,16 @@ public class DBF implements Closeable, HasSize {
     file.write(MDX_exist);
     file.write(language);
     file.write(reserve2, 0, 2);
+
+    /*
+     * xBaseJ foxpro foxplus output is 1 byte longer than raw calculation? (and is rejected by Visual FoxPro!)
+     */
+    long fileSize = (offset + (lrecl * count)) + 1;
+    if (file.getChannel().size() != fileSize) {
+      System.err.println(
+          "WARNING: DBF IS WRONG SIZE. " + file.getChannel().size() + " != " + fileSize);
+      file.setLength(fileSize);
+    }
   }
 
   protected Field read_Field_header() throws IOException, xBaseJException {
