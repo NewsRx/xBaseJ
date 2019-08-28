@@ -1,13 +1,9 @@
-plugins {
-id "com.diffplug.gradle.spotless" version "3.24.2"
-}
-
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse-wtp'
 
 group = 'com.github.NewsRxTech'
-version = '20190828.00'
+version = '20190828.01'
 
 sourceCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
@@ -18,8 +14,6 @@ install {
 		pom.artifactId = 'xBaseJ'
 	}
 }
-
-compileJava.dependsOn 'spotlessApply'
 
 tasks.eclipseWtp.dependsOn(cleanEclipseWtp)
 
@@ -152,22 +146,4 @@ beforeTest { descriptor ->
 onOutput { descriptor, event ->
 	logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
 }
-}
-
-spotless {
-format 'misc', {
-	target '**/*.gradle', '**/*.md', '**/.gitignore'
-
-	trimTrailingWhitespace()
-	indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
-	endWithNewline()
-}
-java {
-	googleJavaFormat()
-	custom 'Lambda fix', { it.replace('} )', '})').replace('} ,', '},') }
-}
-sql {
-	dbeaver()
-}
-freshmark {}
 }
