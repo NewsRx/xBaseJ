@@ -59,6 +59,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Vector;
@@ -2179,10 +2183,10 @@ public class DBF implements Closeable, HasSize {
 			parent = ".";
 		}
 
-		File f = File.createTempFile("tempxbase", "tmp");
-		String tempname = f.getAbsolutePath();
+		Path tempDirectory = Files.createTempDirectory("xBaseJ-");
+		String tempname = ffile.getAbsoluteFile().getName();
 
-		try (DBF tempDBF = new DBF(tempname, version, true)) {
+		try (DBF tempDBF = new DBF(new File(tempDirectory.toFile(), tempname).getAbsolutePath(), version, true)) {
 
 			tempDBF.reserve = reserve;
 			tempDBF.language = language;
@@ -2208,38 +2212,48 @@ public class DBF implements Closeable, HasSize {
 
 			file.close();
 			ffile.delete();
-			tempDBF.renameTo(dosname);
+			
+			Files.copy(Paths.get(tempDBF.ffile.getAbsolutePath()), //
+					Paths.get(ffile.getAbsolutePath()), //
+					StandardCopyOption.REPLACE_EXISTING);
 
 			if (dbtobj != null) {
 				dbtobj.file.close();
-				dbtobj.thefile.delete();
 			}
 
 			if (tempDBF.dbtobj != null) {
-				// tempDBF.dbtobj.file.close();
-				tempDBF.dbtobj.rename(dosname);
-				dbtobj = tempDBF.dbtobj;
+				Files.copy(Paths.get(tempDBF.dbtobj.thefile.getAbsolutePath()), //
+						Paths.get(dbtobj.thefile.getAbsolutePath()), //
+						StandardCopyOption.REPLACE_EXISTING);
+				dbtobj.file = new RandomAccessFile(dbtobj.thefile.getAbsolutePath(), "rw");
+				
 				Field tField;
 				MemoField mField;
 				for (i = 1; i <= fldcount; i++) {
 					tField = getField(i);
-					if (tField.isMemoField()) {
+					if (tField.isMemoField() || tField.isPictureField()) {
 						mField = (MemoField) tField;
 						mField.setDBTObj(dbtobj);
 					}
 				}
 			}
 		}
+		
 		ffile = new File(dosname);
-
 		file = new RandomAccessFile(dosname, "rw");
-
 		channel = file.getChannel();
 
 		read_dbhead();
 
 		for (i = 1; i <= fldcount; i++) {
-			getField(i).setBuffer(buffer);
+			Field field = getField(i);
+			field.setBuffer(buffer);
+			if (field instanceof MemoField) {
+				((MemoField)field).setDBTObj(dbtobj);
+			}
+			if (field instanceof PictureField) {
+				((PictureField)field).setDBTObj(dbtobj);
+			}
 		}
 
 		Index NDXes;

@@ -16,7 +16,7 @@ import org.xBaseJ.fields.MemoField;
 
 public class ManualTests {
 
-  public static void main(String[] args) throws IOException, xBaseJException {
+  public static void main(String[] args) throws IOException, xBaseJException, SecurityException, CloneNotSupportedException {
     String testFolderSource = "VFP9-test-files";
     String testFolderDest = "temp";
     Util.setxBaseJProperty("ignoreVersionMismatch", "true");
@@ -24,9 +24,34 @@ public class ManualTests {
     extracted(
         testFolderSource, "test-data-with-memo.dbf", testFolderDest, "test-data-with-memo.dbf");
     createDbfsToLoadIntoFoxpro();
+    packTest();
   }
 
-  private static void createDbfsToLoadIntoFoxpro()
+  private static void packTest() throws SecurityException, IOException, xBaseJException, CloneNotSupportedException {
+	System.out.println("Pack DBASEIII_WITH_MEMO test");
+	try (DBF dbf =
+	        new DBF("temp/test-dbaseiii-with-memo-pack.dbf", DBFTypes.DBASEIII_WITH_MEMO, true)) {
+	      CharField charField = new CharField("charfield", 254);
+	      MemoField memoField = new MemoField("memofield");
+	      dbf.addField(new Field[] {charField, memoField});
+	      for (int count=0; count<10000; count++) {
+	    	  charField.put("charfield value "+count);
+	    	  memoField.put("memofield value "+count);
+	    	  dbf.write();
+	      }
+	      dbf.gotoRecord(10);
+	      dbf.delete();
+	      dbf.pack();
+	      dbf.gotoRecord(9);
+	      System.out.println("charField: "+charField.get().trim());
+	      System.out.println("memoField: "+memoField.get().trim());
+	      dbf.gotoRecord(10);
+	      System.out.println("charField: "+charField.get().trim());
+	      System.out.println("memoField: "+memoField.get().trim());
+	    }
+  }
+
+private static void createDbfsToLoadIntoFoxpro()
       throws SecurityException, xBaseJException, IOException {
     try (DBF dbf =
         new DBF("temp/test-in-foxpro-dbaseiii-with-memo.dbf", DBFTypes.DBASEIII_WITH_MEMO, true)) {
