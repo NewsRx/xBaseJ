@@ -19,12 +19,12 @@ GITBUCKET_HTTP_HOST="www.newsrx.com"
 GITBUCKET_SSH_HOST="tomcat-0002.newsrx.com"
 PORT=29418
 
-if [ ! -f ~/git/gitbucket-info.sh ]; then
-	echo "create the file gitbucket-info.sh - place into the file: export gb_userpass='username:password'"
+if [ ! -f ~/git/git-scripts/gitbucket-info.sh ]; then
+	echo "create the file git-scripts/gitbucket-info.sh - place into the file: export gb_userpass='username:password'"
 	exit -1
 fi
 
-. ~/git/gitbucket-info.sh
+. ~/git/git-scripts/gitbucket-info.sh
 
 # create repo
 curl -k -X POST --user "$gb_userpass" \
@@ -41,11 +41,9 @@ done
 git remote add origin "ssh://migrate@$GITBUCKET_SSH_HOST:$PORT/$ORG/$repo.git" 2> /dev/null || true
 git remote set-url origin "ssh://git@$GITBUCKET_SSH_HOST:$PORT/$ORG/$repo.git"
 
-#git remote add origin "ssh://git@www.newsrx.com/home/git/${REPO}/" || true
-
 touch .gitignore
 
-cat > .gitignore << EOT
+cat >> .gitignore << EOT
 *~
 /build/
 *.pydevproject
@@ -76,9 +74,9 @@ mv -v .gitignore.tmp .gitignore
 
 if [ -f "build.gradle" ]; then
     mv -v "build.gradle" "build.gradle.tmp"
-	gradle :wrapper --gradle-version 4.10.3 --distribution-type all
+	gradle :wrapper --distribution-type all
 	mv -v "build.gradle.tmp" "build.gradle"
-	./gradlew :create-dirs
+	./gradlew :create-dirs || true
 	find src | while read folder; do
 		if [ ! -d "$folder" ]; then continue; fi
 		touch "$folder"/.gitignore
