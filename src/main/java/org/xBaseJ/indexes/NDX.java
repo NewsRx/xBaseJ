@@ -99,7 +99,9 @@ public class NDX extends Index {
         lNode = new Node(nfile, key_per_Node, key_length, keyType, Index_record, false);
       } else {
         Node llNode = new Node(nfile, key_per_Node, key_length, keyType, Index_record, false);
-        lNode.set_prev(llNode);
+        if (lNode!=null) {
+        	lNode.set_prev(llNode);
+        }
         lNode = llNode;
       } // /* endif */
       workNode = lNode;
@@ -380,7 +382,9 @@ public class NDX extends Index {
 
       topNode = null;
 
-      reIndexWork(topTree.getLeast(), 0);
+      if (topTree!=null) {
+    	  reIndexWork(topTree.getLeast(), 0);
+      }
 
       anchor_write();
     }
@@ -403,7 +407,7 @@ public class NDX extends Index {
       if (topTree == null) {
         topTree = new BinaryTree(lastkey, i, topTree);
       } else {
-        new BinaryTree(lastkey, i, topTree);
+        //new BinaryTree(lastkey, i, topTree);
       }
     }
 
@@ -413,7 +417,7 @@ public class NDX extends Index {
     nfile = new RandomAccessFile(file, "rw");
     anchor_write();
 
-    if (database.getRecordCount() > 0) {
+    if (database.getRecordCount() > 0 && topTree != null) {
       reIndexWork(topTree.getLeast(), 0);
     }
 

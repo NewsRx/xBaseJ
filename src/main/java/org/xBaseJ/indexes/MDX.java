@@ -86,7 +86,9 @@ public class MDX extends Index {
         lNode = new MNode(mfile, key_per_Node, key_length, keyType, Index_record, false);
       } else {
         MNode llNode = new MNode(mfile, key_per_Node, key_length, keyType, Index_record, false);
-        lNode.set_prev(llNode);
+        if (lNode!=null) {
+        	lNode.set_prev(llNode);
+        }
         lNode = llNode;
       } // /* endif */
       workNode = lNode;
@@ -261,7 +263,7 @@ public class MDX extends Index {
     }
 
     topNode = null;
-    if (database.getRecordCount() > 0) {
+    if (database.getRecordCount() > 0 && topTree!=null) {
       reIndexWork(topTree.getLeast(), 0, topTree);
     }
     tagHead.top_Node = top_Node;
