@@ -604,6 +604,7 @@ public class DBF implements Closeable, HasSize {
 	 * @throws xBaseJException passed an empty array or other error
 	 * @throws IOException     Java error caused by called methods
 	 */
+	@SuppressWarnings("null")
 	public void addField(Field aField[]) throws xBaseJException, IOException {
 		if (aField.length == 0) {
 			throw new xBaseJException("No Fields in array to add");
