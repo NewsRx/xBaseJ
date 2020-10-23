@@ -41,14 +41,16 @@ public class TestMaxLength extends TestCase {
   public void testMaxFieldLength() {
     try {
       Util.setxBaseJProperty("ignoreDBFLengthCheck", "true");
-      DBF d1 = new DBF("testfiles/test.dbf", true);
+      try (DBF d1 = new DBF("testfiles/test.dbf", true)) {
       for (int i = 0; i < 50; i++) {
         CharField c = new CharField("C" + i, 100);
         d1.addField(c);
       }
       d1.close();
-      d1 = new DBF("testfiles/a.dbf");
-
+      }
+      try (DBF d1 = new DBF("testfiles/a.dbf")) {
+    	  //
+      }
     } catch (Exception e) {
       e.printStackTrace();
       fail(e.getMessage());

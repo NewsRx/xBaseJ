@@ -45,8 +45,8 @@ public class TestAdd extends TestCase {
 
   public void testNewCharField() {
 
-    try {
-      DBF d1 = new DBF("testfiles/a.dbf", true);
+    try (DBF d1 = new DBF("testfiles/a.dbf", true)){
+      
       CharField c = new CharField("C3", 10);
       d1.addField(c);
     } catch (Exception e) {
@@ -56,8 +56,8 @@ public class TestAdd extends TestCase {
 
   public void testReaddSame() {
 
-    try {
-      DBF d1 = new DBF("testfiles/a.dbf");
+    try (DBF d1 = new DBF("testfiles/a.dbf");){
+      
       CharField c = new CharField("C3", 10);
       d1.addField(c);
       fail("shouldn't be able to add field again");

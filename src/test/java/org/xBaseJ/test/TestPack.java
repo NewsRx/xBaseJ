@@ -218,8 +218,7 @@ public class TestPack extends TestCase {
   }
 
   public void testPackwithFPT() {
-    try {
-      DBF dbf = new DBF("testfiles/crw.DBF");
+    try (      DBF dbf = new DBF("testfiles/crw.DBF")) {
 
       int recCnt = dbf.getRecordCount();
 
@@ -242,8 +241,7 @@ public class TestPack extends TestCase {
    */
   public void testBugDeleteAllPackReindexReadd() {
     build(true);
-    try {
-      DBF aDB = new DBF("testfiles/class.DBF");
+    try (      DBF aDB = new DBF("testfiles/class.DBF")) {
       aDB.useIndex("testfiles/classId.ndx");
       aDB.useIndex("testfiles/TchrClass.ndx");
 
@@ -271,7 +269,7 @@ public class TestPack extends TestCase {
       discuss.put("Intro class");
 
       aDB.write();
-      aDB = null;
+      //aDB = null;
 
     } catch (Exception e) {
       e.printStackTrace();

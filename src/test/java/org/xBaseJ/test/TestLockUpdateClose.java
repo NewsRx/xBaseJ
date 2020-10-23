@@ -54,9 +54,7 @@ public class TestLockUpdateClose extends TestCase {
     // if (os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0)
     // return;
 
-    DBF writer = null;
-    try {
-      writer = new DBF("testfiles/temp2.dbf", true);
+    try (DBF writer = new DBF("testfiles/temp2.dbf", true)) {
 
       Field str_field = new CharField("st", 10);
       writer.addField(str_field);
@@ -69,11 +67,7 @@ public class TestLockUpdateClose extends TestCase {
       // update the first record
       writer.gotoRecord(1, true);
       str_field.put("updated");
-    } catch (OverlappingFileLockException oe) {
-    } catch (Exception ex2) {
-      ex2.printStackTrace();
-      fail(ex2.getMessage());
-    }
+    
     try {
       writer.update(); // ----> OverlappingFileLockException
     } catch (Exception ex1) {
@@ -115,6 +109,11 @@ public class TestLockUpdateClose extends TestCase {
     try {
       writer.close(); // -----> incorrect descriptor
     } catch (IOException ex2) {
+      fail(ex2.getMessage());
+    }
+    } catch (OverlappingFileLockException oe) {
+    } catch (Exception ex2) {
+      ex2.printStackTrace();
       fail(ex2.getMessage());
     }
   }

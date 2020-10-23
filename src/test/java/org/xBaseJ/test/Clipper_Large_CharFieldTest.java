@@ -31,11 +31,12 @@ public class Clipper_Large_CharFieldTest {
     try {
       CharField scf = new CharField("short", 10);
       CharField lcf = new CharField("long", 510);
-      DBF newone = new DBF("balsetIII.dbf", true);
+      try (DBF newone = new DBF("balsetIII.dbf", true)) {
       newone.addField(scf);
       newone.addField(lcf);
       newone.close();
-      newone = new DBF("balsetIII.dbf");
+      }
+      try (DBF newone = new DBF("balsetIII.dbf")) {
 
       for (int f = 1; f <= newone.getFieldCount(); f++) {
         System.out.println(newone.getField(f).toString());
@@ -48,9 +49,11 @@ public class Clipper_Large_CharFieldTest {
       newone.getField("long").put(sb.toString());
       newone.write();
       newone.close();
-      newone = new DBF("balsetIII.dbf");
+      } 
+      try (DBF   newone = new DBF("balsetIII.dbf")) {
       newone.read();
       System.out.println(newone.getField("long").get().length());
+      }
     } catch (Exception e) {
       fail(e.getMessage());
     }

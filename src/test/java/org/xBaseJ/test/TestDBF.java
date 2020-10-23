@@ -41,17 +41,8 @@ import junit.framework.TestCase;
 public class TestDBF extends TestCase {
 
   public void testBuildDBF() {
-    DBF aDB = null;
-    try {
-      aDB = new DBF("testfiles/testdbt.dbf", true);
-    } catch (SecurityException e) {
-      fail(e.getMessage());
-    } catch (xBaseJException e) {
-      fail(e.getMessage());
-    } catch (IOException e) {
-      fail(e.getMessage());
-    }
-
+    try (DBF aDB = new DBF("testfiles/testdbt.dbf", true)) {
+      
     CharField cf = null;
     try {
       cf = new CharField("char", 10);
@@ -92,11 +83,19 @@ public class TestDBF extends TestCase {
     } catch (IOException e) {
       fail(e.getMessage());
     }
+    
+    } catch (SecurityException e) {
+        fail(e.getMessage());
+      } catch (xBaseJException e) {
+        fail(e.getMessage());
+      } catch (IOException e) {
+        fail(e.getMessage());
+      }
 
-    try {
-      aDB = new DBF("testfiles/testdbt.dbf");
-      cf = (CharField) aDB.getField("char");
-      mf = (MemoField) aDB.getField("memo");
+    try (DBF aDB = new DBF("testfiles/testdbt.dbf")){
+      
+      CharField cf = (CharField) aDB.getField("char");
+      MemoField mf = (MemoField) aDB.getField("memo");
       cf.put("123456789");
       mf.put("123456789");
 
@@ -114,11 +113,11 @@ public class TestDBF extends TestCase {
       fail(e.getMessage());
     }
 
-    try {
-      aDB = new DBF("testfiles/testdbt.dbf");
+    try (DBF aDB = new DBF("testfiles/testdbt.dbf")) {
+      
 
-      cf = (CharField) aDB.getField("char");
-      mf = (MemoField) aDB.getField("memo");
+      CharField cf = (CharField) aDB.getField("char");
+      MemoField mf = (MemoField) aDB.getField("memo");
 
       aDB.read();
 

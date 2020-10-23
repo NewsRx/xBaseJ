@@ -12,6 +12,7 @@ package org.xBaseJ.test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import org.xBaseJ.DBF;
 import org.xBaseJ.fields.CharField;
@@ -52,18 +53,19 @@ public class TestDuplicateKey extends TestCase {
   }
 
   public void test() throws Exception {
-    DBF db = new DBF("testfiles/testupdidx.dbf", true);
+    try (DBF db = new DBF("testfiles/testupdidx.dbf", true)) {
     CharField c1 = new CharField("first", 2);
     CharField c2 = new CharField("second", 20);
     Field f[] = {c1, c2};
     db.addField(f);
     db.createIndex("testfiles/testupdidx.ndx", "first", false);
     db.close();
-
-    db = new DBF("testfiles/testupdidx.dbf");
+    }
+    List<String> secondValues = new ArrayList<>();
+    try (DBF db = new DBF("testfiles/testupdidx.dbf")) {
     db.useIndex("testfiles/testupdidx.ndx");
-    c1 = (CharField) db.getField("first");
-    c2 = (CharField) db.getField("second");
+    CharField c1 = (CharField) db.getField("first");
+    CharField c2 = (CharField) db.getField("second");
     c1.put("11");
     c2.put("first");
     db.write();
@@ -74,20 +76,20 @@ public class TestDuplicateKey extends TestCase {
     c2.put("third");
     db.write(); // all three rows have the same value
     db.startTop();
-    ArrayList<String> secondValues = new ArrayList<>();
     for (int lp = 0; lp < 3; lp++) {
       db.findNext();
       secondValues.add(c2.get());
     }
     db.close();
     // System.exit(0);
-    db = new DBF("testfiles/testupdidx.dbf");
-    c1 = (CharField) db.getField("first");
-    c2 = (CharField) db.getField("second");
+    }
+    HashSet<String> secondVHash = new HashSet<>(secondValues);
+    try (DBF db = new DBF("testfiles/testupdidx.dbf")) {
+	CharField c1 = (CharField) db.getField("first");
+	CharField c2 = (CharField) db.getField("second");
     db.useIndex("testfiles/testupdidx.ndx");
     db.find("11");
     int foundCnt = 0;
-    HashSet<String> secondVHash = new HashSet<>(secondValues);
     for (int lp = 0; lp < 3; lp++) {
       if (secondVHash.contains(c2.get())) {
         if (c2.get().equals("second")) {
@@ -117,12 +119,13 @@ public class TestDuplicateKey extends TestCase {
     db.close();
 
     secondVHash = new HashSet<>(secondValues);
-    db = new DBF("testfiles/testupdidx.dbf");
+    }
+    try (DBF db = new DBF("testfiles/testupdidx.dbf")) {
     assertEquals(3, db.getRecordCount());
-    c1 = (CharField) db.getField("first");
-    c2 = (CharField) db.getField("second");
+    CharField c1 = (CharField) db.getField("first");
+    CharField c2 = (CharField) db.getField("second");
     db.useIndex("testfiles/testupdidx.ndx");
-    foundCnt = 0;
+    int foundCnt = 0;
     db.find("11");
 
     for (int lp = 0; lp < 3; lp++) {
@@ -137,5 +140,5 @@ public class TestDuplicateKey extends TestCase {
       }
     }
     assertEquals(3, foundCnt);
-  }
+  }}
 }

@@ -39,8 +39,8 @@ import junit.framework.TestCase;
 public class TestCreate extends TestCase {
 
   public void testCreateDBF() {
-    try {
-      DBF d1 = new DBF("testfiles/temp.tmp", true);
+    try (DBF d1 = new DBF("testfiles/temp.tmp", true)){
+      
       CharField c = new CharField("C3", 10);
       d1.addField(c);
       c = new CharField("C33", 10);

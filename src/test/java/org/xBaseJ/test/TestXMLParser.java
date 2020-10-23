@@ -11,14 +11,14 @@ public class TestXMLParser extends TestCase {
 
   public void testXMLParserRoundTrip() throws Exception {
 
-    DBF sdf = new DBF("testfiles/testdbt.dbf");
+    try (DBF sdf = new DBF("testfiles/testdbt.dbf")) {
 
     PrintWriter pw = new PrintWriter("testfiles/testdbtdbf.xml");
     sdf.getXML(pw);
     XBASEXMLParser xxp = new XBASEXMLParser();
     xxp.parse("testfiles/testdbtdbf.xml", "testfiles/testdbtxmled.dbf");
 
-    DBF xscf = new DBF("testfiles/testdbtxmled.dbf");
+    try (DBF xscf = new DBF("testfiles/testdbtxmled.dbf")) {
 
     assertEquals(sdf.getFieldCount(), xscf.getFieldCount());
     for (int f = 1; f <= sdf.getFieldCount(); f++) {
@@ -34,5 +34,6 @@ public class TestXMLParser extends TestCase {
         assertEquals(sdf.getField(f).get(), xscf.getField(f).get());
       }
     }
+    }}
   }
 }

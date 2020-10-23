@@ -68,7 +68,7 @@ public class TestIndexAfterAdding extends TestCase {
 
     oDB.close();
 
-    DBF pDB = new DBF("testIndexAfterAdding.dbf");
+    try (DBF pDB = new DBF("testIndexAfterAdding.dbf")) {
     Elm_No = (NumField) pDB.getField("ElmNo");
     Hit_Count = (NumField) pDB.getField("HitCount");
     Last_Draw_No = (NumField) pDB.getField("LstDrwNo");
@@ -81,5 +81,6 @@ public class TestIndexAfterAdding extends TestCase {
     System.out.println("second");
     pDB.find("44");
     assertEquals("44", Elm_No.get());
+    }
   }
 }
