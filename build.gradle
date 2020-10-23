@@ -1,11 +1,16 @@
-apply plugin: 'java'
-apply plugin: 'maven'
+apply plugin: 'java-library'
 apply plugin: 'eclipse-wtp'
+apply plugin: 'maven'
 
 group = 'com.github.NewsRxTech'
-version = '20191001.01'
+version = '20201023.01'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+compileJava {
+    options.release = 11
+}
+
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
@@ -14,8 +19,6 @@ install {
 		pom.artifactId = 'xBaseJ'
 	}
 }
-
-tasks.eclipseWtp.dependsOn(cleanEclipseWtp)
 
 task sourcesJar(type: Jar, dependsOn: classes) {
 	classifier = 'sources'
@@ -31,10 +34,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
 	archives sourcesJar
 	archives javadocJar
-}
-
-configurations.all {
-	resolutionStrategy.cacheChangingModulesFor 30, 'seconds'
 }
 
 repositories {
@@ -77,31 +76,9 @@ eclipseJdt {
 	f.append('line.separator=\\n\n')
 }}
 
-project.afterEvaluate {
-	// use jre lib matching version used by project, not the workspace default
-	if (sourceCompatibility != null) {
-		def target = project.sourceCompatibility.toString()
-		def containerPrefix = "org.eclipse.jdt.launching.JRE_CONTAINER"
-		def containerSuffix
-		if (target =~ /1.[4-5]/) {
-			containerSuffix = '/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-' + target
-		} else if (target =~ /1.[6-8]/) {
-			containerSuffix = '/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-' + target
-		}
-		if (containerSuffix != null) {
-			project.eclipse.classpath {
-				containers.removeAll { it.startsWith(containerPrefix) }
-				containers.add(containerPrefix + containerSuffix)
-			}
-		}
-	}
-}
-
 eclipse {
 	project {
 		name = 'xBaseJ'
-		natures 'org.eclipse.buildship.core.gradleprojectnature'
-		referencedProjects
 	}
 
 	classpath {
@@ -110,18 +87,6 @@ eclipse {
 		downloadJavadoc = true
 	}
 
-	jdt {
-		sourceCompatibility=1.7
-		targetCompatibility=1.7
-	}
-
-	wtp {
-		facet {
-			facets = []
-			facet name: 'jst.java', version: '1.7'
-			/*facet name: 'jst.web', version: '3.0'*/
-		}
-	}
 }
 
 configurations.all {
@@ -133,7 +98,7 @@ configurations.all {
 	test {
 // enable TestNG support (default is JUnit)
 //useTestNG()
-maxHeapSize = "6144m"
+maxHeapSize = "1024m"
 systemProperty 'debug', 'true'
 testLogging.showStandardStreams = true
 
