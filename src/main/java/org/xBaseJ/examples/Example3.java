@@ -10,9 +10,9 @@ public class Example3 {
 
   public static void main(String args[]) {
 
-    try {
+    try (DBF aDB = new DBF("teacher.dbf", true)){
       // Create a new dbf file
-      DBF aDB = new DBF("teacher.dbf", true);
+      
 
       // Define fields
       CharField teacherId = new CharField("teacherId", 9);

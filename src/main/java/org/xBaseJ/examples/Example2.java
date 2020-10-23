@@ -13,9 +13,9 @@ public class Example2 {
 
     String dow[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-    try {
+    try (DBF classDB = new DBF("class.dbf")) {
       // Open dbf file
-      DBF classDB = new DBF("class.dbf");
+      
 
       // Define fields
       CharField classId = (CharField) classDB.getField("classId");

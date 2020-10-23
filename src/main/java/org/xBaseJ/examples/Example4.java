@@ -13,9 +13,9 @@ public class Example4 {
 
     String dow[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-    try {
+    try (DBF classDB = new DBF("class.dbf")) {
       // Open dbf file
-      DBF classDB = new DBF("class.dbf");
+      
 
       // Define fields
       CharField classId = (CharField) classDB.getField("classId");
@@ -26,7 +26,7 @@ public class Example4 {
       LogicalField underGrad = (LogicalField) classDB.getField("UnderGrad");
       CharField daysMeet = (CharField) classDB.getField("daysMeet");
 
-      DBF teacherDB = new DBF("teacher.dbf");
+      try (DBF teacherDB = new DBF("teacher.dbf")) {
       teacherDB.useIndex("teacher.ndx");
 
       // Define fields
@@ -53,7 +53,7 @@ public class Example4 {
           System.out.println("   Taught by: " + teacherName.get());
         } // end if undergrad test
       }
-
+    }
     } catch (Exception e) {
       e.printStackTrace();
     }

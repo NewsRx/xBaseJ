@@ -11,9 +11,9 @@ public class Example1 {
 
   public static void main(String args[]) {
 
-    try {
+    try (DBF aDB = new DBF("class.dbf", true)){
       // Create a new dbf file
-      DBF aDB = new DBF("class.dbf", true);
+      
 
       // Create the fields
 
