@@ -65,6 +65,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.xBaseJ.cp.CodePage;
@@ -82,7 +83,7 @@ import org.xBaseJ.indexes.MDXFile;
 import org.xBaseJ.indexes.NDX;
 import org.xBaseJ.intf.HasSize;
 
-public class DBF implements Closeable, HasSize {
+public class DBF implements Closeable, HasSize, Iterable<DBF> {
 
 	protected String dosname;
 	protected int current_record = 0;
@@ -2387,4 +2388,40 @@ public class DBF implements Closeable, HasSize {
 		srcChannel.close();
 		dstChannel.close();
 	} // end copyTo method
+
+	@Override
+	public Iterator<DBF> iterator() {
+		return new Iterator<>() {
+			private DBF dbf = DBF.this;
+			private int recno=0;
+			@Override
+			public boolean hasNext() {
+				return dbf.getRecordCount()>recno;
+			}
+
+			@Override
+			public DBF next() {
+				recno++;
+				if (recno>dbf.getRecordCount()) {
+					throw new IndexOutOfBoundsException("Record "+recno+" exceeds record count of "+dbf.getRecordCount());
+				}
+				try {
+					dbf.gotoRecord(recno);
+				} catch (xBaseJException | IOException e) {
+					throw new RuntimeException(e);
+				}
+				return dbf;
+			}
+			
+			public void remove() {
+				try {
+					dbf.gotoRecord(recno);
+					dbf.delete();
+					dbf.update();
+				} catch (xBaseJException | IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+	}
 }
