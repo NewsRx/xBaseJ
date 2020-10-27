@@ -83,7 +83,7 @@ import org.xBaseJ.indexes.MDXFile;
 import org.xBaseJ.indexes.NDX;
 import org.xBaseJ.intf.HasSize;
 
-public class DBF implements Closeable, HasSize, Iterable<DBF> {
+public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 
 	protected String dosname;
 	protected int current_record = 0;
@@ -2390,7 +2390,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBF> {
 	} // end copyTo method
 
 	@Override
-	public Iterator<DBF> iterator() {
+	public Iterator<DBFRecord> iterator() {
 		return new Iterator<>() {
 			private DBF dbf = DBF.this;
 			private int recno=0;
@@ -2400,7 +2400,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBF> {
 			}
 
 			@Override
-			public DBF next() {
+			public DBFRecord next() {
 				recno++;
 				if (recno>dbf.getRecordCount()) {
 					throw new IndexOutOfBoundsException("Record "+recno+" exceeds record count of "+dbf.getRecordCount());
@@ -2410,7 +2410,61 @@ public class DBF implements Closeable, HasSize, Iterable<DBF> {
 				} catch (xBaseJException | IOException e) {
 					throw new RuntimeException(e);
 				}
-				return dbf;
+				final DBFRecord dbfRecord = new DBFRecord() {
+					final DBF dbf = DBF.this;
+					final int myRecno = recno;
+					
+					@Override
+					public void setDeleted(boolean deleted) throws xBaseJException, IOException {
+						int prevRecno = dbf.getCurrentRecordNumber();
+						dbf.gotoRecord(myRecno);
+						if (deleted) {
+							dbf.delete();
+						} else {
+							dbf.undelete();
+						}
+						dbf.update();
+						dbf.gotoRecord(prevRecno);
+					}
+					
+					@Override
+					public int recno() {
+						return myRecno;
+					}
+					
+					@Override
+					public void put(String field, String value) throws ArrayIndexOutOfBoundsException, xBaseJException, IOException {
+						int prevRecno = dbf.getCurrentRecordNumber();
+						dbf.gotoRecord(myRecno);
+						dbf.getField(field).put(value);
+						dbf.update();
+						dbf.gotoRecord(prevRecno);						
+					}
+					
+					@Override
+					public boolean isDeleted() throws xBaseJException, IOException {
+						int prevRecno = dbf.getCurrentRecordNumber();
+						dbf.gotoRecord(myRecno);
+						boolean deleted = dbf.deleted();
+						dbf.gotoRecord(prevRecno);
+						return deleted;
+					}
+					
+					@Override
+					public String get(String field) throws xBaseJException, IOException {
+						int prevRecno = dbf.getCurrentRecordNumber();
+						dbf.gotoRecord(myRecno);
+						String value = dbf.getField(field).get();
+						dbf.gotoRecord(prevRecno);
+						return value;
+					}
+					
+					@Override
+					public DBF dbf() {
+						return dbf;
+					}
+				};
+				return dbfRecord;
 			}
 			
 			public void remove() {
