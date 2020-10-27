@@ -12,13 +12,13 @@ Additionally several of the field setters have been made "null safe".
 
 Initial implementation for the proper handling of DBFs which use the later MEMO FILE 4 byte index format instead of original 10 digit string format.
 
-Preliminary support for reading (**ONLY**) Visual FoxPro files has been implemented. You will need to set the xBaseJ property "ignoreVersionMismatch" to "true". I.E:
+Preliminary support for reading Memo Fields (**ONLY**) for  Visual FoxPro files has been implemented. You will need to set the xBaseJ property "ignoreVersionMismatch" to "true". I.E:
 
 ```Java
 Util.setxBaseJProperty("ignoreVersionMismatch", "true");
 ```
 
-Attempting to write out memo fields to a visual foxpro file at this time will result in a fatal error or a corrupted DBF and FPT.
+Attempting to write out memo fields to a Visual FoxPro file at this time will result in a fatal error or a corrupted DBF and FPT.
 
 Char Fields are now by default space filled and trailing space trimmed to closer match Visual FoxPro expectations. (Visual FoxPro string trim functions don't trim chr(0)).
 
@@ -28,14 +28,12 @@ This project can easily be used with Gradle, Maven, SBT, and Leiningen: https://
 
 Example Gradle config:
 
-```Java
+```gradle
 repositories {
-jcenter()
-maven { url "https://jitpack.io" }
+	jcenter()
+	maven { url "https://jitpack.io" }
 }
 dependencies {
-compile ('com.github.NewsRxTech:xBaseJ:20190827.02') {
-		exclude group: 'org.eclipse.swt'
-	}
+	implementation ('com.github.NewsRxTech:xBaseJ:20201027.01')
 }
 ```
