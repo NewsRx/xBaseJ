@@ -2163,16 +2163,28 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	}
 
 	/**
-	 * packs a DBF by removing deleted records and memo fields.
-	 *
-	 * @throws xBaseJException            File does exist and told not to destroy
-	 *                                    it.
-	 * @throws xBaseJException            Told to destroy but operating system can
-	 *                                    not destroy
-	 * @throws IOException                Java error caused by called methods
-	 * @throws CloneNotSupportedException Java error caused by called methods
+	 * Packs a DBF by removing deleted records and memo fields.
+	 * 
+	 * @throws SecurityException
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws CloneNotSupportedException
 	 */
-	public void pack() throws xBaseJException, IOException, SecurityException, CloneNotSupportedException {
+	public void pack() throws SecurityException, xBaseJException, IOException, CloneNotSupportedException {
+		pack(version);
+	}
+	
+	
+	/**
+	 * Packs a DBF by removing deleted records and memo fields. DBF will be converted to the newVersion #DBFType. 
+	 * @param newVersion
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws SecurityException
+	 * @throws CloneNotSupportedException
+	 */
+	
+	public void pack(DBFTypes newVersion) throws xBaseJException, IOException, SecurityException, CloneNotSupportedException {
 		Field Fields[] = new Field[fldcount];
 
 		int i, j;
@@ -2188,7 +2200,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		Path tempDirectory = Files.createTempDirectory("xBaseJ-");
 		String tempname = ffile.getAbsoluteFile().getName();
 
-		try (DBF tempDBF = new DBF(new File(tempDirectory.toFile(), tempname).getAbsolutePath(), version, true)) {
+		try (DBF tempDBF = new DBF(new File(tempDirectory.toFile(), tempname).getAbsolutePath(), newVersion, true)) {
 
 			tempDBF.reserve = reserve;
 			tempDBF.language = language;
