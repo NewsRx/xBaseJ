@@ -410,7 +410,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			}
 		}
 
-		if (version == DBFTypes.FOXPRO_WITH_MEMO) {
+		if (version == DBFTypes.FOXPRO_WITH_MEMO || version == DBFTypes.VISUAL_FOXPRO) {
 			dbtobj = new DBT_fpt(this, readonly);
 		} else if (version == DBFTypes.DBASEIII_WITH_MEMO) {
 			dbtobj = new DBT_iii(this, readonly);
@@ -507,6 +507,8 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		current_record = 0;
 	}
 
+	@SuppressWarnings("deprecation")
+	@Deprecated
 	@Override
 	public void finalize() throws Throwable {
 		try {
@@ -525,7 +527,12 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 
 		if (format != DBFTypes.DBASEIII && format != DBFTypes.DBASEIV && format != DBFTypes.DBASEIII_WITH_MEMO
 				&& format != DBFTypes.DBASEIV_WITH_MEMO && format != DBFTypes.FOXPRO_WITH_MEMO) {
-			throw new xBaseJException("Invalid format specified");
+			String mismatch = Util.getxBaseJProperty("ignoreVersionMismatch").toLowerCase();
+			if (mismatch != null && (mismatch.compareTo("true") == 0 || mismatch.compareTo("yes") == 0)) {
+				// ignore
+			} else {
+				throw new xBaseJException("Invalid format specified");
+			}
 		}
 
 		if (destroy == false && ffile.exists()) {
@@ -2168,19 +2175,6 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	}
 
 	/**
-	 * Packs a DBF by removing deleted records and memo fields.
-	 * 
-	 * @throws SecurityException
-	 * @throws xBaseJException
-	 * @throws IOException
-	 * @throws CloneNotSupportedException
-	 */
-	public void pack() throws SecurityException, xBaseJException, IOException, CloneNotSupportedException {
-		pack(version);
-	}
-	
-	
-	/**
 	 * Packs a DBF by removing deleted records and memo fields. DBF will be converted to the newVersion #DBFType. 
 	 * @param newVersion
 	 * @throws xBaseJException
@@ -2189,7 +2183,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	 * @throws CloneNotSupportedException
 	 */
 	
-	public void pack(DBFTypes newVersion) throws xBaseJException, IOException, SecurityException, CloneNotSupportedException {
+	public void pack() throws xBaseJException, IOException, SecurityException, CloneNotSupportedException {
 		Field Fields[] = new Field[fldcount];
 
 		int i, j;
@@ -2210,7 +2204,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		Path tempDirectory = Files.createTempDirectory("xBaseJ-");
 		String tempname = ffile.getAbsoluteFile().getName();
 
-		try (DBF tempDBF = new DBF(new File(tempDirectory.toFile(), tempname).getAbsolutePath(), newVersion, true)) {
+		try (DBF tempDBF = new DBF(new File(tempDirectory.toFile(), tempname).getAbsolutePath(), version, true)) {
 
 			tempDBF.reserve = reserve;
 			tempDBF.language = language;

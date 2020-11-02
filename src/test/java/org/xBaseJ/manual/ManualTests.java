@@ -104,7 +104,7 @@ private static void packConvertTest() throws SecurityException, IOException, xBa
 	    	  memoField2.put("memofield value "+count);
 	    	  dbf.write();
 	      }
-	      dbf.pack(DBFTypes.DBASEIII_WITH_MEMO);
+	      dbf.pack();
 	    }
 }
   private static void extracted(
