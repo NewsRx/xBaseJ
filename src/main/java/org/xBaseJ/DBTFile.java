@@ -46,9 +46,13 @@ public abstract class DBTFile extends Object {
 
   public String extension = "dbt";
 
-  public void rename(String name) throws IOException {
-
-    String tname = new String(name.substring(0, name.length() - 1) + "t");
+  public void rename(final String name) throws IOException {
+	  String tmp = name;
+	  int lastDot = tmp.lastIndexOf(".");
+	  if (lastDot>-1) {
+		  tmp = tmp.substring(0, lastDot);
+	  }
+    String tname = tmp+".dbt";
     file.close();
     File nfile = new File(tname);
     nfile.delete();

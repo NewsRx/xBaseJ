@@ -62,7 +62,12 @@ public class DBT_fpt extends DBTFile {
 
   @Override
   public void rename(String name) throws IOException {
-    String tname = new String(name.substring(0, name.length() - 3) + "fpt");
+	  String tmp = name;
+	  int lastDot = tmp.lastIndexOf(".");
+	  if (lastDot>-1) {
+		  tmp = tmp.substring(0, lastDot);
+	  }
+    String tname = tmp+".fpt";
     file.close();
     File nfile = new File(tname);
     nfile.delete();
