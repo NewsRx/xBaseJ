@@ -725,7 +725,12 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 
 			for (i = 1; i <= fldcount; i++) {
 				try {
-					tField = (Field) getField(i).clone();
+					Field myField = getField(i);
+					if (myField instanceof MemoField) {
+						tField = new MemoField(myField.getName());
+					}  else {
+						tField = (Field) getField(i).clone();
+					}
 				} catch (CloneNotSupportedException e) {
 
 					throw new xBaseJException("Clone not supported logic error");
@@ -2189,7 +2194,12 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 
 		int i, j;
 		for (i = 1; i <= fldcount; i++) {
-			Fields[i - 1] = (Field) getField(i).clone();
+			Field myField = getField(i);
+			if (myField instanceof MemoField) {
+				Fields[i - 1] = new MemoField(myField.getName());
+			}  else {
+				Fields[i - 1] = (Field) getField(i).clone();
+			}
 		}
 
 		String parent = ffile.getParent();
