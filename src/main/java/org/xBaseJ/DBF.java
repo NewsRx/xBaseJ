@@ -2246,12 +2246,21 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			}
 
 			if (tempDBF.dbtobj != null) {
-				Files.copy(Paths.get(tempDBF.dbtobj.thefile.getAbsolutePath()), //
-						Paths.get(dbtobj.thefile.getAbsolutePath()), //
-						StandardCopyOption.REPLACE_EXISTING);
-				dbtobj.rename(ffile.getAbsolutePath()); //make sure memo has correct extension
-				dbtobj.file = new RandomAccessFile(dbtobj.thefile.getAbsolutePath(), "rw");
+				final String tmpMemoFile = tempDBF.dbtobj.thefile.getAbsolutePath();
+				final String memoFile = dbtobj.thefile.getAbsolutePath();
 				
+				System.out.println(tmpMemoFile);
+				System.out.println(memoFile);
+				
+				if (new File(memoFile).exists()) {
+					Files.deleteIfExists(Paths.get(memoFile));
+				}
+				Files.move(Paths.get(tmpMemoFile), Paths.get(memoFile), StandardCopyOption.REPLACE_EXISTING);
+				
+				dbtobj.rename(ffile.getAbsolutePath()); //make sure memo has correct extension
+				dbtobj.file = new RandomAccessFile(memoFile, "rw");
+				
+				System.exit(0);;
 				
 				Field tField;
 				MemoField mField;

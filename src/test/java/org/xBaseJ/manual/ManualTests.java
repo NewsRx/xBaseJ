@@ -20,11 +20,12 @@ public class ManualTests {
     String testFolderSource = "VFP9-test-files";
     String testFolderDest = "temp";
     Util.setxBaseJProperty("ignoreVersionMismatch", "true");
-    extracted(testFolderSource, "banned-content-db3.DBF", testFolderDest, "banned-content-db3.dbf");
-    extracted(
-        testFolderSource, "test-data-with-memo.dbf", testFolderDest, "test-data-with-memo.dbf");
-    createDbfsToLoadIntoFoxpro();
-    packTest();
+//    extracted(testFolderSource, "banned-content-db3.DBF", testFolderDest, "banned-content-db3.dbf");
+//    extracted(
+//        testFolderSource, "test-data-with-memo.dbf", testFolderDest, "test-data-with-memo.dbf");
+//    createDbfsToLoadIntoFoxpro();
+//    packTest();
+    packConvertTest();
   }
 
   private static void packTest() throws SecurityException, IOException, xBaseJException, CloneNotSupportedException {
@@ -49,6 +50,8 @@ public class ManualTests {
 	      System.out.println("charField: "+charField.get().trim());
 	      System.out.println("memoField: "+memoField.get().trim());
 	    }
+	
+	
   }
 
 private static void createDbfsToLoadIntoFoxpro()
@@ -82,6 +85,28 @@ private static void createDbfsToLoadIntoFoxpro()
     }
   }
 
+private static void packConvertTest() throws SecurityException, IOException, xBaseJException, CloneNotSupportedException {
+	System.out.println("Create DBASEIV_WITH_MEMO DBF, pack as DBASEIII_WITH_MEMO test");
+	try (DBF dbf =
+	        new DBF("temp/test-convert-pack.dbf", DBFTypes.DBASEIV_WITH_MEMO, true);
+			DBF dbf2 =
+			        new DBF("temp/test-convert-pack2.dbf", DBFTypes.DBASEIV_WITH_MEMO, true)) {
+	      CharField charField = new CharField("charfield", 254);
+	      MemoField memoField = new MemoField("memofield");
+	      dbf.addField(new Field[] {charField, memoField});
+	      CharField charField2 = new CharField("charfield", 254);
+	      MemoField memoField2 = new MemoField("memofield");
+	      dbf2.addField(new Field[] {charField2, memoField2});
+	      for (int count=0; count<10000; count++) {
+	    	  charField.put("charfield value "+count);
+	    	  memoField.put("memofield value "+count);
+	    	  charField2.put("charfield value "+count);
+	    	  memoField2.put("memofield value "+count);
+	    	  dbf.write();
+	      }
+	      dbf.pack(DBFTypes.DBASEIII_WITH_MEMO);
+	    }
+}
   private static void extracted(
       String testFolderSource, String testFileSource, String testFolderDest, String testFileDest)
       throws IOException, xBaseJException {

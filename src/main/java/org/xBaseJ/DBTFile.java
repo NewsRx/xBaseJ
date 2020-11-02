@@ -33,6 +33,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public abstract class DBTFile extends Object {
   public RandomAccessFile file;
@@ -46,20 +49,19 @@ public abstract class DBTFile extends Object {
 
   public String extension = "dbt";
 
-  public void rename(final String name) throws IOException {
-	  String tmp = name;
-	  int lastDot = tmp.lastIndexOf(".");
-	  if (lastDot>-1) {
-		  tmp = tmp.substring(0, lastDot);
-	  }
-    String tname = tmp+".dbt";
-    file.close();
-    File nfile = new File(tname);
-    nfile.delete();
-    thefile.renameTo(nfile);
-    thefile = nfile;
-    file = new RandomAccessFile(tname, "rw");
-  }
+	public void rename(final String name) throws IOException {
+		String tmp = name;
+		int lastDot = tmp.lastIndexOf(".");
+		if (lastDot > -1) {
+			tmp = tmp.substring(0, lastDot);
+		}
+		String tname = tmp + "."+extension;
+		file.close();
+		File nfile = new File(tname);
+		Files.move(Paths.get(thefile.getAbsolutePath()), Paths.get(nfile.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+		thefile = nfile;
+		file = new RandomAccessFile(tname, "rw");
+	}
 
   public DBTFile(DBF iDBF, boolean readonly, DBFTypes foxproWithMemo)
       throws IOException, xBaseJException, IOException {

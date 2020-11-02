@@ -34,6 +34,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class DBT_fpt extends DBTFile {
 
@@ -70,9 +73,8 @@ public class DBT_fpt extends DBTFile {
     String tname = tmp+".fpt";
     file.close();
     File nfile = new File(tname);
-    nfile.delete();
-    thefile.renameTo(nfile);
-    thefile = nfile;
+	Files.move(Paths.get(thefile.getAbsolutePath()), Paths.get(nfile.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+	thefile = nfile;
     file = new RandomAccessFile(tname, "rw");
   }
 
