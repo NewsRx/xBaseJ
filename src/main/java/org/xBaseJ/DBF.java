@@ -2260,8 +2260,6 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 				dbtobj.rename(ffile.getAbsolutePath()); //make sure memo has correct extension
 				dbtobj.file = new RandomAccessFile(memoFile, "rw");
 				
-				System.exit(0);;
-				
 				Field tField;
 				MemoField mField;
 				for (i = 1; i <= fldcount; i++) {
