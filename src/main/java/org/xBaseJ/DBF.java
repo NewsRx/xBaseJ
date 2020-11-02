@@ -527,12 +527,12 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 
 		if (format != DBFTypes.DBASEIII && format != DBFTypes.DBASEIV && format != DBFTypes.DBASEIII_WITH_MEMO
 				&& format != DBFTypes.DBASEIV_WITH_MEMO && format != DBFTypes.FOXPRO_WITH_MEMO) {
-			String mismatch = Util.getxBaseJProperty("ignoreVersionMismatch").toLowerCase();
-			if (mismatch != null && (mismatch.compareTo("true") == 0 || mismatch.compareTo("yes") == 0)) {
-				// ignore
-			} else {
+//			String mismatch = Util.getxBaseJProperty("ignoreVersionMismatch").toLowerCase();
+//			if (mismatch != null && (mismatch.compareTo("true") == 0 || mismatch.compareTo("yes") == 0)) {
+//				// ignore
+//			} else {
 				throw new xBaseJException("Invalid format specified");
-			}
+//			}
 		}
 
 		if (destroy == false && ffile.exists()) {
