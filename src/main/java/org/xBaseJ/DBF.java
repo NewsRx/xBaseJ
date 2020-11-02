@@ -84,6 +84,14 @@ import org.xBaseJ.indexes.NDX;
 import org.xBaseJ.intf.HasSize;
 
 public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
+	
+	public File getDbfFile() {
+		return ffile;
+	}
+	
+	public File getMemoFile() {
+		return dbtobj==null?null:dbtobj.thefile;
+	}
 
 	protected String dosname;
 	protected int current_record = 0;
