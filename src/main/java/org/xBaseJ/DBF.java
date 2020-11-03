@@ -105,16 +105,21 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	 */
 	public void moveToFolder(File destFolder) throws IOException, xBaseJException {
 		int recno=getCurrentRecordNumber();
+		final File srcDbf = ffile;
+		final File srcMemofile = dbtobj==null?null:dbtobj.thefile;
+		final File srcMdxFile = MDXfile==null?null:MDXfile.file;
 		close();
-		final File newDbf = new File(destFolder, ffile.getName());
-		Files.move(ffile.toPath(), newDbf.toPath());
-		if (dbtobj!=null&&dbtobj.thefile!=null) {
-			Files.move(dbtobj.thefile.toPath(), new File(destFolder, dbtobj.thefile.getName()).toPath());
+		final File destDbf = new File(destFolder, srcDbf.getName());
+		Files.move(srcDbf.toPath(), destDbf.toPath());
+		if (srcMemofile!=null) {
+			final File destMemoFile = new File(destFolder, srcMemofile.getName());
+			Files.move(srcMemofile.toPath(), destMemoFile.toPath());
 		}
-		if (MDXfile!=null && MDXfile.file!=null) {
-			Files.move(MDXfile.file.toPath(), new File(destFolder, MDXfile.file.getName()).toPath());
+		if (MDXfile!=null && srcMdxFile!=null) {
+			final File destMdxFile = new File(destFolder, srcMdxFile.getName());
+			Files.move(srcMdxFile.toPath(), destMdxFile.toPath());
 		}
-		openDBF(newDbf.getAbsolutePath());
+		openDBF(destDbf.getAbsolutePath());
 		if (recno>0 && recno<=getRecordCount()) {
 			gotoRecord(recno);
 		}
