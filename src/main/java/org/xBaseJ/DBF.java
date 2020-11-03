@@ -182,7 +182,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		}
 
 		try (DBF tempTable = new DBF(dbfFile.getAbsolutePath(), newVersion, destroy)) {
-			tempTable.language = language;
+			tempTable.setCodepage(getCodepage());
 			tempTable.update_dbhead();
 			List<Field> fields2 = new ArrayList<>();
 			for (Field field : fields) {
