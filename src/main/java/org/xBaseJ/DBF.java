@@ -163,37 +163,59 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			final Field field = getField(fieldNo);
 			fields.add(field);
 		}
+		
+		boolean hasMemoFile = false;
+		List<Field> fields2 = new ArrayList<>();
+		for (Field field : fields) {
+			if (field instanceof MemoField) {
+				fields2.add(new MemoField(field.getName()));
+				hasMemoFile=true;
+			} else if (field instanceof PictureField) {
+				fields2.add(new PictureField(field.getName()));
+				hasMemoFile=true;
+			} else {
+				fields2.add((Field) field.clone());
+			}
+		}
 
 		DBFTypes newVersion = type == null ? version : type;
 		switch (newVersion) {
 		case DBASEIII:
-		case DBASEIII_WITH_MEMO:
-		case DBASEIV:
-		case DBASEIV_WITH_MEMO:
-		case FOXPRO2:
-		case FOXPRO_WITH_MEMO:
+			if (hasMemoFile) {
+				newVersion=DBFTypes.DBASEIII_WITH_MEMO;
+			}
 			break;
-
-		case VISUAL_FOXPRO:
-		case VISUAL_FOXPRO_AUTOINCREMENT:
-		case VISUAL_FOXPRO_VARCHAR:
+		case DBASEIV:
+			if (hasMemoFile) {
+				newVersion=DBFTypes.DBASEIV_WITH_MEMO;
+			}
+			break;
+		case DBASEIII_WITH_MEMO:
+			if (!hasMemoFile) {
+				newVersion=DBFTypes.DBASEIII;
+			}
+			break;
+		case DBASEIV_WITH_MEMO:
+			if (!hasMemoFile) {
+				newVersion=DBFTypes.DBASEIV;
+			}
+			break;
+		case FOXPRO2: // buggy - corruption appears in memo fields
+		case FOXPRO_WITH_MEMO: // buggy - corruption appears in memo fields
+		case VISUAL_FOXPRO: //binary memo file indexes not supported for writing
+		case VISUAL_FOXPRO_AUTOINCREMENT: //binary memo file indexes not supported for writing
+		case VISUAL_FOXPRO_VARCHAR: //binary memo file indexes not supported for writing
 		default:
-			newVersion = DBFTypes.FOXPRO_WITH_MEMO;
+			if (hasMemoFile) {
+				newVersion = DBFTypes.DBASEIV_WITH_MEMO;
+			} else {
+				newVersion=DBFTypes.DBASEIV;
+			}
 		}
 
 		try (DBF tempTable = new DBF(dbfFile.getAbsolutePath(), newVersion, destroy)) {
 			tempTable.setCodepage(getCodepage());
 			tempTable.update_dbhead();
-			List<Field> fields2 = new ArrayList<>();
-			for (Field field : fields) {
-				if (field instanceof MemoField) {
-					fields2.add(new MemoField(field.getName()));
-				} else if (field instanceof PictureField) {
-					fields2.add(new PictureField(field.getName()));
-				} else {
-					fields2.add((Field) field.clone());
-				}
-			}
 			tempTable.addFields(fields2);
 			for (int _recno = 1; _recno <= getRecordCount(); _recno++) {
 				gotoRecord(_recno);
