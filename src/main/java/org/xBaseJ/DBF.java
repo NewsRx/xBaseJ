@@ -208,7 +208,11 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		}
 
 		// restore position
-		gotoRecord(recno);
+		if (recno>0 && recno<= getRecordCount()) {
+			gotoRecord(recno);
+		} else {
+			startTop();
+		}
 	}
 
 	protected String dosname;
