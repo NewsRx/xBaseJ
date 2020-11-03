@@ -63,9 +63,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.xBaseJ.cp.CodePage;
@@ -87,6 +89,68 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	
 	public File getDbfFile() {
 		return ffile;
+	}
+
+	public void copyTo(File dbfFile) throws xBaseJException, IOException, CloneNotSupportedException {
+		DBFTypes newVersion = version;
+		switch(version) {
+		case DBASEIII:
+		case DBASEIII_WITH_MEMO:
+		case DBASEIV:
+		case DBASEIV_WITH_MEMO:
+		case FOXPRO2:
+		case FOXPRO_WITH_MEMO:
+			break;
+			
+		case VISUAL_FOXPRO:
+		case VISUAL_FOXPRO_AUTOINCREMENT:
+		case VISUAL_FOXPRO_VARCHAR:
+			version=DBFTypes.FOXPRO_WITH_MEMO;
+			break;
+			
+		default:
+			break;
+		}
+		copyTo(dbfFile, newVersion);
+	}
+	public void copyTo(File dbfFile, DBFTypes type) throws xBaseJException, IOException, CloneNotSupportedException {
+		copyTo(dbfFile, type, false);
+	}
+	public void copyTo(File dbfFile, DBFTypes type, boolean destroy) throws xBaseJException, IOException, CloneNotSupportedException {
+		//save position
+		int recno = getCurrentRecordNumber();
+		
+		List<Field> fields = new ArrayList<>();
+		for (int fieldNo = 1; fieldNo<=getFieldCount(); fieldNo++) {
+			final Field field = getField(fieldNo);
+			fields.add(field);
+		}
+		
+		try (DBF tempTable = new DBF(dbfFile.getAbsolutePath(), type==null?version:type, destroy)) {
+			tempTable.language=language;
+			tempTable.update_dbhead();
+			List<Field> fields2 = new ArrayList<>();
+			for (Field field: fields) {
+				if (field instanceof MemoField) {
+					fields2.add(new MemoField(field.getName()));
+				} else if (field instanceof PictureField) {
+					fields2.add(new PictureField(field.getName()));
+				} else {
+					fields2.add((Field) field.clone());
+				}
+			}
+			tempTable.addFields(fields2);
+			for (int _recno=1; _recno<=getRecordCount(); _recno++) {
+				gotoRecord(_recno);
+				for (int ix=0; ix<fields.size(); ix++) {
+					fields2.get(ix).put(fields.get(ix).get());
+				}
+				tempTable.write();
+			}
+		}
+		
+		//restore position
+		gotoRecord(recno);
 	}
 	
 	public File getMemoFile() {
@@ -2183,8 +2247,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	}
 
 	/**
-	 * Packs a DBF by removing deleted records and memo fields. DBF will be converted to the newVersion #DBFType. 
-	 * @param newVersion
+	 * Packs a DBF by removing deleted records and memo fields. For Visual FoxPro DBFs use {@link #copyTo(File)}.
 	 * @throws xBaseJException
 	 * @throws IOException
 	 * @throws SecurityException
