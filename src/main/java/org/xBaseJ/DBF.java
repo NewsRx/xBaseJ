@@ -96,7 +96,32 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	}
 
 	/**
-	 * Copies records to a new DBF. Will skip deleted records. Will not overwrite an existing DBF.
+	 * Move DBF, Memo, and MDX to destFolder. Closes DBF, moves files, then opens
+	 * DBF from new location.
+	 * 
+	 * @param destFolder
+	 * @throws IOException
+	 * @throws xBaseJException
+	 */
+	public void moveToFolder(File destFolder) throws IOException, xBaseJException {
+		int recno=getCurrentRecordNumber();
+		close();
+		final File newDbf = new File(destFolder, ffile.getName());
+		Files.move(ffile.toPath(), newDbf.toPath());
+		if (dbtobj!=null&&dbtobj.thefile!=null) {
+			Files.move(dbtobj.thefile.toPath(), new File(destFolder, dbtobj.thefile.getName()).toPath());
+		}
+		if (MDXfile!=null && MDXfile.file!=null) {
+			Files.move(MDXfile.file.toPath(), new File(destFolder, MDXfile.file.getName()).toPath());
+		}
+		openDBF(newDbf.getAbsolutePath());
+		if (recno>0 && recno<=getRecordCount()) {
+			gotoRecord(recno);
+		}
+	}
+	
+	/**
+	 * Copies records to a new DBF. Will skip deleted records. Will not overwrite an existing DBF. Does NOT copy MDX files.
 	 * 
 	 * @param dbfFile Destination DBF
 	 * @throws xBaseJException
@@ -109,7 +134,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 
 	/**
 	 * Copies records to a new DBF. Will skip deleted records if copyDeleted is
-	 * false. Will not overwrite an existing DBF.
+	 * false. Will not overwrite an existing DBF. Does NOT copy MDX files.
 	 * 
 	 * @param dbfFile Destination DBF
 	 * @param copyDeleted If false, skip deleted records during copy.
@@ -124,11 +149,13 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 
 	/**
 	 * Copies records to a new DBF of the specified {@link DBFTypes}. Will skip
-	 * deleted records if copyDeleted is false.  Will not overwrite an existing DBF.
+	 * deleted records if copyDeleted is false. Will not overwrite an existing DBF.
+	 * Does NOT copy MDX files.
 	 * 
-	 * @param dbfFile Destination DBF
+	 * @param dbfFile     Destination DBF
 	 * @param copyDeleted If false, skip deleted records during copy.
-	 * @param type If null, try and use same version as source. See {@link DBFTypes}.
+	 * @param type        If null, try and use same version as source. See
+	 *                    {@link DBFTypes}.
 	 * @throws xBaseJException
 	 * @throws IOException
 	 * @throws CloneNotSupportedException
@@ -141,7 +168,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	/**
 	 * Copies records to a new DBF of the specified type. Will skip deleted records
 	 * if copyDeleted is false. Will not overwrite an existing DBF if destroy =
-	 * false.
+	 * false. Does NOT copy MDX files.
 	 * 
 	 * @param dbfFile     Destination DBF
 	 * @param copyDeleted If false, skip deleted records during copy.
@@ -1064,7 +1091,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		}
 	}
 
-	public void renameTo(String newname) throws IOException {
+	protected void renameTo(String newname) throws IOException {
 		file.close();
 		File n = new File(newname);
 		boolean b = ffile.renameTo(n); // 20091012_rth - begin
@@ -2549,7 +2576,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	// database rename fails.
 	// Java never provided a universal interface for system level file
 	// copy.
-	public void copyTo(String newname) throws IOException {
+	protected void copyTo(String newname) throws IOException {
 		@SuppressWarnings("resource")
 		FileChannel srcChannel = new FileInputStream(dosname).getChannel();
 		@SuppressWarnings("resource")
