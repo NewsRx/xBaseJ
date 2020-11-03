@@ -90,10 +90,82 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	public File getDbfFile() {
 		return ffile;
 	}
+	
+	public File getMemoFile() {
+		return dbtobj==null?null:dbtobj.thefile;
+	}
 
+	/**
+	 * Copies records to a new DBF. Will skip deleted records. Will not overwrite an existing DBF.
+	 * 
+	 * @param dbfFile Destination DBF
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws CloneNotSupportedException
+	 */
 	public void copyTo(File dbfFile) throws xBaseJException, IOException, CloneNotSupportedException {
-		DBFTypes newVersion = version;
-		switch(version) {
+		copyTo(dbfFile, false);
+	}
+
+	/**
+	 * Copies records to a new DBF. Will skip deleted records if copyDeleted is
+	 * false. Will not overwrite an existing DBF.
+	 * 
+	 * @param dbfFile Destination DBF
+	 * @param copyDeleted If false, skip deleted records during copy.
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws CloneNotSupportedException
+	 */
+	public void copyTo(File dbfFile, boolean copyDeleted)
+			throws xBaseJException, IOException, CloneNotSupportedException {
+		copyTo(dbfFile, copyDeleted, null);
+	}
+
+	/**
+	 * Copies records to a new DBF of the specified {@link DBFTypes}. Will skip
+	 * deleted records if copyDeleted is false.  Will not overwrite an existing DBF.
+	 * 
+	 * @param dbfFile Destination DBF
+	 * @param copyDeleted If false, skip deleted records during copy.
+	 * @param type If null, try and use same version as source. See {@link DBFTypes}.
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws CloneNotSupportedException
+	 */
+	public void copyTo(File dbfFile, boolean copyDeleted, DBFTypes type)
+			throws xBaseJException, IOException, CloneNotSupportedException {
+		copyTo(dbfFile, copyDeleted, type, false);
+	}
+
+	/**
+	 * Copies records to a new DBF of the specified type. Will skip deleted records
+	 * if copyDeleted is false. Will not overwrite an existing DBF if destroy =
+	 * false.
+	 * 
+	 * @param dbfFile     Destination DBF
+	 * @param copyDeleted If false, skip deleted records during copy.
+	 * @param type        If null, try and use same version as source. See
+	 *                    {@link DBFTypes}.
+	 * @param destroy     If false, will throw an exception if target DBF already
+	 *                    exists.
+	 * @throws xBaseJException
+	 * @throws IOException
+	 * @throws CloneNotSupportedException
+	 */
+	public void copyTo(File dbfFile, boolean copyDeleted, DBFTypes type, boolean destroy)
+			throws xBaseJException, IOException, CloneNotSupportedException {
+		// save position
+		int recno = getCurrentRecordNumber();
+
+		List<Field> fields = new ArrayList<>();
+		for (int fieldNo = 1; fieldNo <= getFieldCount(); fieldNo++) {
+			final Field field = getField(fieldNo);
+			fields.add(field);
+		}
+
+		DBFTypes newVersion = type == null ? version : type;
+		switch (newVersion) {
 		case DBASEIII:
 		case DBASEIII_WITH_MEMO:
 		case DBASEIV:
@@ -101,36 +173,19 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		case FOXPRO2:
 		case FOXPRO_WITH_MEMO:
 			break;
-			
+
 		case VISUAL_FOXPRO:
 		case VISUAL_FOXPRO_AUTOINCREMENT:
 		case VISUAL_FOXPRO_VARCHAR:
-			version=DBFTypes.FOXPRO_WITH_MEMO;
-			break;
-			
 		default:
-			break;
+			newVersion = DBFTypes.FOXPRO_WITH_MEMO;
 		}
-		copyTo(dbfFile, newVersion);
-	}
-	public void copyTo(File dbfFile, DBFTypes type) throws xBaseJException, IOException, CloneNotSupportedException {
-		copyTo(dbfFile, type, false);
-	}
-	public void copyTo(File dbfFile, DBFTypes type, boolean destroy) throws xBaseJException, IOException, CloneNotSupportedException {
-		//save position
-		int recno = getCurrentRecordNumber();
-		
-		List<Field> fields = new ArrayList<>();
-		for (int fieldNo = 1; fieldNo<=getFieldCount(); fieldNo++) {
-			final Field field = getField(fieldNo);
-			fields.add(field);
-		}
-		
-		try (DBF tempTable = new DBF(dbfFile.getAbsolutePath(), type==null?version:type, destroy)) {
-			tempTable.language=language;
+
+		try (DBF tempTable = new DBF(dbfFile.getAbsolutePath(), newVersion, destroy)) {
+			tempTable.language = language;
 			tempTable.update_dbhead();
 			List<Field> fields2 = new ArrayList<>();
-			for (Field field: fields) {
+			for (Field field : fields) {
 				if (field instanceof MemoField) {
 					fields2.add(new MemoField(field.getName()));
 				} else if (field instanceof PictureField) {
@@ -140,21 +195,20 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 				}
 			}
 			tempTable.addFields(fields2);
-			for (int _recno=1; _recno<=getRecordCount(); _recno++) {
+			for (int _recno = 1; _recno <= getRecordCount(); _recno++) {
 				gotoRecord(_recno);
-				for (int ix=0; ix<fields.size(); ix++) {
+				if (deleted() && !copyDeleted) {
+					continue;
+				}
+				for (int ix = 0; ix < fields.size(); ix++) {
 					fields2.get(ix).put(fields.get(ix).get());
 				}
 				tempTable.write();
 			}
 		}
-		
-		//restore position
+
+		// restore position
 		gotoRecord(recno);
-	}
-	
-	public File getMemoFile() {
-		return dbtobj==null?null:dbtobj.thefile;
 	}
 
 	protected String dosname;
