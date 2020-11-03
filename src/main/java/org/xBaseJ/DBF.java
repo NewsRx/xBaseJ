@@ -207,9 +207,9 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		case VISUAL_FOXPRO_VARCHAR: //binary memo file indexes not supported for writing
 		default:
 			if (hasMemoFile) {
-				newVersion = DBFTypes.DBASEIV_WITH_MEMO;
+				newVersion = DBFTypes.DBASEIII_WITH_MEMO;
 			} else {
-				newVersion=DBFTypes.DBASEIV;
+				newVersion=DBFTypes.DBASEIII;
 			}
 		}
 
