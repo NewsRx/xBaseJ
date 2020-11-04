@@ -53,7 +53,7 @@ dependencies {
 	implementation 'commons-logging:commons-logging:1.1.1'
 	implementation 'com.github.NewsRxTech:xBaseJ-annotations:20201103.01'
 	
-	annotationProcessor 'com.github.NewsRxTech:xBaseJ-annotations-processor:a1fec857d4'
+	annotationProcessor 'com.github.NewsRxTech:xBaseJ-annotations-processor:20201104.01'
 	
 	testCompile 'junit:junit:4.12'
 }
