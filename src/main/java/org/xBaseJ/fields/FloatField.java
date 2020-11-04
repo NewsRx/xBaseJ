@@ -79,6 +79,12 @@ public class FloatField extends NumField {
     return type;
   }
 
+  public Double getDouble() {
+	  if (get().trim().isEmpty()) {
+		  return null;
+	  }
+	  return Double.valueOf(get().trim());
+  }
   /**
    * sets the field contents.
    *
@@ -129,14 +135,14 @@ public class FloatField extends NumField {
 
     char charray[] = new char[Length];
 
-    Double inDouble = new Double(workstring);
+    Double inDouble = Double.valueOf(workstring);
     double duble = inDouble.doubleValue();
 
     for (i = 0; i < decPosition; i++) {
       duble *= 10;
     }
 
-    inDouble = new Double(duble + .01);
+    inDouble = Double.valueOf(duble + .01);
     long longv = inDouble.longValue();
 
     if (longv < 0) {
