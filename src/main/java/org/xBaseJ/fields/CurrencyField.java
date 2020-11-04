@@ -60,8 +60,11 @@ public class CurrencyField extends Field {
 
   @Override
   public String get() {
-    BigDecimal val = currencyFromByteArray(super.getBytes());
-    return new String(val.toString());
+    return new String(getBigDecimal().toPlainString());
+  }
+  
+  public BigDecimal getBigDecimal () {
+	  return currencyFromByteArray(super.getBytes());
   }
 
   public void put(BigDecimal value) throws xBaseJException {
