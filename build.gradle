@@ -1,9 +1,12 @@
-apply plugin: 'java-library'
-apply plugin: 'eclipse-wtp'
-apply plugin: 'maven'
+plugins {
+	id "com.diffplug.eclipse.apt" version "3.25.0"
+	id "java-library"
+	id "eclipse-wtp"
+	id "maven"
+}
 
 group = 'com.github.NewsRxTech'
-version = '20201023.01'
+version = '20201104.01'
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
@@ -33,7 +36,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 artifacts {
 	archives sourcesJar
-	archives javadocJar
+	// archives javadocJar - javadoc needs fixing
 }
 
 repositories {
@@ -46,7 +49,12 @@ provided
 }
 
 dependencies {
-	compile 'commons-logging:commons-logging:1.1.1'
+
+	implementation 'commons-logging:commons-logging:1.1.1'
+	implementation 'com.github.NewsRxTech:xBaseJ-annotations:20201103.01'
+	
+	annotationProcessor 'com.github.NewsRxTech:xBaseJ-annotations-processor:a1fec857d4'
+	
 	testCompile 'junit:junit:4.12'
 }
 
@@ -82,7 +90,6 @@ eclipse {
 	}
 
 	classpath {
-		plusConfigurations += [configurations.provided]
 		downloadSources = true
 		downloadJavadoc = true
 	}
