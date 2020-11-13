@@ -86,13 +86,13 @@ import org.xBaseJ.indexes.NDX;
 import org.xBaseJ.intf.HasSize;
 
 public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
-	
+
 	public File getDbfFile() {
 		return ffile;
 	}
-	
+
 	public File getMemoFile() {
-		return dbtobj==null?null:dbtobj.thefile;
+		return dbtobj == null ? null : dbtobj.thefile;
 	}
 
 	/**
@@ -104,29 +104,30 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	 * @throws xBaseJException
 	 */
 	public void moveToFolder(File destFolder) throws IOException, xBaseJException {
-		int recno=getCurrentRecordNumber();
+		int recno = getCurrentRecordNumber();
 		final File srcDbf = ffile;
-		final File srcMemofile = dbtobj==null?null:dbtobj.thefile;
-		final File srcMdxFile = MDXfile==null?null:MDXfile.file;
+		final File srcMemofile = dbtobj == null ? null : dbtobj.thefile;
+		final File srcMdxFile = MDXfile == null ? null : MDXfile.file;
 		close();
 		final File destDbf = new File(destFolder, srcDbf.getName());
 		Files.move(srcDbf.toPath(), destDbf.toPath());
-		if (srcMemofile!=null) {
+		if (srcMemofile != null) {
 			final File destMemoFile = new File(destFolder, srcMemofile.getName());
 			Files.move(srcMemofile.toPath(), destMemoFile.toPath());
 		}
-		if (MDXfile!=null && srcMdxFile!=null) {
+		if (MDXfile != null && srcMdxFile != null) {
 			final File destMdxFile = new File(destFolder, srcMdxFile.getName());
 			Files.move(srcMdxFile.toPath(), destMdxFile.toPath());
 		}
 		openDBF(destDbf.getAbsolutePath());
-		if (recno>0 && recno<=getRecordCount()) {
+		if (recno > 0 && recno <= getRecordCount()) {
 			gotoRecord(recno);
 		}
 	}
-	
+
 	/**
-	 * Copies records to a new DBF. Will skip deleted records. Will not overwrite an existing DBF. Does NOT copy MDX files.
+	 * Copies records to a new DBF. Will skip deleted records. Will not overwrite an
+	 * existing DBF. Does NOT copy MDX files.
 	 * 
 	 * @param dbfFile Destination DBF
 	 * @throws xBaseJException
@@ -141,7 +142,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	 * Copies records to a new DBF. Will skip deleted records if copyDeleted is
 	 * false. Will not overwrite an existing DBF. Does NOT copy MDX files.
 	 * 
-	 * @param dbfFile Destination DBF
+	 * @param dbfFile     Destination DBF
 	 * @param copyDeleted If false, skip deleted records during copy.
 	 * @throws xBaseJException
 	 * @throws IOException
@@ -195,16 +196,16 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			final Field field = getField(fieldNo);
 			fields.add(field);
 		}
-		
+
 		boolean hasMemoFile = false;
 		List<Field> fields2 = new ArrayList<>();
 		for (Field field : fields) {
 			if (field instanceof MemoField) {
 				fields2.add(new MemoField(field.getName()));
-				hasMemoFile=true;
+				hasMemoFile = true;
 			} else if (field instanceof PictureField) {
 				fields2.add(new PictureField(field.getName()));
-				hasMemoFile=true;
+				hasMemoFile = true;
 			} else {
 				fields2.add((Field) field.clone());
 			}
@@ -214,34 +215,34 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		switch (newVersion) {
 		case DBASEIII:
 			if (hasMemoFile) {
-				newVersion=DBFTypes.DBASEIII_WITH_MEMO;
+				newVersion = DBFTypes.DBASEIII_WITH_MEMO;
 			}
 			break;
 		case DBASEIV:
 			if (hasMemoFile) {
-				newVersion=DBFTypes.DBASEIV_WITH_MEMO;
+				newVersion = DBFTypes.DBASEIV_WITH_MEMO;
 			}
 			break;
 		case DBASEIII_WITH_MEMO:
 			if (!hasMemoFile) {
-				newVersion=DBFTypes.DBASEIII;
+				newVersion = DBFTypes.DBASEIII;
 			}
 			break;
 		case DBASEIV_WITH_MEMO:
 			if (!hasMemoFile) {
-				newVersion=DBFTypes.DBASEIV;
+				newVersion = DBFTypes.DBASEIV;
 			}
 			break;
 		case FOXPRO2: // buggy - corruption appears in memo fields
 		case FOXPRO_WITH_MEMO: // buggy - corruption appears in memo fields
-		case VISUAL_FOXPRO: //binary memo file indexes not supported for writing
-		case VISUAL_FOXPRO_AUTOINCREMENT: //binary memo file indexes not supported for writing
-		case VISUAL_FOXPRO_VARCHAR: //binary memo file indexes not supported for writing
+		case VISUAL_FOXPRO: // binary memo file indexes not supported for writing
+		case VISUAL_FOXPRO_AUTOINCREMENT: // binary memo file indexes not supported for writing
+		case VISUAL_FOXPRO_VARCHAR: // binary memo file indexes not supported for writing
 		default:
 			if (hasMemoFile) {
 				newVersion = DBFTypes.DBASEIII_WITH_MEMO;
 			} else {
-				newVersion=DBFTypes.DBASEIII;
+				newVersion = DBFTypes.DBASEIII;
 			}
 		}
 
@@ -262,7 +263,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		}
 
 		// restore position
-		if (recno>0 && recno<= getRecordCount()) {
+		if (recno > 0 && recno <= getRecordCount()) {
 			gotoRecord(recno);
 		} else {
 			startTop();
@@ -594,13 +595,15 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			}
 		}
 
-		if (version == DBFTypes.FOXPRO_WITH_MEMO || version == DBFTypes.VISUAL_FOXPRO) {
-			dbtobj = new DBT_fpt(this, readonly);
-		} else if (version == DBFTypes.DBASEIII_WITH_MEMO) {
-			dbtobj = new DBT_iii(this, readonly);
-		} else if (version == DBFTypes.DBASEIV_WITH_MEMO) {
-			dbtobj = new DBT_iv(this, readonly);
-		}
+		// let this be handled by following code which checks for any memo fields being
+		// defined
+//		if (version == DBFTypes.FOXPRO_WITH_MEMO || version == DBFTypes.VISUAL_FOXPRO) {
+//			dbtobj = new DBT_fpt(this, readonly);
+//		} else if (version == DBFTypes.DBASEIII_WITH_MEMO) {
+//			dbtobj = new DBT_iii(this, readonly);
+//		} else if (version == DBFTypes.DBASEIV_WITH_MEMO) {
+//			dbtobj = new DBT_iv(this, readonly);
+//		}
 
 		fld_root = new Vector<>();
 
@@ -610,51 +613,61 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 		}
 
 		/*
-		 * If there is a memo field, then assume there is a memo file, period.
+		 * Correct DBF header version stamp based on existence of any Memo fields or
+		 * absence thereof.
 		 */
-		if (dbtobj == null) {
-			for (Field fld : fld_root) {
-				if (fld.getType() == MemoField.type) {
-					switch (version) {
-					case DBASEIII:
-						dbtobj = new DBT_iii(this, readonly);
-						version = DBFTypes.DBASEIII_WITH_MEMO;
-						break;
-					case DBASEIII_WITH_MEMO:
-						dbtobj = new DBT_iii(this, readonly);
-						break;
-					case DBASEIV:
-						dbtobj = new DBT_iv(this, readonly);
-						version = DBFTypes.DBASEIV_WITH_MEMO;
-						break;
-					case DBASEIV_WITH_MEMO:
-						dbtobj = new DBT_iv(this, readonly);
-						break;
-					case FOXPRO2:
-						dbtobj = new DBT_fpt(this, readonly);
-						version = DBFTypes.FOXPRO_WITH_MEMO;
-						break;
-					case FOXPRO_WITH_MEMO:
-						dbtobj = new DBT_fpt(this, readonly);
-						break;
-					case VISUAL_FOXPRO:
-						dbtobj = new DBT_fpt(this, readonly);
-						break;
-					case VISUAL_FOXPRO_AUTOINCREMENT:
-						dbtobj = new DBT_fpt(this, readonly);
-						break;
-					case VISUAL_FOXPRO_VARCHAR:
-						dbtobj = new DBT_fpt(this, readonly);
-						break;
-					}
-					break;
+		boolean hasMemo = false;
+		memoFieldScan: for (Field fld : fld_root) {
+			if (fld.getType() == MemoField.type) {
+				switch (version) {
+				case DBASEIII:
+					dbtobj = new DBT_iii(this, readonly);
+					version = DBFTypes.DBASEIII_WITH_MEMO;
+					hasMemo=true;
+					break memoFieldScan;
+				case DBASEIII_WITH_MEMO:
+					dbtobj = new DBT_iii(this, readonly);
+					hasMemo=true;
+					break memoFieldScan;
+				case DBASEIV:
+					dbtobj = new DBT_iv(this, readonly);
+					version = DBFTypes.DBASEIV_WITH_MEMO;
+					hasMemo=true;
+					break memoFieldScan;
+				case DBASEIV_WITH_MEMO:
+					dbtobj = new DBT_iv(this, readonly);
+					hasMemo=true;
+					break memoFieldScan;
+				case FOXPRO2:
+					dbtobj = new DBT_fpt(this, readonly);
+					version = DBFTypes.FOXPRO_WITH_MEMO;
+					hasMemo=true;
+					break memoFieldScan;
+				case FOXPRO_WITH_MEMO:
+					dbtobj = new DBT_fpt(this, readonly);
+					hasMemo=true;
+					break memoFieldScan;
+				case VISUAL_FOXPRO:
+					dbtobj = new DBT_fpt(this, readonly);
+					hasMemo=true;
+					break memoFieldScan;
+				case VISUAL_FOXPRO_AUTOINCREMENT:
+					dbtobj = new DBT_fpt(this, readonly);
+					hasMemo=true;
+					break memoFieldScan;
+				case VISUAL_FOXPRO_VARCHAR:
+					dbtobj = new DBT_fpt(this, readonly);
+					hasMemo=true;
+					break memoFieldScan;
 				}
+				break;
 			}
-			if (dbtobj != null) {
-				for (Field fld : fld_root) {
-					if (fld.isMemoField()) {
-						((MemoField) fld).setDBTObj(dbtobj);
-					}
+		}
+		
+		if (hasMemo) {
+			for (Field fld : fld_root) {
+				if (fld.isMemoField()) {
+					((MemoField) fld).setDBTObj(dbtobj);
 				}
 			}
 		}
@@ -715,7 +728,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 //			if (mismatch != null && (mismatch.compareTo("true") == 0 || mismatch.compareTo("yes") == 0)) {
 //				// ignore
 //			} else {
-				throw new xBaseJException("Invalid format specified");
+			throw new xBaseJException("Invalid format specified");
 //			}
 		}
 
@@ -919,7 +932,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 					Field myField = getField(i);
 					if (myField instanceof MemoField) {
 						tField = new MemoField(myField.getName());
-					}  else {
+					} else {
 						tField = (Field) getField(i).clone();
 					}
 				} catch (CloneNotSupportedException e) {
@@ -2359,13 +2372,15 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	}
 
 	/**
-	 * Packs a DBF by removing deleted records and memo fields. For Visual FoxPro DBFs use {@link #copyTo(File)}.
+	 * Packs a DBF by removing deleted records and memo fields. For Visual FoxPro
+	 * DBFs use {@link #copyTo(File)}.
+	 * 
 	 * @throws xBaseJException
 	 * @throws IOException
 	 * @throws SecurityException
 	 * @throws CloneNotSupportedException
 	 */
-	
+
 	public void pack() throws xBaseJException, IOException, SecurityException, CloneNotSupportedException {
 		Field Fields[] = new Field[fldcount];
 
@@ -2374,7 +2389,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			Field myField = getField(i);
 			if (myField instanceof MemoField) {
 				Fields[i - 1] = new MemoField(myField.getName());
-			}  else {
+			} else {
 				Fields[i - 1] = (Field) getField(i).clone();
 			}
 		}
@@ -2413,7 +2428,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 
 			file.close();
 			ffile.delete();
-			
+
 			Files.copy(Paths.get(tempDBF.ffile.getAbsolutePath()), //
 					Paths.get(ffile.getAbsolutePath()), //
 					StandardCopyOption.REPLACE_EXISTING);
@@ -2425,16 +2440,17 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			if (tempDBF.dbtobj != null) {
 				final String tmpMemoFile = tempDBF.dbtobj.thefile.getAbsolutePath();
 				final String memoFile = dbtobj.thefile.getAbsolutePath();
-				
+
 				if (new File(memoFile).exists()) {
 					Files.deleteIfExists(Paths.get(memoFile));
 				}
 				Files.copy(Paths.get(tmpMemoFile), Paths.get(memoFile), StandardCopyOption.REPLACE_EXISTING);
-				//dbtobj = tempDBF.dbtobj;
-				dbtobj.thefile=new File(memoFile);
-				//dbtobj.rename(ffile.getAbsolutePath()); //make sure memo has correct extension
+				// dbtobj = tempDBF.dbtobj;
+				dbtobj.thefile = new File(memoFile);
+				// dbtobj.rename(ffile.getAbsolutePath()); //make sure memo has correct
+				// extension
 				dbtobj.file = new RandomAccessFile(dbtobj.thefile, "rw");
-				
+
 				Field tField;
 				MemoField mField;
 				for (i = 1; i <= fldcount; i++) {
@@ -2446,7 +2462,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 				}
 			}
 		}
-		
+
 		ffile = new File(dosname);
 		file = new RandomAccessFile(dosname, "rw");
 		channel = file.getChannel();
@@ -2457,10 +2473,10 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			Field field = getField(i);
 			field.setBuffer(buffer);
 			if (field instanceof MemoField) {
-				((MemoField)field).setDBTObj(dbtobj);
+				((MemoField) field).setDBTObj(dbtobj);
 			}
 			if (field instanceof PictureField) {
-				((PictureField)field).setDBTObj(dbtobj);
+				((PictureField) field).setDBTObj(dbtobj);
 			}
 		}
 
@@ -2599,17 +2615,19 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 	public Iterator<DBFRecord> iterator() {
 		return new Iterator<>() {
 			private DBF dbf = DBF.this;
-			private int recno=0;
+			private int recno = 0;
+
 			@Override
 			public boolean hasNext() {
-				return dbf.getRecordCount()>recno;
+				return dbf.getRecordCount() > recno;
 			}
 
 			@Override
 			public DBFRecord next() {
 				recno++;
-				if (recno>dbf.getRecordCount()) {
-					throw new IndexOutOfBoundsException("Record "+recno+" exceeds record count of "+dbf.getRecordCount());
+				if (recno > dbf.getRecordCount()) {
+					throw new IndexOutOfBoundsException(
+							"Record " + recno + " exceeds record count of " + dbf.getRecordCount());
 				}
 				try {
 					dbf.gotoRecord(recno);
@@ -2619,7 +2637,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 				final DBFRecord dbfRecord = new DBFRecord() {
 					final DBF dbf = DBF.this;
 					final int myRecno = recno;
-					
+
 					@Override
 					public void setDeleted(boolean deleted) throws xBaseJException, IOException {
 						int prevRecno = dbf.getCurrentRecordNumber();
@@ -2632,21 +2650,22 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 						dbf.update();
 						dbf.gotoRecord(prevRecno);
 					}
-					
+
 					@Override
 					public int recno() {
 						return myRecno;
 					}
-					
+
 					@Override
-					public void put(String field, String value) throws ArrayIndexOutOfBoundsException, xBaseJException, IOException {
+					public void put(String field, String value)
+							throws ArrayIndexOutOfBoundsException, xBaseJException, IOException {
 						int prevRecno = dbf.getCurrentRecordNumber();
 						dbf.gotoRecord(myRecno);
 						dbf.getField(field).put(value);
 						dbf.update();
-						dbf.gotoRecord(prevRecno);						
+						dbf.gotoRecord(prevRecno);
 					}
-					
+
 					@Override
 					public boolean isDeleted() throws xBaseJException, IOException {
 						int prevRecno = dbf.getCurrentRecordNumber();
@@ -2655,7 +2674,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 						dbf.gotoRecord(prevRecno);
 						return deleted;
 					}
-					
+
 					@Override
 					public String get(String field) throws xBaseJException, IOException {
 						int prevRecno = dbf.getCurrentRecordNumber();
@@ -2664,7 +2683,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 						dbf.gotoRecord(prevRecno);
 						return value;
 					}
-					
+
 					@Override
 					public DBF dbf() {
 						return dbf;
@@ -2672,7 +2691,7 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 				};
 				return dbfRecord;
 			}
-			
+
 			public void remove() {
 				try {
 					dbf.gotoRecord(recno);
