@@ -659,8 +659,9 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 					dbtobj = new DBT_fpt(this, readonly);
 					hasMemo=true;
 					break memoFieldScan;
+				default:
+					throw new xBaseJException("Unknown DBF type: "+version.name());
 				}
-				break;
 			}
 		}
 		
