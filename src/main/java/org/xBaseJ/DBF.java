@@ -669,6 +669,8 @@ public class DBF implements Closeable, HasSize, Iterable<DBFRecord> {
 			for (Field fld : fld_root) {
 				if (fld.isMemoField()) {
 					((MemoField) fld).setDBTObj(dbtobj);
+				} else if (fld.isPictureField()) {
+					((PictureField) fld).setDBTObj(dbtobj);
 				}
 			}
 		}
