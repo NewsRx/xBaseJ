@@ -1,27 +1,29 @@
 plugins {
-	id "com.diffplug.eclipse.apt" version "3.25.0"
-	id "java-library"
-	id "eclipse-wtp"
-	id "maven"
+  id 'java-library'
+  id 'war'
+  id 'eclipse-wtp'
+  id 'org.gretty'
+  id "com.diffplug.eclipse.apt"
+  // id "maven"
 }
 
 group = 'com.github.NewsRxTech'
 version = '20201104.01'
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
-compileJava {
-    options.release = 11
-}
-
 compileJava.options.encoding = 'UTF-8'
-compileTestJava.options.encoding = 'UTF-8'
+compileJava.options.release = 11
 
-install {
+compileTestJava.options.encoding = 'UTF-8'
+compileTestJava.options.release = 11
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(11)
+java.toolchain.vendor = JvmVendorSpec.ADOPTOPENJDK
+
+/* install {
 	repositories.mavenInstaller {
 		pom.artifactId = 'xBaseJ'
 	}
-}
+} */
 
 task sourcesJar(type: Jar, dependsOn: classes) {
 	classifier = 'sources'
@@ -40,12 +42,13 @@ artifacts {
 }
 
 repositories {
+	mavenCentral()
 	jcenter()
 	maven { url 'https://jitpack.io' }
 }
 
 configurations {
-provided
+	provided
 }
 
 dependencies {
@@ -55,7 +58,7 @@ dependencies {
 	
 	annotationProcessor 'com.github.NewsRxTech:xBaseJ-annotations-processor:20201104.01'
 	
-	testCompile 'junit:junit:4.12'
+	testImplementation 'junit:junit:4.12'
 }
 
 sourceSets {
@@ -84,7 +87,14 @@ eclipseJdt {
 	f.append('line.separator=\\n\n')
 }}
 
+// Required for correct setup of APT in Eclipse
+eclipseJdt.dependsOn cleanEclipseJdt, eclipseJdtApt
+eclipseJdtApt.dependsOn cleanEclipseJdtApt, eclipseFactorypath
+eclipseFactorypath.dependsOn cleanEclipseFactorypath, "create-dirs"
+
 eclipse {
+	synchronizationTasks eclipseJdt
+
 	project {
 		name = 'xBaseJ'
 	}
@@ -102,20 +112,10 @@ configurations.all {
 		}
 	}
 
-	test {
-// enable TestNG support (default is JUnit)
-//useTestNG()
-maxHeapSize = "1024m"
-systemProperty 'debug', 'true'
-testLogging.showStandardStreams = true
-
-// listen to events in the test execution lifecycle
-beforeTest { descriptor ->
-	logger.lifecycle("Running test: " + descriptor)
-}
-
-// listen to standard out and standard error of the test JVM(s)
-onOutput { descriptor, event ->
-	logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
-}
+test {
+	// enable TestNG support (default is JUnit)
+	//useTestNG()
+	maxHeapSize = "1024m"
+	systemProperty 'debug', 'true'
+	testLogging.showStandardStreams = true
 }

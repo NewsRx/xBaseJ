@@ -1,24 +1,14 @@
-rootProject.name = 'xBaseJ'
-
-String[] p = []
-/*
- * Dynamically locate loosely coupled project dependencies.
- */
-p.each { s->
-	include (":"+s);
-	boolean found=false;
-	File f;
-	f = new File(settingsDir,"../"+s); //preferred is side-by-side
-	found = new File(f, "build.gradle").exists();
-	if (!found) {
-		throw new RuntimeException("=== MISSING PROJECT: '"+s+"'");
-	}
-	project(":"+s).projectDir=f
-	s=new File(f, "settings.gradle")
-	if (s.exists()) {
-		String tmp = rootProject.name
-		apply from: s
-		rootProject.name = tmp
-	}
+pluginManagement {
+  plugins {
+    id "org.wisepersist.gwt" version "1.1.11"
+    id "org.gretty" version "3.0.4"
+    id "com.diffplug.eclipse.apt" version "3.29.1"
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id "io.freefair.lombok" version "6.0.0-m2"
+    id 'ru.vyarus.mkdocs' version '2.0.1'
+	id 'ru.vyarus.use-python' version '2.2.0'
+  }
 }
+
+rootProject.name = 'xBaseJ'
 
