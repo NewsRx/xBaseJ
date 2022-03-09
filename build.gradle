@@ -2,9 +2,7 @@ plugins {
   id 'java-library'
   id 'war'
   id 'eclipse-wtp'
-  id 'org.gretty'
   id "com.diffplug.eclipse.apt"
-  // id "maven"
 }
 
 group = 'com.github.NewsRxTech'
