@@ -1,0 +1,6 @@
+[submodule "xBaseJ-annotations"]
+	path = xBaseJ-annotations
+	url = git@github.com:NewSRXTech/xBaseJ-annotations.git
+[submodule "xBaseJ-annotations-processor"]
+	path = xBaseJ-annotations-processor
+	url = git@github.com:NewSRXTech/xBaseJ-annotations-processor.git
